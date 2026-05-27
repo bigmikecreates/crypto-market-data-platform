@@ -1,4 +1,3 @@
-import re
 from collections import defaultdict
 from pathlib import Path
 
@@ -7,8 +6,8 @@ import pyarrow.parquet as pq
 
 from crypto_market_data_platform.config import TimestampConfig
 from crypto_market_data_platform.models.candle import Candle
+from crypto_market_data_platform.validation.candles import _DECIMAL_PATTERN
 
-_DECIMAL_PATTERN = re.compile(r"^[0-9]+(\.[0-9]+)?$")
 _DECIMAL128_TYPE = pa.decimal128(38, 10)
 
 
