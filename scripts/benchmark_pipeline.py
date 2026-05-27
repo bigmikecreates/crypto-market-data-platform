@@ -776,27 +776,31 @@ def profile(
 
     header = (
         f"  {'Provider':>12} {'Candles':>8} {'Wall(ms)':>10}"
-        f" {'CPU(ms)':>10} {'Mem(MB)':>9} {'Peak(MB)':>9}"
+        f" {'CPU(ms)':>10} {'Net(ms)':>9}"
+        f" {'Mem(MB)':>9} {'Peak(MB)':>9}"
         f" {'File(KB)':>9} {'Issues':>7}"
     )
     lines.append(header)
-    lines.append("  " + "─" * 76)
+    lines.append("  " + "─" * 84)
 
     for pname, result in all_results:
         ps = _pipeline_stats(result)
+        net = ps["wall_ms"] - ps["cpu_ms"]
         lines.append(
             f"  {pname:>12} {result.count:>8} {ps['wall_ms']:>10.2f}"
-            f" {ps['cpu_ms']:>10.2f} {ps['mem_mb']:>9.2f}"
+            f" {ps['cpu_ms']:>10.2f} {net:>9.2f}"
+            f" {ps['mem_mb']:>9.2f}"
             f" {ps['peak_mb']:>9.2f} {ps['file_kb']:>9.2f}"
             f" {result.validation_issues:>7}"
         )
 
-    lines.append("  " + "─" * 76)
+    lines.append("  " + "─" * 84)
     lines.append("")
-    lines.append("Issues = validation issues flagged for the batch.")
+    lines.append("Net = wall - cpu  (time spent waiting on I/O, network, or scheduler)")
+    lines.append("     near 0 → CPU-bound     much larger than 0 → network/I/O-bound")
     lines.append("")
 
-    # per-provider detail tables (coarse = pipeline stages)
+    # per-provider detail tables
     for pname, result in all_results:
         pipe_stages = result.stages[: result.pipeline_end_index + 1]
         all_stages = result.stages
@@ -831,12 +835,23 @@ def profile(
         lines.append(sep)
         peak_stage = max(all_stages, key=lambda s: s.peak_mb)
         file_kb_total = max((s.file_kb for s in all_stages if s.file_kb is not None), default=0.0)
+        pipeline_mem = sum(max(s.mem_delta_mb, 0) for s in pipe_stages)
         lines.append(
             f"  {'Pipeline total':<{name_w}} {_fmt(total_wall):>9} {_fmt(total_cpu):>9}"
-            f" {_fmt(sum(max(s.mem_delta_mb, 0) for s in pipe_stages)):>9}"
+            f" {_fmt(pipeline_mem):>9}"
             f" {_fmt(peak_stage.peak_mb):>9}"
             f" {_fmt(file_kb_total) if file_kb_total > 0 else _fmt_none():>8}"
         )
+        lines.append("")
+
+        # Network/CPU Boundary section
+        net_wait = total_wall - total_cpu
+        ratio = net_wait / total_cpu if total_cpu > 0 else 0
+        regime = "CPU-bound" if ratio < 0.5 else "network-bound" if ratio > 1.5 else "balanced"
+        lines.append("  ── Network/CPU Boundary ──")
+        lines.append(f"  Network wait:  {net_wait:.2f} ms  (wall - cpu = time outside our process)")
+        lines.append(f"  CPU processing: {total_cpu:.2f} ms  (total CPU for pipeline stages)")
+        lines.append(f"  Network/CPU ratio: {ratio:.1f}×  → {regime}")
         lines.append("")
 
         lines.append(f"  Candles: {result.count}  |  Validation issues: {result.validation_issues}")

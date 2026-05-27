@@ -434,3 +434,95 @@ Deferred — expected candle count, missing interval detection, pagination-aware
 validation, provider scoring — all depend on knowing how real providers
 paginate, cap results, and handle sparse markets. Adding them before Kraken or
 Coinbase would produce rules tuned to fake data that might not match reality.
+
+---
+
+## 8. Network/CPU Boundary Measurement
+
+### 8.1 The split determines the optimisation strategy
+
+**Problem:** The synthetic benchmark (10k candles, no network) and the live
+provider benchmarks (24 candles, real API) produce very different profiles, but
+without a first-class metric that distinguishes them, it is easy to optimise the
+wrong thing — spending effort on local pipeline throughput when the real
+bottleneck is network I/O, or vice versa.
+
+**Observation from live profiling:** The CPU/Wall ratio changes by two orders
+of magnitude depending on whether network I/O is present:
+
+| Benchmark | Candles | Wall (ms) | CPU (ms) | Net (ms) | Net/CPU ratio | Character |
+|---|---|---|---|---|---|---|
+| Synthetic (CandlePipelineRunner) | 10,000 | 154.6 | 161.1 | −6.5 | −0.0× | **CPU-bound** |
+| FakeProvider | 1 | 2.3 | 2.1 | 0.2 | 0.1× | **CPU-bound** |
+| BitfinexProvider | 24 | 75.3 | 11.3 | 64.0 | 5.7× | **network-bound** |
+| KuCoinProvider | 24 | 280.7 | 9.0 | 271.7 | 30.1× | **network-bound** |
+
+(Net = wall − cpu: time spent outside our process — waiting on the network,
+the scheduler, or I/O. A negative value for the synthetic benchmark reflects
+timer granularity noise; it is effectively zero.)
+
+**Why this matters:** A 10× improvement in local pipeline throughput
+(the CPU-bound domain) would reduce the synthetic benchmark by 90%, but
+would reduce Bitfinex ingestion by ~15% and KuCoin ingestion by ~3%. The
+returns are rapidly diminishing for real providers — optimising the CPU path is
+not the lever you think it is once network I/O dominates.
+
+### 8.2 How the boundary is measured
+
+The `profile` command reports a **Network/CPU Boundary** section per provider:
+
+```
+Network wait:  63.95 ms  (wall − cpu = time outside our process)
+CPU processing: 11.31 ms  (total CPU for pipeline stages)
+Network/CPU ratio: 5.7×  → network-bound
+```
+
+The metrics are derived entirely from existing `time.perf_counter()` and
+`time.process_time()` instrumentation — no new probes are needed.
+
+- **Network wait** = `pipeline wall total − pipeline CPU total`. This captures
+  all time not spent on our thread: network I/O wait, kernel context switches,
+  scheduler preemption, and PyArrow's internal C-level allocations (which
+  `tracemalloc` cannot see). In practice, for an idle machine with a live API
+  call, it is almost entirely HTTP round-trip time.
+- **CPU processing** = sum of `process_time()` deltas across all pipeline
+  stages. This is cycles our thread actually ran.
+- **Regime classification:**
+  - `Net/CPU < 0.5` → **CPU-bound** (the pipeline is the bottleneck)
+  - `0.5 ≤ Net/CPU ≤ 1.5` → **balanced** (neither dominates)
+  - `Net/CPU > 1.5` → **network-bound** (the network is the bottleneck)
+
+### 8.3 What the boundary implies for optimisation
+
+**When CPU-bound** (synthetic benchmark, FakeProvider):
+Optimise the local pipeline: Candle object creation, decimal128 casting,
+validation throughput. Every CPU cycle saved translates directly to real
+wall-clock savings. The current bottleneck is Candle dataclass construction
+(~64% of pipeline CPU at 10k candles — see Section 6).
+
+**When network-bound** (Bitfinex, KuCoin):
+Optimise I/O concurrency: larger batch sizes per request, parallel symbol
+fetching, connection reuse, WebSocket streaming. CPU savings in the pipeline
+are overwhelmed by HTTP round-trip time — a 50% pipeline improvement saves
+~5ms out of 75ms (Bitfinex) or ~4ms out of 281ms (KuCoin). The returns are
+modest until I/O is addressed.
+
+**The key insight:** the same benchmark framework must measure both regimes
+because the same ingestion pipeline transitions between them depending on
+whether a provider call is in-flight. A single "throughput" number is
+misleading — you need to know whether you are CPU-bound or network-bound to
+know what to fix.
+
+### 8.4 Design implications for the benchmark suite
+
+The project maintains two benchmark paths that exercise different regimes:
+
+| Command | Regime | What it measures | Primary audience |
+|---|---|---|---|
+| `run --runner candle` | CPU-bound | Pipeline code throughput (Candle → Parquet) | Regression gate for core pipeline |
+| `profile` | mixed (network + CPU) | End-to-end provider ingestion cost | Provider integration, capacity planning |
+
+Both use the same `BenchmarkContext`/`StageMetrics`/`BenchmarkResult`
+infrastructure. The `profile` command adds the Network/CPU boundary
+interpretation layer on top. Neither path is a subset of the other — they are
+complementary views of the same system at different abstraction levels.
