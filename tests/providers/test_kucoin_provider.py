@@ -13,7 +13,7 @@ from crypto_market_data_platform.providers.kucoin import (
     _to_kc_timeframe,
 )
 
-_FIXTURE_DIR = Path(__file__).parent / "fixtures"
+_FIXTURE_DIR = Path(__file__).parent.parent / "fixtures"
 
 
 def _load_fixture(name: str) -> Any:

@@ -13,7 +13,7 @@ from crypto_market_data_platform.providers.bitfinex import (
     _to_bfx_timeframe,
 )
 
-_FIXTURE_DIR = Path(__file__).parent / "fixtures"
+_FIXTURE_DIR = Path(__file__).parent.parent / "fixtures"
 
 
 def _load_fixture(name: str) -> Any:
