@@ -22,65 +22,6 @@ CLI (cmpd) ──────→ IngestionService ────────→ Pa
 Benchmark (scripts/benchmark_pipeline.py) ───→ synthetic + live provider profiles
 ```
 
-## Package Layout
-
-```
-src/crypto_market_data_platform/
-├── __init__.py
-├── config.py                 # TimestampConfig
-├── models/
-│   ├── candle.py             # Candle @dataclass(slots=True), all fields str
-│   └── funding_rate.py       # FundingRate @dataclass(slots=True)
-├── providers/
-│   ├── base.py               # MarketDataProvider ABC
-│   ├── fake.py               # FakeProvider (hardcoded candles + funding rates)
-│   ├── bitfinex.py           # BitfinexProvider (live)
-│   └── kucoin.py             # KuCoinProvider (live)
-├── validation/
-│   ├── result.py             # ValidationResult, Issue
-│   ├── candles.py            # validate_candle_batch() + 5 rules
-│   ├── funding_rates.py      # validate_funding_rate_batch() + rules
-│   └── patterns.py           # Shared decimal/timestamp patterns
-├── storage/
-│   └── parquet_writer.py     # write_candles(), write_funding_rates()
-├── cli/
-│   ├── main.py               # cmpd Typer app (7 commands)
-│   ├── ingestion_service.py  # IngestionService orchestrator
-│   └── funding_ingestion_service.py
-├── query/
-│   ├── service.py            # QueryService ABC (5 methods)
-│   └── duckdb_service.py     # DuckDBQueryService (read_parquet)
-├── server/
-│   ├── app.py                # create_app() factory
-│   ├── config.py             # ServerConfig
-│   ├── dependencies.py       # FastAPI Depends for QueryService
-│   └── routers/
-│       ├── health.py         # GET /health
-│       ├── datasets.py       # GET /datasets
-│       ├── candles.py        # GET /candles
-│       ├── funding.py        # GET /funding-rates
-│       ├── summary.py        # GET /summary
-│       └── query.py          # POST /query
-└── benchmark/
-    ├── core.py               # PipelineRunner ABC, BenchmarkContext
-    ├── rules.py              # CrossValidationRule engine
-    └── runners.py            # Candle + Provider pipeline runners
-
-scripts/
-├── benchmark_pipeline.py     # Typer CLI: run (synthetic), profile (live)
-└── …
-
-Dockerfile                    # uvicorn CMD for server deployment
-docs/
-├── benchmarks/
-│   └── design-rationale.md   # All design decisions with evidence
-├── validation-strategy.md
-├── provider-selection.md
-├── lessons-from-bitfinex-integration.md
-├── lessons-from-kucoin-integration.md
-└── next-steps.md
-```
-
 ## CLI Reference
 
 The binary is `cmpd` (run via `python -m crypto_market_data_platform.cli.main`):
