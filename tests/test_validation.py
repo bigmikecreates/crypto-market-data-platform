@@ -1,11 +1,11 @@
 import pytest
 
 from crypto_market_data_platform.models.candle import Candle
-from crypto_market_data_platform.validation.candles import (
+from crypto_market_data_platform.validation.candles import validate_candle_batch
+from crypto_market_data_platform.validation.patterns import (
     _decimal_gte,
     _digit_count,
-    _DECIMAL_PATTERN,
-    validate_candle_batch,
+    _UNSIGNED_DECIMAL_PATTERN,
 )
 
 
@@ -89,11 +89,12 @@ def test_invalid_decimal_string(field: str, bad_val: str):
     assert not result.passed
 
 
-def test_negative_decimal_is_invalid():
+def test_negative_decimal_is_negative_value():
     c = _candle(open="-5000")
     result = validate_candle_batch([c])
     codes = [i.code for i in result.issues]
-    assert "INVALID_DECIMAL" in codes
+    assert "NEGATIVE_VALUE" in codes
+    assert "INVALID_DECIMAL" not in codes
     assert not result.passed
 
 

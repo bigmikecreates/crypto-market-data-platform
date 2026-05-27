@@ -1,34 +1,17 @@
-import re
-
 from crypto_market_data_platform.models.candle import Candle
+from crypto_market_data_platform.validation.patterns import (
+    _SIGNED_DECIMAL_PATTERN,
+    _UNSIGNED_DECIMAL_PATTERN,
+    _TIMESTAMP_PATTERN,
+    _decimal_gte,
+    _digit_count,
+)
 from crypto_market_data_platform.validation.result import ValidationIssue, ValidationResult
-
-_DECIMAL_PATTERN = re.compile(r"^[0-9]+(\.[0-9]+)?$")
-_TIMESTAMP_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$")
 
 _DECIMAL_FIELDS = ["open", "high", "low", "close", "volume"]
 _ALL_FIELDS = _DECIMAL_FIELDS + ["exchange", "symbol", "timeframe", "timestamp", "source"]
 
 _PRECISION_OVERFLOW_SEVERITY = "warning"
-
-
-def _decimal_gte(a: str, b: str) -> bool:
-    if a == b:
-        return True
-    int_a, _, frac_a = a.partition(".")
-    int_b, _, frac_b = b.partition(".")
-    int_a = int_a.lstrip("0") or "0"
-    int_b = int_b.lstrip("0") or "0"
-    if len(int_a) != len(int_b):
-        return len(int_a) > len(int_b)
-    if int_a != int_b:
-        return int_a > int_b
-    max_len = max(len(frac_a), len(frac_b))
-    return frac_a.ljust(max_len, "0") >= frac_b.ljust(max_len, "0")
-
-
-def _digit_count(s: str) -> int:
-    return len(s) - s.count(".")
 
 
 def _check_non_empty(candle: Candle, index: int, issues: list[ValidationIssue]) -> None:
@@ -49,7 +32,7 @@ def _check_decimals(candle: Candle, index: int, issues: list[ValidationIssue]) -
     valid_decimals: list[str] = []
     for field in _DECIMAL_FIELDS:
         val = getattr(candle, field, "")
-        if not _DECIMAL_PATTERN.match(val):
+        if not _SIGNED_DECIMAL_PATTERN.match(val):
             issues.append(
                 ValidationIssue(
                     severity="error",
@@ -60,7 +43,7 @@ def _check_decimals(candle: Candle, index: int, issues: list[ValidationIssue]) -
                 )
             )
         else:
-            if _digit_count(val) > 38:
+            if _digit_count(val.replace("-", "")) > 38:
                 issues.append(
                     ValidationIssue(
                         severity=_PRECISION_OVERFLOW_SEVERITY,
@@ -72,6 +55,21 @@ def _check_decimals(candle: Candle, index: int, issues: list[ValidationIssue]) -
                 )
             valid_decimals.append(val)
     return valid_decimals
+
+
+def _check_non_negative(candle: Candle, index: int, issues: list[ValidationIssue]) -> None:
+    for field in _DECIMAL_FIELDS:
+        val = getattr(candle, field, "")
+        if val.startswith("-"):
+            issues.append(
+                ValidationIssue(
+                    severity="error",
+                    code="NEGATIVE_VALUE",
+                    message=f"Field '{field}' is negative: '{val}'.",
+                    candle_index=index,
+                    field=field,
+                )
+            )
 
 
 def _check_timestamp(candle: Candle, index: int, issues: list[ValidationIssue]) -> None:
@@ -97,7 +95,7 @@ def _check_ohlc_invariants(
     open_v = getattr(candle, "open", "")
     close = getattr(candle, "close", "")
 
-    if not all(_DECIMAL_PATTERN.match(v) for v in [high, low, open_v, close]):
+    if not all(_UNSIGNED_DECIMAL_PATTERN.match(v) for v in [high, low, open_v, close]):
         return
 
     if not _decimal_gte(high, open_v):
@@ -174,6 +172,7 @@ def validate_candle_batch(candles: list[Candle]) -> ValidationResult:
     for idx, candle in enumerate(candles):
         _check_non_empty(candle, idx, issues)
         valid_decimals = _check_decimals(candle, idx, issues)
+        _check_non_negative(candle, idx, issues)
         _check_timestamp(candle, idx, issues)
         _check_ohlc_invariants(candle, idx, issues)
 
