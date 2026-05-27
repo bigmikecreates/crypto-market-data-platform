@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 from pathlib import Path
 
 import pyarrow as pa
@@ -27,6 +28,17 @@ def _to_timestamp(
 ) -> pa.Array:
     arr = pa.array(values, type=pa.string())
     return arr.cast(ts_config.parquet_type)
+
+
+def _path_for_candle(c: Candle, base_path: str) -> Path:
+    date_str = c.timestamp[:10]
+    return (
+        Path(base_path)
+        / c.exchange
+        / c.symbol
+        / c.timeframe
+        / f"{date_str}.parquet"
+    )
 
 
 def candle_to_table(
@@ -64,22 +76,20 @@ def write_candles(
         return []
 
     ts_config = ts_config or TimestampConfig()
-    written: list[Path] = []
-    table = candle_to_table(candles, ts_config)
 
+    grouped: dict[Path, list[Candle]] = defaultdict(list)
     for c in candles:
-        date_str = c.timestamp[:10]
-        path = (
-            Path(base_path)
-            / c.exchange
-            / c.symbol
-            / c.timeframe
-            / f"{date_str}.parquet"
-        )
+        grouped[_path_for_candle(c, base_path)].append(c)
+
+    written: list[Path] = []
+    for path, candles_for_path in grouped.items():
+        table = candle_to_table(candles_for_path, ts_config)
         path.parent.mkdir(parents=True, exist_ok=True)
 
         if path.exists():
             existing = pq.read_table(str(path))
+            if existing.schema != table.schema:
+                existing = existing.cast(table.schema)
             table = pa.concat_tables([existing, table])
 
         pq.write_table(table, str(path))
