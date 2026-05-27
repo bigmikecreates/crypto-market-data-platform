@@ -5,12 +5,14 @@ import typer
 from crypto_market_data_platform.cli.ingestion_service import IngestionService
 from crypto_market_data_platform.providers.bitfinex import BitfinexProvider
 from crypto_market_data_platform.providers.fake import FakeProvider
+from crypto_market_data_platform.providers.kucoin import KuCoinProvider
 
 app = typer.Typer()
 
 PROVIDERS: dict[str, type] = {
     "fake": FakeProvider,
     "bitfinex": BitfinexProvider,
+    "kucoin": KuCoinProvider,
 }
 
 
