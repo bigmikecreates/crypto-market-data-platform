@@ -1,0 +1,36 @@
+name: Deploy MkDocs
+
+on:
+  push:
+    branches:
+      - docs/mkdocs-material
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout docs source branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs/mkdocs-material
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install docs dependencies
+        run: |
+          pip install -e .[docs]
+
+      - name: Build docs
+        run: |
+          mkdocs build --strict
+
+      - name: Deploy built site to gh-pages
+        run: |
+          mkdocs gh-deploy --force
