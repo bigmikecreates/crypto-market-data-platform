@@ -18,6 +18,9 @@ dependencies = [
 test = [
     "pytest"
 ]
+docs = [
+    "mkdocs-material"
+]
 
 [build-system]
 requires = ["setuptools", "wheel"]

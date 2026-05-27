@@ -1,0 +1,63 @@
+site_name: Crypto Market Data Platform
+site_description: Local-first cryptocurrency market data ingestion, validation, storage, and query platform.
+repo_url: https://github.com/bigmikecreates/crypto-market-data-platform
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - content.tabs.link
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - footnotes
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Philosophy: philosophy.md
+  - Architecture: architecture.md
+  - Providers: providers.md
+  - Data Model: data-model.md
+  - Benchmark Design: benchmark-design.md
+  - Performance Notes: performance-notes.md
+  - Roadmap: roadmap.md
+  - References:
+    - Validation Strategy: validation-strategy.md
+    - Provider Selection: benchmarks/provider-selection.md
+    - Bitfinex Integration: lessons-from-bitfinex-integration.md
+    - KuCoin Integration: lessons-from-kucoin-integration.md
+    - Design Rationale (full): benchmarks/design-rationale.md

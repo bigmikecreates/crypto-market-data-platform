@@ -4,4 +4,5 @@ __pycache__/
 data/
 *egg-info
 .bench_tmp*
+site/
 .opencode/plans/
