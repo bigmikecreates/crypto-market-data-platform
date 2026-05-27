@@ -29,6 +29,7 @@ class BenchmarkResult:
     stages: list[StageMetrics] = field(default_factory=list)
     schema: dict[str, str] = field(default_factory=dict)
     pipeline_end_index: int = 0
+    validation_issues: int = 0
 
 
 class BenchmarkContext:

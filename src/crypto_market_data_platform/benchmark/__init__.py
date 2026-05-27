@@ -5,10 +5,14 @@ from crypto_market_data_platform.benchmark.core import (
     StageMetrics,
 )
 from crypto_market_data_platform.benchmark.rules import CrossValidationRule, evaluate_rules
-from crypto_market_data_platform.benchmark.runners import CandlePipelineRunner
+from crypto_market_data_platform.benchmark.runners import (
+    CandlePipelineRunner,
+    ProviderCandlePipelineRunner,
+)
 
 RUNNERS: dict[str, type[PipelineRunner]] = {
     "candle": CandlePipelineRunner,
+    "provider": ProviderCandlePipelineRunner,
 }
 
 __all__ = [
@@ -17,6 +21,7 @@ __all__ = [
     "CandlePipelineRunner",
     "CrossValidationRule",
     "PipelineRunner",
+    "ProviderCandlePipelineRunner",
     "RUNNERS",
     "StageMetrics",
     "evaluate_rules",

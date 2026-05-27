@@ -19,7 +19,7 @@ def _to_decimal128(values: list[str], label: str, candle_key: str) -> pa.Array:
                 f"Invalid decimal string '{v}' for {label} in candle {candle_key}"
             )
     arr = pa.array(values, type=pa.string())
-    return arr.cast(_DECIMAL128_TYPE)
+    return arr.cast(_DECIMAL128_TYPE, safe=False)
 
 
 def _to_timestamp(

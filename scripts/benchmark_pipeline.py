@@ -15,6 +15,7 @@ import os
 import statistics
 import sys
 import tracemalloc
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -26,8 +27,12 @@ from crypto_market_data_platform.benchmark.rules import (
     VERBOSE_RULES,
     evaluate_rules,
 )
+from crypto_market_data_platform.benchmark.runners import ProviderCandlePipelineRunner
 from crypto_market_data_platform.config import TimestampConfig
 from crypto_market_data_platform.models.candle import Candle
+from crypto_market_data_platform.providers.bitfinex import BitfinexProvider
+from crypto_market_data_platform.providers.fake import FakeProvider
+from crypto_market_data_platform.providers.kucoin import KuCoinProvider
 from crypto_market_data_platform.storage.parquet_writer import (
     _to_decimal128,
     _to_timestamp,
@@ -690,6 +695,155 @@ def run(
         }
         output.write_text(json.dumps(data, indent=2))
         typer.echo(f"  Wrote JSON to {output}")
+
+
+@app.command()
+def profile(
+    symbol: str = typer.Option("BTC/USDT", "--symbol", help="Trading pair symbol (FakeProvider)"),
+    timeframe: str = typer.Option("1h", "--timeframe", help="Candle timeframe"),
+    start: str = typer.Option(
+        ..., "--start", help="Start time (ISO-8601, e.g. 2026-05-25)"
+    ),
+    end: str = typer.Option(
+        ..., "--end", help="End time (ISO-8601, e.g. 2026-05-27)"
+    ),
+    iterations: int = typer.Option(
+        3, "--iterations", "-i", help="Benchmark iterations per provider"
+    ),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Show fine-grained checkpoint stages per provider"),
+) -> None:
+    """Profile each market-data provider (fake, bitfinex, kucoin) with
+    the same symbol/timeframe range and print a comparison."""
+    import gc
+    import shutil
+
+    ts_config = TimestampConfig(resolution="s")
+
+    dt_start = datetime.fromisoformat(start).replace(tzinfo=timezone.utc)
+    dt_end = datetime.fromisoformat(end).replace(tzinfo=timezone.utc)
+
+    # Each provider uses its own symbol convention
+    providers: list[tuple[str, Any, str]] = [
+        ("fake", FakeProvider(), symbol),
+        ("bitfinex", BitfinexProvider(), "tBTCUSD"),
+        ("kucoin", KuCoinProvider(), "BTC-USDT"),
+    ]
+
+    # warmup: trigger PyArrow one-time init (~300ms)
+    wc = [Candle(exchange="w", symbol="w", timeframe="1h", timestamp="2026-01-01T00:00:00", open="1", high="2", low="1", close="2", volume="1", source="w") for _ in range(10)]
+    _to_decimal128([c.open for c in wc], "open", "warmup")
+    _to_timestamp([c.timestamp for c in wc], ts_config)
+
+    tracemalloc.start()
+
+    all_results: list[tuple[str, BenchmarkResult]] = []
+
+    for pname, pinst, psym in providers:
+        results: list[BenchmarkResult] = []
+        for i in range(iterations):
+            gc.collect()
+            tracemalloc.clear_traces()
+
+            runner = ProviderCandlePipelineRunner(
+                provider=pinst, symbol=psym, timeframe=timeframe,
+                start=dt_start, end=dt_end,
+            )
+            base_path = f".bench_tmp_{pname}_{i}"
+            if verbose:
+                result = runner.run_verbose(0, ts_config, base_path)
+            else:
+                result = runner.run_coarse(0, ts_config, base_path)
+            results.append(result)
+            shutil.rmtree(base_path, ignore_errors=True)
+
+        # pick median by wall-clock
+        pipe_stats = [_pipeline_stats(r) for r in results]
+        wall_times = [s["wall_ms"] for s in pipe_stats]
+        median_wall = statistics.median(wall_times)
+        median_idx = min(
+            range(len(wall_times)),
+            key=lambda i: abs(wall_times[i] - median_wall),
+        )
+        all_results.append((pname, results[median_idx]))
+
+    tracemalloc.stop()
+
+    # ── build comparison report ────────────────────────────────
+    lines: list[str] = []
+    lines.append("PROVIDER COMPARISON")
+    lines.append("═══════════════════")
+    lines.append("")
+
+    header = (
+        f"  {'Provider':>12} {'Candles':>8} {'Wall(ms)':>10}"
+        f" {'CPU(ms)':>10} {'Mem(MB)':>9} {'Peak(MB)':>9}"
+        f" {'File(KB)':>9} {'Issues':>7}"
+    )
+    lines.append(header)
+    lines.append("  " + "─" * 76)
+
+    for pname, result in all_results:
+        ps = _pipeline_stats(result)
+        lines.append(
+            f"  {pname:>12} {result.count:>8} {ps['wall_ms']:>10.2f}"
+            f" {ps['cpu_ms']:>10.2f} {ps['mem_mb']:>9.2f}"
+            f" {ps['peak_mb']:>9.2f} {ps['file_kb']:>9.2f}"
+            f" {result.validation_issues:>7}"
+        )
+
+    lines.append("  " + "─" * 76)
+    lines.append("")
+    lines.append("Issues = validation issues flagged for the batch.")
+    lines.append("")
+
+    # per-provider detail tables (coarse = pipeline stages)
+    for pname, result in all_results:
+        pipe_stages = result.stages[: result.pipeline_end_index + 1]
+        all_stages = result.stages
+        total_wall = sum(s.wall_ms for s in pipe_stages)
+        total_cpu = sum(s.cpu_ms for s in pipe_stages)
+
+        name_w = max(_stage_name_width(all_stages), 12)
+        sep = "  " + "─" * 69
+
+        lines.append(f"[{pname}]")
+        lines.append("")
+        col_header = (
+            f"  {'Stage':<{name_w}} {'Wall(ms)':>9} {'CPU(ms)':>9}"
+            f" {'Mem(MB)':>9} {'Peak(MB)':>9} {'File(KB)':>8}"
+        )
+        lines.append(col_header)
+        lines.append(sep)
+
+        for stage in all_stages:
+            is_pipeline = all_stages.index(stage) <= result.pipeline_end_index
+            wall_s = _fmt(stage.wall_ms)
+            cpu_s = _fmt(stage.cpu_ms)
+            mem_s = _fmt(stage.mem_delta_mb)
+            peak_s = _fmt(stage.peak_mb)
+            file_s = _fmt(stage.file_kb) if stage.file_kb is not None else _fmt_none()
+            mark = "  *" if (not is_pipeline and stage != all_stages[0]) else ""
+            lines.append(
+                f"  {stage.name:<{name_w}} {wall_s:>9} {cpu_s:>9}"
+                f" {mem_s:>9} {peak_s:>9} {file_s:>8}{mark}"
+            )
+
+        lines.append(sep)
+        peak_stage = max(all_stages, key=lambda s: s.peak_mb)
+        file_kb_total = max((s.file_kb for s in all_stages if s.file_kb is not None), default=0.0)
+        lines.append(
+            f"  {'Pipeline total':<{name_w}} {_fmt(total_wall):>9} {_fmt(total_cpu):>9}"
+            f" {_fmt(sum(max(s.mem_delta_mb, 0) for s in pipe_stages)):>9}"
+            f" {_fmt(peak_stage.peak_mb):>9}"
+            f" {_fmt(file_kb_total) if file_kb_total > 0 else _fmt_none():>8}"
+        )
+        lines.append("")
+
+        lines.append(f"  Candles: {result.count}  |  Validation issues: {result.validation_issues}")
+        lines.append("")
+
+    report = "\n".join(lines)
+    typer.echo(report)
 
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ class FakeProvider(MarketDataProvider):
                 exchange="fake",
                 symbol=symbol,
                 timeframe=timeframe,
-                timestamp=start.isoformat(),
+                timestamp=start.strftime("%Y-%m-%dT%H:%M:%S"),
                 open="100",
                 high="110",
                 low="90",

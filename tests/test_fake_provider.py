@@ -51,7 +51,7 @@ class TestFakeProvider:
         assert c.exchange == "fake"
         assert c.symbol == "BTC/USDT"
         assert c.timeframe == "1h"
-        assert c.timestamp == self.start.isoformat()
+        assert c.timestamp == self.start.strftime("%Y-%m-%dT%H:%M:%S")
         assert c.open == "100"
         assert c.high == "110"
         assert c.low == "90"
