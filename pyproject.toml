@@ -1,0 +1,25 @@
+[project]
+name = "crypto_market_data_platform"
+version = "0.1.0"
+requires-python = ">=3.12"
+description = "Local-first crypto market data ingestion, validation, storage, and query platform."
+dependencies = [
+    "pandas",
+    "polars",
+    "pyarrow",
+    "duckdb",
+    "pydantic",
+    "typer",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest"
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
