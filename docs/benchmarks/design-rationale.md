@@ -526,3 +526,138 @@ Both use the same `BenchmarkContext`/`StageMetrics`/`BenchmarkResult`
 infrastructure. The `profile` command adds the Network/CPU boundary
 interpretation layer on top. Neither path is a subset of the other — they are
 complementary views of the same system at different abstraction levels.
+
+---
+
+## 9. Query Service Layer (Read Side)
+
+### 9.1 QueryService ABC separates domain interface from transport
+
+**Problem:** The first query implementation (DuckDB over local Parquet files) is
+convenient for development but should not be hard-coded into CLI commands or
+future API layers. A REST API, a gRPC service, or an analytics pipeline all
+need the same five operations — list datasets, get candles, get funding rates,
+get summary, raw SQL — and should not care which engine provides them.
+
+**Decision:** Define a `QueryService` ABC with five abstract methods in
+`query/service.py`. `DuckDBQueryService` is the sole concrete implementation
+today; future implementations (Postgres, HTTP proxy, InfluxDB) implement the
+same ABC without changing consumers.
+
+**Why this solves it:** The CLI commands, the FastAPI server, and any future
+consumer all depend on `QueryService` via dependency injection — they never
+import `DuckDBQueryService` directly. Adding a new engine means writing a new
+subclass and wiring it into `ServerConfig`; no consumer code changes.
+
+### 9.2 DuckDB Query Engine: SQL-on-Parquet without a server
+
+**Problem:** Parquet files are not directly queryable by SQL without an
+intermediate engine. Copying them into a database adds latency and storage
+overhead. The query layer should read Parquet files in place.
+
+**Decision:** Use DuckDB's `read_parquet()` function to query partitioned
+Parquet files directly — no import step, no database server, no schema
+registration. Connection-per-query (connect, execute, close) avoids state
+management.
+
+**Why this solves it:** DuckDB reads the Parquet schema at query time, so
+schema changes (e.g., adding a new column) are automatically picked up. There
+is no data ingestion step — the CLI writer produces Parquet files, and the
+query service reads them in the same format. Connection-per-query is cheap for
+DuckDB (in-process, no network) and eliminates connection-pool complexity.
+
+### 9.3 Path-based file discovery with variable-depth symbol handling
+
+**Problem:** Symbols containing `/` (e.g. `BTC/USDT`) create variable-depth
+directory trees: `{base}/{exchange}/BTC/USDT/{timeframe}/{date}.parquet`. A
+fixed `parts[-3]` approach for extracting the symbol breaks when the symbol
+contains slashes.
+
+**Decision:** Use the penultimate directory component as the anchor. If it is
+`"funding_rate"`, the path is a funding rate dataset; otherwise it is a
+timeframe identifier for candles. The symbol is reconstructed by joining all
+parts between the exchange (index 0) and the anchor.
+
+```
+{exchange}/{symbol...}/{timeframe}/{date}.parquet
+                   ^^^^^^^^^^^^
+                   anchor = parts[-2]
+                   symbol = "/".join(parts[1:-2])
+```
+
+**Why this solves it:** The penultimate anchor is always either a timeframe
+(`"1h"`, `"1d"`) or `"funding_rate"` — neither contains `/`. This makes the
+discovery algorithm independent of symbol depth: `BTC/USDT` (2 parts) and
+`BTC-USD` (1 part) both work without special cases.
+
+### 9.4 DuckDB decimal128 → string conversion for model compatibility
+
+**Problem:** The Parquet schema stores prices as `decimal128(38,10)`, but the
+`Candle` model stores them as `str`. DuckDB returns `decimal128` values as
+Python `Decimal` objects, which would need to be converted back to strings
+before constructing `Candle` instances.
+
+**Decision:** Cast decimal128 columns to `VARCHAR` in the SQL query:
+```sql
+SELECT *, open::VARCHAR, high::VARCHAR, ... FROM read_parquet([...])
+```
+The `_rows_to_dicts()` helper also normalises any remaining `Decimal` and
+`datetime` objects to strings via `isinstance` checks.
+
+**Why this solves it:** The cast is done in DuckDB's C++ engine, not in Python.
+The resulting values are already strings matching the model types. The
+`isinstance` fallback catches columns that are not explicitly cast (e.g. custom
+queries via `raw_sql()`).
+
+---
+
+## 10. Server Layer (FastAPI)
+
+### 10.1 FastAPI over DuckDB for HTTP access
+
+**Problem:** The query service currently requires Python and the project
+package to be installed. Analysts, dashboards, and external tools need HTTP
+access to the data without installing Python dependencies.
+
+**Decision:** Build a FastAPI application (`server/app.py`) that wraps the
+`QueryService` ABC. The `create_app()` factory accepts a `ServerConfig` with
+the `QueryService` implementation injected, defaulting to `DuckDBQueryService`.
+Endpoints mirror the ABC methods:
+
+| Method | Path | QueryService method |
+|--------|------|---------------------|
+| GET | `/health` | — |
+| GET | `/datasets` | `list_datasets()` |
+| GET | `/candles` | `get_candles()` |
+| GET | `/funding-rates` | `get_funding_rates()` |
+| GET | `/summary` | `get_summary()` |
+| POST | `/query` | `raw_sql()` |
+
+**Why this solves it:** The server is a thin HTTP adapter over the existing
+ABC — zero new query logic. Because it depends on `QueryService` (not
+`DuckDBQueryService`), swapping the backend (Postgres, remote proxy) requires
+only changing the injected implementation in `ServerConfig`.
+
+### 10.2 Lifespan-managed middleware and error handling
+
+**Problem:** A production HTTP server needs CORS headers (for browser clients),
+consistent error responses (for API consumers), and lifecycle management
+(startup/shutdown hooks). Adding these ad-hoc leads to inconsistent behaviour.
+
+**Decision:** Register three infrastructure components in `create_app()`:
+
+1. **`lifespan` context manager** — placeholder for startup/shutdown logic
+   (connection pool warm-up, resource cleanup).
+2. **`CORSMiddleware`** — `allow_origins=["*"]` for development; scoped in
+   production via `ServerConfig`.
+3. **Global `@app.exception_handler(Exception)`** — catches unhandled
+   exceptions and returns `{"error": "<message>", "code": 500}` instead of
+   the default HTML 500 page.
+
+**Why this solves it:** CORS is required for any browser-based client; the
+wildcard default avoids mysterious "blocked by CORS" errors during development.
+The global error handler guarantees that every response is JSON, not HTML —
+critical for programmatic API consumers. The lifespan context manager provides
+a hook for future startup tasks (loading models, warming DuckDB caches)
+without scattering `@app.on_event` decorators across routers.
+

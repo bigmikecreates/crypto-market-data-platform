@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pyarrow.parquet as pq
 from typer.testing import CliRunner
 
 from crypto_market_data_platform.cli.main import app
@@ -12,6 +13,7 @@ class TestFetchCommand:
         result = runner.invoke(
             app,
             [
+                "fetch",
                 "--symbol", "BTC/USDT",
                 "--timeframe", "1h",
                 "--start", "2026-05-27",
@@ -30,6 +32,7 @@ class TestFetchCommand:
         result = runner.invoke(
             app,
             [
+                "fetch",
                 "--symbol", "BTC/USDT",
                 "--timeframe", "1h",
                 "--start", "2026-05-27",
@@ -44,6 +47,7 @@ class TestFetchCommand:
         result = runner.invoke(
             app,
             [
+                "fetch",
                 "--symbol", "ETH/USDT",
                 "--timeframe", "1d",
                 "--start", "2026-05-27",
@@ -53,3 +57,28 @@ class TestFetchCommand:
         )
         assert result.exit_code == 0, f"stderr: {result.stderr}"
         assert "Wrote 1 candle(s)" in result.stdout
+
+
+class TestFetchFundingCommand:
+    def test_fetch_funding_creates_parquet(self, tmp_path: Path) -> None:
+        result = runner.invoke(
+            app,
+            [
+                "fetch-funding",
+                "--symbol", "BTC/USDT",
+                "--start", "2026-05-27",
+                "--end", "2026-05-28",
+                "--output", str(tmp_path),
+            ],
+        )
+        assert result.exit_code == 0, f"stderr: {result.stderr}"
+        assert "Wrote 1 funding rate(s)" in result.stdout
+
+        parquet_file = tmp_path / "fake" / "BTC/USDT" / "funding_rate" / "2026-05-27.parquet"
+        assert parquet_file.exists(), f"Expected {parquet_file} to exist"
+        table = pq.read_table(str(parquet_file))
+        assert table.num_rows == 1
+        assert table.schema.names == [
+            "exchange", "symbol", "timestamp",
+            "rate", "predicted_rate", "next_funding_time", "source",
+        ]
