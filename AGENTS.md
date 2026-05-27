@@ -29,6 +29,14 @@ Before adding more providers, implement only provider-independent rules:
 
 Do not overdesign completeness, gap detection, provider scoring, or provider-specific warning systems until real provider behaviour justifies it.
 
+## Provider Selection
+
+Follow the ranking in `docs/benchmarks/provider-selection.md`.
+Start with the highest-ranked provider (Bitfinex) to maximise
+validation-layer stress from the first integration. Use constrained
+providers (Kraken, etc.) later as targeted edge-case tests against
+infrastructure already proven at scale.
+
 ## Provider Rules
 
 When adding a provider:
