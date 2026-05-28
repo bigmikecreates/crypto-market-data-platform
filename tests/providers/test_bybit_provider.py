@@ -66,6 +66,7 @@ class TestBybitProvider:
 
     def test_provider_is_ohlcv_provider(self) -> None:
         from crypto_market_data_platform.providers.base import OHLCVProvider
+
         assert isinstance(self.provider, OHLCVProvider)
 
     def test_returns_list_of_candles(self) -> None:
@@ -93,7 +94,9 @@ class TestBybitProvider:
     def test_parse_multiple_rows(self) -> None:
         rows = _load_fixture("bybit_ohlc.json")
         rows_reversed = list(reversed(rows))
-        candles = [_parse_row(r, "bybit", "BTC/USDT", "1h", "bybit") for r in rows_reversed]
+        candles = [
+            _parse_row(r, "bybit", "BTC/USDT", "1h", "bybit") for r in rows_reversed
+        ]
         assert len(candles) == 5
         assert candles[0].timestamp == "2024-01-01T00:00:00"
         assert candles[1].timestamp == "2024-01-01T01:00:00"

@@ -43,7 +43,9 @@ def fetch(
         help="Market data type: ohlcv or funding-rate",
     ),
     symbol: str = typer.Option("BTC/USDT", "--symbol", help="Trading pair symbol"),
-    timeframe: str = typer.Option("1h", "--timeframe", help="Candle timeframe (ohlcv only)"),
+    timeframe: str = typer.Option(
+        "1h", "--timeframe", help="Candle timeframe (ohlcv only)"
+    ),
     start: datetime = typer.Option(
         ...,
         "--start",
@@ -73,18 +75,24 @@ def fetch(
     ),
 ) -> None:
     if market_data_type not in ("ohlcv", "funding-rate"):
-        typer.echo(f"Invalid market data type '{market_data_type}'. Use ohlcv or funding-rate.", err=True)
+        typer.echo(
+            f"Invalid market data type '{market_data_type}'. Use ohlcv or funding-rate.",
+            err=True,
+        )
         raise typer.Exit(code=1)
 
     if merge_strategy not in ("auto", "memory", "duckdb"):
-        typer.echo(f"Invalid merge strategy '{merge_strategy}'. Use auto, memory, or duckdb.", err=True)
+        typer.echo(
+            f"Invalid merge strategy '{merge_strategy}'. Use auto, memory, or duckdb.",
+            err=True,
+        )
         raise typer.Exit(code=1)
 
     if market_data_type == "funding-rate":
         p = FakeProvider()
         rates = p.fetch_funding_rates(symbol=symbol, start=start, end=end)
-        svc = FundingRateService()
-        count = svc.ingest(rates, base_path=output, merge_strategy=merge_strategy)
+        fr_svc = FundingRateService()
+        count = fr_svc.ingest(rates, base_path=output, merge_strategy=merge_strategy)
         typer.echo(f"Wrote {count} funding rate(s) to {output}/")
         return
 
@@ -94,8 +102,8 @@ def fetch(
         typer.echo(f"Unknown provider '{provider}'. Available: {available}", err=True)
         raise typer.Exit(code=1)
 
-    svc = OhlcvService(provider=provider_cls())
-    count = svc.ingest(
+    ohlcv_svc = OhlcvService(provider=provider_cls())
+    count = ohlcv_svc.ingest(
         symbol=symbol,
         timeframe=timeframe,
         start=start,
@@ -150,8 +158,13 @@ def query_ohlcv(
     """Query candle data."""
     svc = DuckDBQueryService()
     rows = svc.get_candles(
-        base_path=path, exchange=exchange, symbol=symbol,
-        timeframe=timeframe, start=start, end=end, limit=limit,
+        base_path=path,
+        exchange=exchange,
+        symbol=symbol,
+        timeframe=timeframe,
+        start=start,
+        end=end,
+        limit=limit,
     )
     _print_rows(rows)
 
@@ -168,8 +181,12 @@ def query_funding_rate(
     """Query funding rate data."""
     svc = DuckDBQueryService()
     rows = svc.get_funding_rates(
-        base_path=path, exchange=exchange, symbol=symbol,
-        start=start, end=end, limit=limit,
+        base_path=path,
+        exchange=exchange,
+        symbol=symbol,
+        start=start,
+        end=end,
+        limit=limit,
     )
     _print_rows(rows)
 
@@ -213,12 +230,20 @@ def serve(
 
 @app.command()
 def inspect(
-    path: str = typer.Option(..., "--path", help="Path to a .parquet file or dataset directory"),
+    path: str = typer.Option(
+        ..., "--path", help="Path to a .parquet file or dataset directory"
+    ),
     limit: int = typer.Option(10, "--limit", "-n", help="Max rows in sample"),
-    start: str = typer.Option(None, "--start", help="Start of timestamp range (ISO-8601), inclusive"),
-    end: str = typer.Option(None, "--end", help="End of timestamp range (ISO-8601), exclusive"),
+    start: str = typer.Option(
+        None, "--start", help="Start of timestamp range (ISO-8601), inclusive"
+    ),
+    end: str = typer.Option(
+        None, "--end", help="End of timestamp range (ISO-8601), exclusive"
+    ),
     stats_flag: bool = typer.Option(False, "--stats", help="Show column statistics"),
-    verbose_flag: bool = typer.Option(False, "--verbose", help="Show full Parquet metadata"),
+    verbose_flag: bool = typer.Option(
+        False, "--verbose", help="Show full Parquet metadata"
+    ),
 ) -> None:
     """Inspect a parquet file or dataset directory."""
     try:

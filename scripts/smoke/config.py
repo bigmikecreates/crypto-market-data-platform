@@ -3,17 +3,17 @@ from datetime import datetime
 SYMBOLS: dict[str, list[str]] = {
     "bitfinex": ["BTC/USD", "ETH/USD", "BTC/USDT", "ETH/USDT"],
     "bitstamp": ["BTC/USD", "ETH/USD", "BTC/USDT", "ETH/USDT"],
-    "bybit":    ["BTC/USDT", "ETH/USDT", "BTC/USD", "ETH/USD"],
-    "kucoin":   ["BTC/USDT", "ETH/USDT", "BTC/USD", "ETH/USD"],
-    "mexc":     ["BTC/USDT", "ETH/USDT", "BTC/USD", "ETH/USD"],
+    "bybit": ["BTC/USDT", "ETH/USDT", "BTC/USD", "ETH/USD"],
+    "kucoin": ["BTC/USDT", "ETH/USDT", "BTC/USD", "ETH/USD"],
+    "mexc": ["BTC/USDT", "ETH/USDT", "BTC/USD", "ETH/USD"],
 }
 
 API_VERSIONS: dict[str, str] = {
     "bitfinex": "v2",
     "bitstamp": "v2",
-    "bybit":    "v5",
-    "kucoin":   "v1",
-    "mexc":     "v3",
+    "bybit": "v5",
+    "kucoin": "v1",
+    "mexc": "v3",
 }
 
 TIMEFRAME = "1h"
@@ -74,7 +74,7 @@ def _endpoint_mexc(symbol: str, start: datetime, end: datetime) -> str:
 ENDPOINTS = {
     "bitfinex": _endpoint_bitfinex,
     "bitstamp": _endpoint_bitstamp,
-    "bybit":    _endpoint_bybit,
-    "kucoin":   _endpoint_kucoin,
-    "mexc":     _endpoint_mexc,
+    "bybit": _endpoint_bybit,
+    "kucoin": _endpoint_kucoin,
+    "mexc": _endpoint_mexc,
 }

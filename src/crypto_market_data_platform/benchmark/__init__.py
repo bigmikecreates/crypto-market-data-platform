@@ -4,7 +4,10 @@ from crypto_market_data_platform.benchmark.core import (
     PipelineRunner,
     StageMetrics,
 )
-from crypto_market_data_platform.benchmark.rules import CrossValidationRule, evaluate_rules
+from crypto_market_data_platform.benchmark.rules import (
+    CrossValidationRule,
+    evaluate_rules,
+)
 from crypto_market_data_platform.benchmark.runners import (
     CandlePipelineRunner,
     ProviderCandlePipelineRunner,

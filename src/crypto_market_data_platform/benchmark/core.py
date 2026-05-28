@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 import gc
 import time
 import tracemalloc
-from typing import Any
 
 from crypto_market_data_platform.config import TimestampConfig
 

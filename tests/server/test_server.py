@@ -20,14 +20,28 @@ def client(tmp_path):
 def _write_candle_fixtures(base: str) -> None:
     candles = [
         Candle(
-            exchange="ex_a", symbol="BTC/USDT", timeframe="1h",
-            timestamp="2026-05-27T00:00:00", open="100", high="110",
-            low="90", close="105", volume="10", source="test",
+            exchange="ex_a",
+            symbol="BTC/USDT",
+            timeframe="1h",
+            timestamp="2026-05-27T00:00:00",
+            open="100",
+            high="110",
+            low="90",
+            close="105",
+            volume="10",
+            source="test",
         ),
         Candle(
-            exchange="ex_a", symbol="BTC/USDT", timeframe="1h",
-            timestamp="2026-05-28T00:00:00", open="101", high="111",
-            low="91", close="106", volume="11", source="test",
+            exchange="ex_a",
+            symbol="BTC/USDT",
+            timeframe="1h",
+            timestamp="2026-05-28T00:00:00",
+            open="101",
+            high="111",
+            low="91",
+            close="106",
+            volume="11",
+            source="test",
         ),
     ]
     write_candles(candles, base_path=base)
@@ -36,9 +50,12 @@ def _write_candle_fixtures(base: str) -> None:
 def _write_funding_fixtures(base: str) -> None:
     rates = [
         FundingRate(
-            exchange="ex_a", symbol="PI_XBTUSD",
-            timestamp="2026-05-27T12:00:00", rate="0.0001",
-            predicted_rate="0.0002", next_funding_time="2026-05-27T16:00:00",
+            exchange="ex_a",
+            symbol="PI_XBTUSD",
+            timestamp="2026-05-27T12:00:00",
+            rate="0.0001",
+            predicted_rate="0.0002",
+            next_funding_time="2026-05-27T16:00:00",
             source="test",
         ),
     ]
@@ -116,7 +133,10 @@ class TestRawQuery:
         _write_candle_fixtures(str(tmp_path))
         resp = client.post(
             "/query",
-            json={"sql": f"SELECT count(*) AS cnt FROM read_parquet('{tmp_path}/**/*.parquet')", "path": str(tmp_path)},
+            json={
+                "sql": f"SELECT count(*) AS cnt FROM read_parquet('{tmp_path}/**/*.parquet')",
+                "path": str(tmp_path),
+            },
         )
         assert resp.status_code == 200
         rows = resp.json()
@@ -152,17 +172,24 @@ class TestErrorHandling:
         class FailingQueryService:
             def list_datasets(self, base_path="data"):
                 raise RuntimeError("boom")
+
             def get_candles(self, **kw):
                 raise RuntimeError("boom")
+
             def get_funding_rates(self, **kw):
                 raise RuntimeError("boom")
+
             def get_summary(self, base_path="data"):
                 raise RuntimeError("boom")
+
             def raw_sql(self, sql, base_path="data"):
                 raise RuntimeError("boom")
 
         from crypto_market_data_platform.server.config import ServerConfig
-        cfg = ServerConfig(base_path="/nonexistent", query_service=FailingQueryService())
+
+        cfg = ServerConfig(
+            base_path="/nonexistent", query_service=FailingQueryService()
+        )
         bad_client = TestClient(create_app(cfg), raise_server_exceptions=False)
         resp = bad_client.get("/datasets")
         assert resp.status_code == 500

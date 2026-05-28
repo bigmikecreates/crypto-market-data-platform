@@ -19,7 +19,9 @@ from crypto_market_data_platform.utils.parquet_viewer import (
 _START_TS = 1704067200  # 2024-01-01T00:00:00 UTC
 
 
-def _make_candle_table(n_rows: int, start_ts: int = _START_TS, interval_s: int = 3600) -> pa.Table:
+def _make_candle_table(
+    n_rows: int, start_ts: int = _START_TS, interval_s: int = 3600
+) -> pa.Table:
     opens = []
     highs = []
     lows = []
@@ -44,18 +46,20 @@ def _make_candle_table(n_rows: int, start_ts: int = _START_TS, interval_s: int =
         timeframes.append("1h")
         sources.append("test")
 
-    return pa.table({
-        "exchange": pa.array(exchanges, type=pa.string()),
-        "symbol": pa.array(symbols, type=pa.string()),
-        "timeframe": pa.array(timeframes, type=pa.string()),
-        "timestamp": pa.array(ts_vals, type=pa.timestamp("s")),
-        "open": pa.array(opens, type=pa.string()).cast(pa.decimal128(38, 10)),
-        "high": pa.array(highs, type=pa.string()).cast(pa.decimal128(38, 10)),
-        "low": pa.array(lows, type=pa.string()).cast(pa.decimal128(38, 10)),
-        "close": pa.array(closes, type=pa.string()).cast(pa.decimal128(38, 10)),
-        "volume": pa.array(volumes, type=pa.string()).cast(pa.decimal128(38, 10)),
-        "source": pa.array(sources, type=pa.string()),
-    })
+    return pa.table(
+        {
+            "exchange": pa.array(exchanges, type=pa.string()),
+            "symbol": pa.array(symbols, type=pa.string()),
+            "timeframe": pa.array(timeframes, type=pa.string()),
+            "timestamp": pa.array(ts_vals, type=pa.timestamp("s")),
+            "open": pa.array(opens, type=pa.string()).cast(pa.decimal128(38, 10)),
+            "high": pa.array(highs, type=pa.string()).cast(pa.decimal128(38, 10)),
+            "low": pa.array(lows, type=pa.string()).cast(pa.decimal128(38, 10)),
+            "close": pa.array(closes, type=pa.string()).cast(pa.decimal128(38, 10)),
+            "volume": pa.array(volumes, type=pa.string()).cast(pa.decimal128(38, 10)),
+            "source": pa.array(sources, type=pa.string()),
+        }
+    )
 
 
 def _write_table(table: pa.Table, path: Path) -> Path:
@@ -115,7 +119,9 @@ class TestDiscoverFiles:
         with pytest.raises(ValueError, match="Not a parquet file"):
             discover_files(str(f))
 
-    def test_relative_path(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_relative_path(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         monkeypatch.chdir(tmp_path)
         _write_table(_make_candle_table(3), Path("data.parquet"))
         files = discover_files("data.parquet")
@@ -168,8 +174,16 @@ class TestGetSchemaInfo:
         info = get_schema_info(table)
         names = [n for n, _ in info]
         assert names == [
-            "exchange", "symbol", "timeframe", "timestamp",
-            "open", "high", "low", "close", "volume", "source",
+            "exchange",
+            "symbol",
+            "timeframe",
+            "timestamp",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "source",
         ]
 
     def test_decimal_types(self) -> None:
@@ -323,7 +337,9 @@ class TestRunInspect:
 
     def test_range_excludes_end_boundary(self, tmp_path: Path) -> None:
         p = _write_table(_make_candle_table(24), tmp_path / "data.parquet")
-        result = run_inspect(str(p), start="2024-01-01T00:00:00", end="2024-01-01T01:00:00")
+        result = run_inspect(
+            str(p), start="2024-01-01T00:00:00", end="2024-01-01T01:00:00"
+        )
         assert "Rows: 1" in result
 
     def test_start_only(self, tmp_path: Path) -> None:
@@ -349,7 +365,9 @@ class TestRunInspect:
         t2 = _make_candle_table(10, start_ts=_START_TS + 36000)
         _write_table(t1, tmp_path / "a.parquet")
         _write_table(t2, tmp_path / "b.parquet")
-        result = run_inspect(str(tmp_path), start="2024-01-01T06:00:00", end="2024-01-01T14:00:00")
+        result = run_inspect(
+            str(tmp_path), start="2024-01-01T06:00:00", end="2024-01-01T14:00:00"
+        )
         assert "Rows: 8" in result
 
     def test_verbose_single_file(self, tmp_path: Path) -> None:
@@ -365,7 +383,9 @@ class TestRunInspect:
         result = run_inspect(str(tmp_path), show_verbose=True)
         assert "Metadata:" not in result
 
-    def test_relative_path(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_relative_path(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         monkeypatch.chdir(tmp_path)
         _write_table(_make_candle_table(8), Path("data.parquet"))
         result = run_inspect("data.parquet")

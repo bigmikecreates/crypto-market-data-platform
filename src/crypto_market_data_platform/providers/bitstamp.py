@@ -43,7 +43,9 @@ def _to_bitstamp_step(timeframe: str) -> int:
     return step
 
 
-def _parse_row(row: dict[str, str], exchange: str, symbol: str, timeframe: str, source: str) -> Candle:
+def _parse_row(
+    row: dict[str, str], exchange: str, symbol: str, timeframe: str, source: str
+) -> Candle:
     ts = datetime.fromtimestamp(int(row["timestamp"]), tz=timezone.utc)
     return Candle(
         exchange=exchange,
@@ -113,10 +115,13 @@ class BitstampProvider(OHLCVProvider):
             f"?step={step}&limit={_MAX_LIMIT}"
             f"&start={start_ts}&end={end_ts}"
         )
-        req = urllib.request.Request(url, headers={
-            "Accept": "application/json",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) crypto-market-data-platform/1.0",
-        })
+        req = urllib.request.Request(
+            url,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) crypto-market-data-platform/1.0",
+            },
+        )
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
                 data: Any = json.loads(resp.read().decode())

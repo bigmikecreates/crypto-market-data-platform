@@ -3,7 +3,6 @@ import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
-from typing import Any
 
 from crypto_market_data_platform.models.candle import Candle
 from crypto_market_data_platform.providers.base import OHLCVProvider
@@ -46,7 +45,9 @@ def _to_kc_timeframe(timeframe: str) -> str:
     return mapped
 
 
-def _parse_row(row: list[str], exchange: str, symbol: str, timeframe: str, source: str) -> Candle:
+def _parse_row(
+    row: list[str], exchange: str, symbol: str, timeframe: str, source: str
+) -> Candle:
     ts = datetime.fromtimestamp(int(row[0]), tz=timezone.utc)
     return Candle(
         exchange=exchange,
@@ -116,10 +117,13 @@ class KuCoinProvider(OHLCVProvider):
             f"?symbol={kc_symbol}&type={kc_timeframe}"
             f"&startAt={start_ts}&endAt={end_ts}"
         )
-        req = urllib.request.Request(url, headers={
-            "Accept": "application/json",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) crypto-market-data-platform/1.0",
-        })
+        req = urllib.request.Request(
+            url,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) crypto-market-data-platform/1.0",
+            },
+        )
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
                 data = json.loads(resp.read().decode())

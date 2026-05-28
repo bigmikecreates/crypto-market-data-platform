@@ -41,5 +41,7 @@ def run_query(
     if not files:
         return []
     paths = ", ".join(f"'{f}'" for f in files)
-    query = f"SELECT * FROM read_parquet([{paths}]) ORDER BY timestamp DESC LIMIT {limit}"
+    query = (
+        f"SELECT * FROM read_parquet([{paths}]) ORDER BY timestamp DESC LIMIT {limit}"
+    )
     return svc.raw_sql(query)

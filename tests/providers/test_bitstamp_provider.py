@@ -69,6 +69,7 @@ class TestBitstampProvider:
 
     def test_provider_is_ohlcv_provider(self) -> None:
         from crypto_market_data_platform.providers.base import OHLCVProvider
+
         assert isinstance(self.provider, OHLCVProvider)
 
     def test_returns_list_of_candles(self) -> None:
@@ -77,7 +78,14 @@ class TestBitstampProvider:
         assert isinstance(ohlc, list)
         assert len(ohlc) == 5
         for row in ohlc:
-            assert set(row.keys()) == {"timestamp", "open", "high", "low", "close", "volume"}
+            assert set(row.keys()) == {
+                "timestamp",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+            }
 
     def test_parse_row_returns_candle(self) -> None:
         data = _load_fixture("bitstamp_ohlc.json")

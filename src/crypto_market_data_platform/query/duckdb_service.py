@@ -16,8 +16,10 @@ def _rows_to_dicts(sql_result: Any) -> list[dict[str, Any]]:
     return [
         {
             col: (
-                val.isoformat() if isinstance(val, datetime)
-                else str(val) if isinstance(val, Decimal)
+                val.isoformat()
+                if isinstance(val, datetime)
+                else str(val)
+                if isinstance(val, Decimal)
                 else val
             )
             for col, val in zip(columns, row)
@@ -30,14 +32,14 @@ def _discover_files(
     base_path: str,
 ) -> dict[str, dict[str, list[Path]]]:
     """Discover parquet files grouped by type, then by dataset path.
-    
+
     Path conventions:
       Candles:      {base}/{exchange}/{symbol...}/{timeframe}/{date}.parquet
       Funding rate: {base}/{exchange}/{symbol...}/funding_rate/{date}.parquet
-    
+
     Symbol may contain '/' (e.g. BTC/USDT), so path depth varies.
     The anchor is the penultimate component: timeframe or 'funding_rate'.
-    
+
     Returns e.g.:
       {"candle": {"ex_a/BTC/USDT/1h": [Path(...), ...]},
        "funding_rate": {"ex_a/PI_XBTUSD/funding_rate": [Path(...), ...]}}
@@ -69,9 +71,7 @@ def _discover_files(
 
 
 class DuckDBQueryService(QueryService):
-    def list_datasets(
-        self, base_path: str = "data"
-    ) -> dict[str, list[str]]:
+    def list_datasets(self, base_path: str = "data") -> dict[str, list[str]]:
         files = _discover_files(base_path)
         return {k: sorted(v.keys()) for k, v in files.items()}
 
@@ -120,9 +120,7 @@ class DuckDBQueryService(QueryService):
         finally:
             con.close()
 
-    def get_summary(
-        self, base_path: str = "data"
-    ) -> list[dict[str, Any]]:
+    def get_summary(self, base_path: str = "data") -> list[dict[str, Any]]:
         tables = _discover_files(base_path)
         rows: list[dict[str, Any]] = []
         con = duckdb.connect()
@@ -132,35 +130,38 @@ class DuckDBQueryService(QueryService):
                     paths = ", ".join(f"'{f}'" for f in files)
                     sql = f"SELECT COUNT(*) AS cnt FROM read_parquet([{paths}])"
                     result = con.sql(sql)
-                    count = result.fetchone()[0]
+                    row = result.fetchone()
+                    count = row[0] if row is not None else 0
                     parts = dataset_key.split("/")
                     if type_name == "candle":
                         exchange, symbol, timeframe = parts[0], parts[1], parts[2]
-                        rows.append({
-                            "type": "candle",
-                            "exchange": exchange,
-                            "symbol": symbol,
-                            "timeframe": timeframe,
-                            "files": len(files),
-                            "rows": int(count),
-                        })
+                        rows.append(
+                            {
+                                "type": "candle",
+                                "exchange": exchange,
+                                "symbol": symbol,
+                                "timeframe": timeframe,
+                                "files": len(files),
+                                "rows": int(count),
+                            }
+                        )
                     else:
                         exchange, symbol = parts[0], parts[1]
-                        rows.append({
-                            "type": "funding_rate",
-                            "exchange": exchange,
-                            "symbol": symbol,
-                            "timeframe": None,
-                            "files": len(files),
-                            "rows": int(count),
-                        })
+                        rows.append(
+                            {
+                                "type": "funding_rate",
+                                "exchange": exchange,
+                                "symbol": symbol,
+                                "timeframe": None,
+                                "files": len(files),
+                                "rows": int(count),
+                            }
+                        )
         finally:
             con.close()
         return rows
 
-    def raw_sql(
-        self, sql: str, base_path: str = "data"
-    ) -> list[dict[str, Any]]:
+    def raw_sql(self, sql: str, base_path: str = "data") -> list[dict[str, Any]]:
         con = duckdb.connect()
         try:
             result = con.sql(sql)
@@ -185,7 +186,9 @@ class DuckDBQueryService(QueryService):
         if data_type == "candle" and timeframe:
             candidates = [k for k in candidates if k.endswith(f"/{timeframe}")]
         if symbol:
-            candidates = [k for k in candidates if f"/{symbol}" in k or k.startswith(f"{symbol}/")]
+            candidates = [
+                k for k in candidates if f"/{symbol}" in k or k.startswith(f"{symbol}/")
+            ]
 
         result: list[Path] = []
         for key in candidates:

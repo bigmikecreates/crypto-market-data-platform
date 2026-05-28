@@ -7,10 +7,7 @@ from crypto_market_data_platform.models.funding_rate import FundingRate
 
 class QueryService(ABC):
     @abstractmethod
-    def list_datasets(
-        self, base_path: str = "data"
-    ) -> dict[str, list[str]]:
-        ...
+    def list_datasets(self, base_path: str = "data") -> dict[str, list[str]]: ...
 
     @abstractmethod
     def get_candles(
@@ -23,8 +20,7 @@ class QueryService(ABC):
         end: str | None = None,
         limit: int = 100,
         order: str = "DESC",
-    ) -> list[Candle]:
-        ...
+    ) -> list[Candle]: ...
 
     @abstractmethod
     def get_funding_rates(
@@ -36,17 +32,10 @@ class QueryService(ABC):
         end: str | None = None,
         limit: int = 100,
         order: str = "DESC",
-    ) -> list[FundingRate]:
-        ...
+    ) -> list[FundingRate]: ...
 
     @abstractmethod
-    def get_summary(
-        self, base_path: str = "data"
-    ) -> list[dict[str, Any]]:
-        ...
+    def get_summary(self, base_path: str = "data") -> list[dict[str, Any]]: ...
 
     @abstractmethod
-    def raw_sql(
-        self, sql: str, base_path: str = "data"
-    ) -> list[dict[str, Any]]:
-        ...
+    def raw_sql(self, sql: str, base_path: str = "data") -> list[dict[str, Any]]: ...

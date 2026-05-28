@@ -47,7 +47,9 @@ class TestWriteCandlesPartitioning:
         table = pq.read_table(str(written[0]))
         assert table.num_rows == 3
 
-        timestamps = [str(t).split(" ")[0] for t in table.column("timestamp").to_pylist()]
+        timestamps = [
+            str(t).split(" ")[0] for t in table.column("timestamp").to_pylist()
+        ]
         assert timestamps == ["2024-01-01", "2024-01-01", "2024-01-01"]
 
     def test_multiple_dates_correct_partitions(self, tmp_path) -> None:
@@ -150,7 +152,11 @@ class TestWriteCandlesEdgeCases:
         assert str(result[0]) == expected
 
     def test_mixed_exchanges_symbols_timeframes(self, tmp_path) -> None:
-        c1 = _make_candle("2024-01-01T00:00:00", exchange="a", symbol="X", timeframe="1h")
-        c2 = _make_candle("2024-01-01T00:00:00", exchange="b", symbol="Y", timeframe="1d")
+        c1 = _make_candle(
+            "2024-01-01T00:00:00", exchange="a", symbol="X", timeframe="1h"
+        )
+        c2 = _make_candle(
+            "2024-01-01T00:00:00", exchange="b", symbol="Y", timeframe="1d"
+        )
         written = write_candles([c1, c2], str(tmp_path))
         assert len(written) == 2

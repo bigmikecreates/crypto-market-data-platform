@@ -35,6 +35,7 @@ def _ts_config(resolution: str = "s") -> TimestampConfig:
 
 # -- funding_rate_to_table -------------------------------------
 
+
 class TestFundingRateToTable:
     def test_empty_returns_empty_table(self):
         table = funding_rate_to_table([], _ts_config())
@@ -64,12 +65,18 @@ class TestFundingRateToTable:
         table = funding_rate_to_table([r], _ts_config())
         names = table.schema.names
         assert names == [
-            "exchange", "symbol", "timestamp",
-            "rate", "predicted_rate", "next_funding_time", "source",
+            "exchange",
+            "symbol",
+            "timestamp",
+            "rate",
+            "predicted_rate",
+            "next_funding_time",
+            "source",
         ]
 
 
 # -- _path_for_funding_rate ------------------------------------
+
 
 class TestPathForFundingRate:
     def test_path_contains_date_and_symbol(self):
@@ -86,6 +93,7 @@ class TestPathForFundingRate:
 
 
 # -- write_funding_rates ---------------------------------------
+
 
 class TestWriteFundingRates:
     @pytest.fixture(autouse=True)
@@ -117,8 +125,12 @@ class TestWriteFundingRates:
         table2 = pq.read_table(str(written[1]))
         assert table1.num_rows == 1
         assert table2.num_rows == 1
-        assert str(written[0]).endswith("2024-01-01.parquet") or str(written[0]).endswith("2024-01-02.parquet")
-        assert str(written[1]).endswith("2024-01-01.parquet") or str(written[1]).endswith("2024-01-02.parquet")
+        assert str(written[0]).endswith("2024-01-01.parquet") or str(
+            written[0]
+        ).endswith("2024-01-02.parquet")
+        assert str(written[1]).endswith("2024-01-01.parquet") or str(
+            written[1]
+        ).endswith("2024-01-02.parquet")
         assert str(written[0]) != str(written[1])
 
     def test_empty_list_returns_empty(self, _tmpdir):
@@ -147,9 +159,15 @@ class TestWriteFundingRates:
         write_funding_rates([r], base_path=_tmpdir)
         write_funding_rates([r], base_path=_tmpdir)
 
-        table = pq.read_table(str(
-            Path(_tmpdir) / "test_exchange" / "PI_XBTUSD" / "funding_rate" / "2024-01-01.parquet"
-        ))
+        table = pq.read_table(
+            str(
+                Path(_tmpdir)
+                / "test_exchange"
+                / "PI_XBTUSD"
+                / "funding_rate"
+                / "2024-01-01.parquet"
+            )
+        )
         assert table.num_rows == 1  # identical row was skipped
 
     def test_append_new_rows(self, _tmpdir):
@@ -158,7 +176,13 @@ class TestWriteFundingRates:
         write_funding_rates([r1], base_path=_tmpdir)
         write_funding_rates([r2], base_path=_tmpdir)
 
-        table = pq.read_table(str(
-            Path(_tmpdir) / "test_exchange" / "PI_XBTUSD" / "funding_rate" / "2024-01-01.parquet"
-        ))
+        table = pq.read_table(
+            str(
+                Path(_tmpdir)
+                / "test_exchange"
+                / "PI_XBTUSD"
+                / "funding_rate"
+                / "2024-01-01.parquet"
+            )
+        )
         assert table.num_rows == 2  # new row was appended

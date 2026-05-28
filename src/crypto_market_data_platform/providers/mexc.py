@@ -40,7 +40,9 @@ def _to_mexc_timeframe(timeframe: str) -> str:
     return mapped
 
 
-def _parse_row(row: list[str], exchange: str, symbol: str, timeframe: str, source: str) -> Candle:
+def _parse_row(
+    row: list[str], exchange: str, symbol: str, timeframe: str, source: str
+) -> Candle:
     mts = int(row[0])
     ts = datetime.fromtimestamp(mts / 1000, tz=timezone.utc)
     return Candle(
@@ -80,9 +82,7 @@ class MexcProvider(OHLCVProvider):
         current_start = start_ms
 
         while current_start < end_ms:
-            rows = self._fetch_ohlcv_page(
-                mexc_symbol, mexc_tf, current_start, end_ms
-            )
+            rows = self._fetch_ohlcv_page(mexc_symbol, mexc_tf, current_start, end_ms)
             if not rows:
                 break
 
@@ -113,10 +113,13 @@ class MexcProvider(OHLCVProvider):
             f"?symbol={mexc_symbol}&interval={mexc_timeframe}"
             f"&startTime={start_ms}&endTime={end_ms}&limit={_MAX_LIMIT}"
         )
-        req = urllib.request.Request(url, headers={
-            "Accept": "application/json",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) crypto-market-data-platform/1.0",
-        })
+        req = urllib.request.Request(
+            url,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) crypto-market-data-platform/1.0",
+            },
+        )
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
                 data: Any = json.loads(resp.read().decode())

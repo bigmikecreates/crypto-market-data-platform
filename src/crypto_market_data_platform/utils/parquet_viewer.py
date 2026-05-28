@@ -87,11 +87,13 @@ def get_metadata_info(path: Path) -> dict[str, Any]:
     for i in range(meta.num_row_groups):
         rg = meta.row_group(i)
         col0 = rg.column(0) if rg.num_columns > 0 else None
-        rg_list.append({
-            "rows": rg.num_rows,
-            "total_byte_size": rg.total_byte_size,
-            "compression": col0.compression if col0 else "unknown",
-        })
+        rg_list.append(
+            {
+                "rows": rg.num_rows,
+                "total_byte_size": rg.total_byte_size,
+                "compression": col0.compression if col0 else "unknown",
+            }
+        )
     return {
         "rows": meta.num_rows,
         "row_groups": meta.num_row_groups,
@@ -202,6 +204,8 @@ def run_inspect(
         lines.append(f"  Row groups:     {meta['row_groups']}")
         lines.append(f"  Groups/columns: {meta['columns']}")
         for i, rg in enumerate(meta.get("row_group_details", [])):
-            lines.append(f"  Group {i}:       {rg['rows']} rows, {rg['total_byte_size']} bytes, {rg['compression']}")
+            lines.append(
+                f"  Group {i}:       {rg['rows']} rows, {rg['total_byte_size']} bytes, {rg['compression']}"
+            )
 
     return "\n".join(lines)

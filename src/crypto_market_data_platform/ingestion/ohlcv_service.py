@@ -41,5 +41,10 @@ class OhlcvService:
                     msg += f" field={issue.field}"
                 msg += f": {issue.message}"
                 print(msg, file=sys.stderr)
-        write_candles(candles, base_path=base_path, ts_config=self._ts_config, merge_strategy=merge_strategy)
+        write_candles(
+            candles,
+            base_path=base_path,
+            ts_config=self._ts_config,
+            merge_strategy=merge_strategy,
+        )
         return len(candles)

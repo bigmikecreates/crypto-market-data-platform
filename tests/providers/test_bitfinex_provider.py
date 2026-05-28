@@ -30,6 +30,7 @@ class TestBitfinexProvider:
 
     def test_provider_is_ohlcv_provider(self) -> None:
         from crypto_market_data_platform.providers.base import OHLCVProvider
+
         assert isinstance(self.provider, OHLCVProvider)
 
     def test_returns_list_of_candles(self) -> None:

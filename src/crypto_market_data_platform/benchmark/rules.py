@@ -65,7 +65,10 @@ def _eval_compression(result: BenchmarkResult) -> tuple[str, str]:
     elif ratio < 15:
         return "PASS", f"{ratio:.1f}× — typical for decimal128 + dict encoding."
     elif ratio < 30:
-        return "WARN", f"{ratio:.1f}× — in-memory far exceeds disk. Check for buffer bloat."
+        return (
+            "WARN",
+            f"{ratio:.1f}× — in-memory far exceeds disk. Check for buffer bloat.",
+        )
     else:
         return "FAIL", f"{ratio:.1f}× — massive gap. Investigate allocation pattern."
 
@@ -80,7 +83,10 @@ def _eval_cpu_wall(result: BenchmarkResult) -> tuple[str, str]:
     if ratio >= 0.8:
         return "PASS", f"{ratio:.2f} — near 1.0, no I/O or lock contention."
     elif ratio >= 0.5:
-        return "WARN", f"{ratio:.2f} — moderate non-CPU overhead (allocation, page faults)."
+        return (
+            "WARN",
+            f"{ratio:.2f} — moderate non-CPU overhead (allocation, page faults).",
+        )
     else:
         return "FAIL", f"{ratio:.2f} — high I/O or lock contention. Investigate."
 
@@ -96,9 +102,15 @@ def _eval_gc_gen2(result: BenchmarkResult) -> tuple[str, str]:
     elif g2 <= max(5, n // 5000):
         return "PASS", f"{g2} gen-2 collection(s) — within acceptable range."
     elif g2 <= max(20, n // 1000):
-        return "WARN", f"{g2} gen-2 collection(s) — moderate. Review temporary object lifetimes."
+        return (
+            "WARN",
+            f"{g2} gen-2 collection(s) — moderate. Review temporary object lifetimes.",
+        )
     else:
-        return "FAIL", f"{g2} gen-2 collection(s) — excessive. Investigate allocation churn."
+        return (
+            "FAIL",
+            f"{g2} gen-2 collection(s) — excessive. Investigate allocation churn.",
+        )
 
 
 # ── Rule: Parquet write dominance ────────────────────────────────
@@ -113,9 +125,15 @@ def _eval_write_dominance(result: BenchmarkResult) -> tuple[str, str]:
     elif pct < 60:
         return "PASS", f"{pct:.0f}% — I/O is dominant but within expected range."
     elif pct < 80:
-        return "WARN", f"{pct:.0f}% — I/O strongly dominates. Disk speed may be the constraint."
+        return (
+            "WARN",
+            f"{pct:.0f}% — I/O strongly dominates. Disk speed may be the constraint.",
+        )
     else:
-        return "FAIL", f"{pct:.0f}% — nearly all time is I/O. Upgrade disk or reduce write count."
+        return (
+            "FAIL",
+            f"{pct:.0f}% — nearly all time is I/O. Upgrade disk or reduce write count.",
+        )
 
 
 # ── Rule: Peak vs total allocated memory ─────────────────────────
@@ -128,7 +146,10 @@ def _eval_peak_vs_allocated(result: BenchmarkResult) -> tuple[str, str]:
     if ratio < 1.5:
         return "PASS", f"{ratio:.1f}× — PyArrow buffer pre-allocation is efficient."
     elif ratio < 2.5:
-        return "PASS", f"{ratio:.1f}× — moderate buffer overhead, expected for columnar data."
+        return (
+            "PASS",
+            f"{ratio:.1f}× — moderate buffer overhead, expected for columnar data.",
+        )
     elif ratio < 4:
         return "WARN", f"{ratio:.1f}× — peak far exceeds total. Consider chunking."
     else:
@@ -150,9 +171,15 @@ def _eval_validation_overhead(result: BenchmarkResult) -> tuple[str, str]:
     elif pct < 5:
         return "PASS", f"{pct:.1f}% — validation cost is acceptable."
     elif pct < 10:
-        return "WARN", f"{pct:.1f}% — validation is noticeable. Consider simplifying regex."
+        return (
+            "WARN",
+            f"{pct:.1f}% — validation is noticeable. Consider simplifying regex.",
+        )
     else:
-        return "FAIL", f"{pct:.1f}% — validation dominates. Move to bulk C++ validation."
+        return (
+            "FAIL",
+            f"{pct:.1f}% — validation dominates. Move to bulk C++ validation.",
+        )
 
 
 # ── Verbose-only: Column conversion cost ─────────────────────────
@@ -170,9 +197,15 @@ def _eval_conversion_cost(result: BenchmarkResult) -> tuple[str, str]:
     elif pct < 20:
         return "PASS", f"{pct:.1f}% — conversion cost is within expected range."
     elif pct < 35:
-        return "WARN", f"{pct:.1f}% — conversion is a significant cost. Consider batch tuning."
+        return (
+            "WARN",
+            f"{pct:.1f}% — conversion is a significant cost. Consider batch tuning.",
+        )
     else:
-        return "FAIL", f"{pct:.1f}% — conversion dominates. Investigate per-column type casting."
+        return (
+            "FAIL",
+            f"{pct:.1f}% — conversion dominates. Investigate per-column type casting.",
+        )
 
 
 # ── Default rules ────────────────────────────────────────────────

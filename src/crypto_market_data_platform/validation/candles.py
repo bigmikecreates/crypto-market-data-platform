@@ -6,10 +6,19 @@ from crypto_market_data_platform.validation.patterns import (
     _decimal_gte,
     _digit_count,
 )
-from crypto_market_data_platform.validation.result import ValidationIssue, ValidationResult
+from crypto_market_data_platform.validation.result import (
+    ValidationIssue,
+    ValidationResult,
+)
 
 _DECIMAL_FIELDS = ["open", "high", "low", "close", "volume"]
-_ALL_FIELDS = _DECIMAL_FIELDS + ["exchange", "symbol", "timeframe", "timestamp", "source"]
+_ALL_FIELDS = _DECIMAL_FIELDS + [
+    "exchange",
+    "symbol",
+    "timeframe",
+    "timestamp",
+    "source",
+]
 
 _PRECISION_OVERFLOW_SEVERITY = "warning"
 
@@ -28,7 +37,9 @@ def _check_non_empty(candle: Candle, index: int, issues: list[ValidationIssue]) 
             )
 
 
-def _check_decimals(candle: Candle, index: int, issues: list[ValidationIssue]) -> list[str]:
+def _check_decimals(
+    candle: Candle, index: int, issues: list[ValidationIssue]
+) -> list[str]:
     valid_decimals: list[str] = []
     for field in _DECIMAL_FIELDS:
         val = getattr(candle, field, "")
@@ -57,7 +68,9 @@ def _check_decimals(candle: Candle, index: int, issues: list[ValidationIssue]) -
     return valid_decimals
 
 
-def _check_non_negative(candle: Candle, index: int, issues: list[ValidationIssue]) -> None:
+def _check_non_negative(
+    candle: Candle, index: int, issues: list[ValidationIssue]
+) -> None:
     for field in _DECIMAL_FIELDS:
         val = getattr(candle, field, "")
         if val.startswith("-"):
@@ -171,7 +184,7 @@ def validate_candle_batch(candles: list[Candle]) -> ValidationResult:
 
     for idx, candle in enumerate(candles):
         _check_non_empty(candle, idx, issues)
-        valid_decimals = _check_decimals(candle, idx, issues)
+        _check_decimals(candle, idx, issues)
         _check_non_negative(candle, idx, issues)
         _check_timestamp(candle, idx, issues)
         _check_ohlc_invariants(candle, idx, issues)

@@ -215,7 +215,9 @@ class ProviderCandlePipelineRunner(PipelineRunner):
         result = BenchmarkResult(
             count=actual_count,
             ts_resolution=ts_config.resolution,
-            runner_name=self._provider.__class__.__name__.replace("Provider", "").lower(),
+            runner_name=self._provider.__class__.__name__.replace(
+                "Provider", ""
+            ).lower(),
         )
 
         if actual_count == 0:
@@ -272,7 +274,9 @@ class ProviderCandlePipelineRunner(PipelineRunner):
         result = BenchmarkResult(
             count=actual_count,
             ts_resolution=ts_config.resolution,
-            runner_name=self._provider.__class__.__name__.replace("Provider", "").lower(),
+            runner_name=self._provider.__class__.__name__.replace(
+                "Provider", ""
+            ).lower(),
         )
 
         if actual_count == 0:

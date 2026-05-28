@@ -46,6 +46,7 @@ class TestMergeViaSet:
         ts = TimestampConfig()
 
         from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c1], ts)  # same c1, no changes
 
@@ -61,6 +62,7 @@ class TestMergeViaSet:
         ts = TimestampConfig()
 
         from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+
         existing = candle_to_table([c1], ts)
         incoming = candle_to_table([c2, c3], ts)
 
@@ -74,6 +76,7 @@ class TestMergeViaSet:
         ts = TimestampConfig()
 
         from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c1_updated], ts)
 
@@ -91,6 +94,7 @@ class TestMergeViaSet:
         ts = TimestampConfig()
 
         from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c2_updated, c3], ts)
 
@@ -104,6 +108,7 @@ class TestMergeViaSet:
         ts = TimestampConfig()
 
         from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+
         existing = pa.Table.from_pydict({})
         incoming = candle_to_table([c1], ts)
 
@@ -115,6 +120,7 @@ class TestMergeViaSet:
         ts = TimestampConfig()
 
         from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+
         existing = candle_to_table([c1], ts)
         incoming = pa.Table.from_pydict({})
 
@@ -131,6 +137,7 @@ class TestMergeViaDuckDB:
         ts = TimestampConfig()
 
         from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c1], ts)
 
@@ -143,6 +150,7 @@ class TestMergeViaDuckDB:
         ts = TimestampConfig()
 
         from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+
         existing = candle_to_table([c1], ts)
         incoming = candle_to_table([c2], ts)
 
@@ -155,6 +163,7 @@ class TestMergeViaDuckDB:
         ts = TimestampConfig()
 
         from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+
         existing = candle_to_table([c1], ts)
         incoming = candle_to_table([c1_updated], ts)
 

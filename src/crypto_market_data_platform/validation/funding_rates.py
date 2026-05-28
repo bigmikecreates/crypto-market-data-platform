@@ -5,16 +5,27 @@ from crypto_market_data_platform.validation.patterns import (
     _decimal_gte,
     _digit_count,
 )
-from crypto_market_data_platform.validation.result import ValidationIssue, ValidationResult
+from crypto_market_data_platform.validation.result import (
+    ValidationIssue,
+    ValidationResult,
+)
 
 _DECIMAL_FIELDS = ["rate", "predicted_rate"]
-_ALL_FIELDS = _DECIMAL_FIELDS + ["exchange", "symbol", "timestamp", "next_funding_time", "source"]
+_ALL_FIELDS = _DECIMAL_FIELDS + [
+    "exchange",
+    "symbol",
+    "timestamp",
+    "next_funding_time",
+    "source",
+]
 
 _PRECISION_OVERFLOW_SEVERITY = "warning"
 _FUNDING_RATE_CAP = "0.005"
 
 
-def _check_non_empty(rate: FundingRate, index: int, issues: list[ValidationIssue]) -> None:
+def _check_non_empty(
+    rate: FundingRate, index: int, issues: list[ValidationIssue]
+) -> None:
     for field in _ALL_FIELDS:
         if not getattr(rate, field, "").strip():
             issues.append(
@@ -28,7 +39,9 @@ def _check_non_empty(rate: FundingRate, index: int, issues: list[ValidationIssue
             )
 
 
-def _check_decimals(rate: FundingRate, index: int, issues: list[ValidationIssue]) -> list[str]:
+def _check_decimals(
+    rate: FundingRate, index: int, issues: list[ValidationIssue]
+) -> list[str]:
     valid_decimals: list[str] = []
     for field in _DECIMAL_FIELDS:
         val = getattr(rate, field, "")
@@ -58,7 +71,9 @@ def _check_decimals(rate: FundingRate, index: int, issues: list[ValidationIssue]
     return valid_decimals
 
 
-def _check_rate_range(rate: FundingRate, index: int, issues: list[ValidationIssue]) -> None:
+def _check_rate_range(
+    rate: FundingRate, index: int, issues: list[ValidationIssue]
+) -> None:
     for field in _DECIMAL_FIELDS:
         val = getattr(rate, field, "")
         if not _SIGNED_DECIMAL_PATTERN.match(val):
@@ -76,7 +91,9 @@ def _check_rate_range(rate: FundingRate, index: int, issues: list[ValidationIssu
             )
 
 
-def _check_timestamps(rate: FundingRate, index: int, issues: list[ValidationIssue]) -> None:
+def _check_timestamps(
+    rate: FundingRate, index: int, issues: list[ValidationIssue]
+) -> None:
     for field in ["timestamp", "next_funding_time"]:
         val = getattr(rate, field, "")
         if not _TIMESTAMP_PATTERN.match(val):
@@ -91,7 +108,9 @@ def _check_timestamps(rate: FundingRate, index: int, issues: list[ValidationIssu
             )
 
 
-def _check_timestamp_ordering(rate: FundingRate, index: int, issues: list[ValidationIssue]) -> None:
+def _check_timestamp_ordering(
+    rate: FundingRate, index: int, issues: list[ValidationIssue]
+) -> None:
     ts = rate.timestamp
     nft = rate.next_funding_time
     if _TIMESTAMP_PATTERN.match(ts) and _TIMESTAMP_PATTERN.match(nft):
@@ -138,7 +157,7 @@ def validate_funding_rate_batch(rates: list[FundingRate]) -> ValidationResult:
 
     for idx, rate in enumerate(rates):
         _check_non_empty(rate, idx, issues)
-        valid_decimals = _check_decimals(rate, idx, issues)
+        _check_decimals(rate, idx, issues)
         _check_rate_range(rate, idx, issues)
         _check_timestamps(rate, idx, issues)
         _check_timestamp_ordering(rate, idx, issues)

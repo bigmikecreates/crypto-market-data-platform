@@ -1,10 +1,11 @@
 import sys
-from datetime import datetime
 
 from crypto_market_data_platform.config import TimestampConfig
 from crypto_market_data_platform.models.funding_rate import FundingRate
 from crypto_market_data_platform.storage.parquet_writer import write_funding_rates
-from crypto_market_data_platform.validation.funding_rates import validate_funding_rate_batch
+from crypto_market_data_platform.validation.funding_rates import (
+    validate_funding_rate_batch,
+)
 
 
 class FundingRateService:
@@ -30,5 +31,10 @@ class FundingRateService:
                     msg += f" field={issue.field}"
                 msg += f": {issue.message}"
                 print(msg, file=sys.stderr)
-        write_funding_rates(rates, base_path=base_path, ts_config=self._ts_config, merge_strategy=merge_strategy)
+        write_funding_rates(
+            rates,
+            base_path=base_path,
+            ts_config=self._ts_config,
+            merge_strategy=merge_strategy,
+        )
         return len(rates)

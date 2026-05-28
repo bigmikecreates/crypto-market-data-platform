@@ -12,5 +12,4 @@ class OHLCVProvider(ABC):
         timeframe: str,
         start: datetime,
         end: datetime,
-    ) -> list[Candle]:
-        ...
+    ) -> list[Candle]: ...

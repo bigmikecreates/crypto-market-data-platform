@@ -24,10 +24,13 @@ def _attempt(provider: str, symbol: str, attempt_num: int) -> AttemptResult:
     start = end.replace(hour=end.hour - 1)
 
     url = ENDPOINTS[provider](symbol, start, end)
-    req = urllib.request.Request(url, headers={
-        "Accept": "application/json",
-        "User-Agent": USER_AGENT,
-    })
+    req = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/json",
+            "User-Agent": USER_AGENT,
+        },
+    )
 
     attempt: AttemptResult = {
         "attempt": attempt_num,
@@ -122,7 +125,9 @@ def smoke_provider(provider: str) -> dict[str, Any]:
 def _attempt_row(a: AttemptResult) -> str:
     sym = a["symbol"]
     if a["outcome"] == "ok":
-        return f"  ✅  Attempt {a['attempt']}: {sym} – HTTP {a['http_status']} – Parse OK"
+        return (
+            f"  ✅  Attempt {a['attempt']}: {sym} – HTTP {a['http_status']} – Parse OK"
+        )
     err = a["error"] or "unknown"
     return f"  ❌  Attempt {a['attempt']}: {sym} – HTTP {a['http_status'] or 'N/A'} – {err}"
 
@@ -167,29 +172,33 @@ def format_markdown(result: dict[str, Any]) -> str:
 
     for a in result["attempts"]:
         if a["outcome"] != "ok":
-            lines.extend([
-                "",
-                f"### Raw response (attempt {a['attempt']}, truncated to {OUTPUT_TRUNCATE} B)",
-                "```json",
-                a["raw"] or "(no body)",
-                "```",
-                "",
-                "### Error",
-                "```",
-                a["error"] or "unknown",
-                "```",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"### Raw response (attempt {a['attempt']}, truncated to {OUTPUT_TRUNCATE} B)",
+                    "```json",
+                    a["raw"] or "(no body)",
+                    "```",
+                    "",
+                    "### Error",
+                    "```",
+                    a["error"] or "unknown",
+                    "```",
+                ]
+            )
             break
 
     syms = SYMBOLS[provider]
     attempted = list(dict.fromkeys(a["symbol"] for a in result["attempts"]))
-    lines.extend([
-        "",
-        "### Resolved symbols",
-        f"Primary: {syms[0]}",
-        f"Attempted: {', '.join(attempted)}",
-        "",
-    ])
+    lines.extend(
+        [
+            "",
+            "### Resolved symbols",
+            f"Primary: {syms[0]}",
+            f"Attempted: {', '.join(attempted)}",
+            "",
+        ]
+    )
     return "\n".join(lines)
 
 
@@ -203,7 +212,9 @@ def parse_args(argv: list[str] | None = None) -> Namespace:
 def main() -> None:
     args = parse_args()
     result = smoke_provider(args.provider)
-    output = format_markdown(result) if args.format == "markdown" else format_text(result)
+    output = (
+        format_markdown(result) if args.format == "markdown" else format_text(result)
+    )
     sys.stdout.write(output)
     sys.stdout.flush()
     sys.exit(0 if result["passed"] else 1)

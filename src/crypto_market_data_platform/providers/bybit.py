@@ -44,7 +44,9 @@ def _to_bybit_timeframe(timeframe: str) -> str:
     return mapped
 
 
-def _parse_row(row: list[str], exchange: str, symbol: str, timeframe: str, source: str) -> Candle:
+def _parse_row(
+    row: list[str], exchange: str, symbol: str, timeframe: str, source: str
+) -> Candle:
     mts = int(row[0])
     ts = datetime.fromtimestamp(mts / 1000, tz=timezone.utc)
     return Candle(
@@ -84,9 +86,7 @@ class BybitProvider(OHLCVProvider):
         current_start = start_ms
 
         while current_start < end_ms:
-            rows = self._fetch_ohlcv_page(
-                bybit_symbol, bybit_tf, current_start, end_ms
-            )
+            rows = self._fetch_ohlcv_page(bybit_symbol, bybit_tf, current_start, end_ms)
             if not rows:
                 break
 
@@ -119,10 +119,13 @@ class BybitProvider(OHLCVProvider):
             f"?category=spot&symbol={bybit_symbol}&interval={bybit_timeframe}"
             f"&start={start_ms}&end={end_ms}&limit={_MAX_LIMIT}"
         )
-        req = urllib.request.Request(url, headers={
-            "Accept": "application/json",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) crypto-market-data-platform/1.0",
-        })
+        req = urllib.request.Request(
+            url,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) crypto-market-data-platform/1.0",
+            },
+        )
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
                 data: Any = json.loads(resp.read().decode())

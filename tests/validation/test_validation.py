@@ -5,7 +5,6 @@ from crypto_market_data_platform.validation.candles import validate_candle_batch
 from crypto_market_data_platform.validation.patterns import (
     _decimal_gte,
     _digit_count,
-    _UNSIGNED_DECIMAL_PATTERN,
 )
 
 
@@ -27,6 +26,7 @@ def _candle(**overrides) -> Candle:
 
 
 # -- happy path ------------------------------------------------
+
 
 def test_valid_candle_passes():
     result = validate_candle_batch([_candle()])
@@ -60,10 +60,22 @@ def test_empty_batch_passes():
 
 # -- EMPTY_FIELD per field -------------------------------------
 
-@pytest.mark.parametrize("field", [
-    "exchange", "symbol", "timeframe", "timestamp",
-    "open", "high", "low", "close", "volume", "source",
-])
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "exchange",
+        "symbol",
+        "timeframe",
+        "timestamp",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "source",
+    ],
+)
 def test_empty_field_yields_EMPTY_FIELD(field: str):
     c = _candle(**{field: ""})
     result = validate_candle_batch([c])
@@ -74,13 +86,17 @@ def test_empty_field_yields_EMPTY_FIELD(field: str):
 
 # -- INVALID_DECIMAL -------------------------------------------
 
-@pytest.mark.parametrize("field,bad_val", [
-    ("open", "abc"),
-    ("high", "1.2.3"),
-    ("low", "12,5"),
-    ("close", "0x10"),
-    ("volume", ""),
-])
+
+@pytest.mark.parametrize(
+    "field,bad_val",
+    [
+        ("open", "abc"),
+        ("high", "1.2.3"),
+        ("low", "12,5"),
+        ("close", "0x10"),
+        ("volume", ""),
+    ],
+)
 def test_invalid_decimal_string(field: str, bad_val: str):
     c = _candle(**{field: bad_val})
     result = validate_candle_batch([c])
@@ -100,6 +116,7 @@ def test_negative_decimal_is_negative_value():
 
 # -- PRECISION_OVERFLOW ----------------------------------------
 
+
 def test_precision_overflow_is_warning():
     val = "9" * 39 + ".0"
     c = _candle(open=val)
@@ -112,13 +129,17 @@ def test_precision_overflow_is_warning():
 
 # -- INVALID_TIMESTAMP -----------------------------------------
 
-@pytest.mark.parametrize("bad_ts", [
-    "not-a-date",
-    "2024/01/01T12:00:00",
-    "2024-01-01 12:00:00",
-    "2024-01-01",
-    "",
-])
+
+@pytest.mark.parametrize(
+    "bad_ts",
+    [
+        "not-a-date",
+        "2024/01/01T12:00:00",
+        "2024-01-01 12:00:00",
+        "2024-01-01",
+        "",
+    ],
+)
 def test_invalid_timestamp(bad_ts: str):
     c = _candle(timestamp=bad_ts)
     result = validate_candle_batch([c])
@@ -128,6 +149,7 @@ def test_invalid_timestamp(bad_ts: str):
 
 
 # -- OHLC_INVARIANT --------------------------------------------
+
 
 def test_high_less_than_open():
     c = _candle(high="49000", open="50000")
@@ -170,6 +192,7 @@ def test_ohlc_invariant_skipped_when_decimals_invalid():
 
 
 # -- DUPLICATE_TIMESTAMP ---------------------------------------
+
 
 def test_duplicate_timestamp_detected():
     candles = [
@@ -214,6 +237,7 @@ def test_same_timestamp_different_source_allowed():
 
 # -- _decimal_gte ----------------------------------------------
 
+
 class TestDecimalGte:
     def test_equal(self):
         assert _decimal_gte("1.0", "1.0")
@@ -241,6 +265,7 @@ class TestDecimalGte:
 
 
 # -- _digit_count ----------------------------------------------
+
 
 class TestDigitCount:
     def test_integer(self):

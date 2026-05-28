@@ -21,8 +21,10 @@ def _row_key(table: pa.Table, i: int, key_cols: list[str]) -> tuple:
 
 
 def _rows_differ(
-    t1: pa.Table, i1: int,
-    t2: pa.Table, i2: int,
+    t1: pa.Table,
+    i1: int,
+    t2: pa.Table,
+    i2: int,
     data_cols: list[str],
 ) -> bool:
     for col in data_cols:
@@ -138,13 +140,7 @@ def _to_timestamp(
 
 def _path_for_candle(c: Candle, base_path: str) -> Path:
     date_str = c.timestamp[:10]
-    return (
-        Path(base_path)
-        / c.exchange
-        / c.symbol
-        / c.timeframe
-        / f"{date_str}.parquet"
-    )
+    return Path(base_path) / c.exchange / c.symbol / c.timeframe / f"{date_str}.parquet"
 
 
 def candle_to_table(
@@ -197,7 +193,9 @@ def write_candles(
             existing = pq.read_table(str(path))
             if existing.schema != table.schema:
                 existing = existing.cast(table.schema)
-            table = _merge_tables(existing, table, _CANDLE_KEY_COLS, strategy=merge_strategy)
+            table = _merge_tables(
+                existing, table, _CANDLE_KEY_COLS, strategy=merge_strategy
+            )
 
         pq.write_table(table, str(path))
         written.append(path)
@@ -208,11 +206,7 @@ def write_candles(
 def _path_for_funding_rate(r: FundingRate, base_path: str) -> Path:
     date_str = r.timestamp[:10]
     return (
-        Path(base_path)
-        / r.exchange
-        / r.symbol
-        / "funding_rate"
-        / f"{date_str}.parquet"
+        Path(base_path) / r.exchange / r.symbol / "funding_rate" / f"{date_str}.parquet"
     )
 
 
@@ -267,7 +261,9 @@ def write_funding_rates(
             existing = pq.read_table(str(path))
             if existing.schema != table.schema:
                 existing = existing.cast(table.schema)
-            table = _merge_tables(existing, table, _FUNDING_RATE_KEY_COLS, strategy=merge_strategy)
+            table = _merge_tables(
+                existing, table, _FUNDING_RATE_KEY_COLS, strategy=merge_strategy
+            )
 
         pq.write_table(table, str(path))
         written.append(path)

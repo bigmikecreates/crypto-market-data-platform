@@ -18,6 +18,12 @@ dependencies = [
 test = [
     "pytest"
 ]
+lint = [
+    "ruff",
+    "mypy",
+    "pandas-stubs",
+    "pyarrow-stubs",
+]
 docs = [
     "mkdocs-material"
 ]

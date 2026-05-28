@@ -22,6 +22,7 @@ def _funding_rate(**overrides) -> FundingRate:
 
 # -- happy path ------------------------------------------------
 
+
 def test_valid_funding_rate_passes():
     result = validate_funding_rate_batch([_funding_rate()])
     assert result.passed
@@ -30,8 +31,12 @@ def test_valid_funding_rate_passes():
 
 def test_multiple_valid_rates():
     rates = [
-        _funding_rate(timestamp="2024-01-01T12:00:00", next_funding_time="2024-01-01T16:00:00"),
-        _funding_rate(timestamp="2024-01-01T16:00:00", next_funding_time="2024-01-01T20:00:00"),
+        _funding_rate(
+            timestamp="2024-01-01T12:00:00", next_funding_time="2024-01-01T16:00:00"
+        ),
+        _funding_rate(
+            timestamp="2024-01-01T16:00:00", next_funding_time="2024-01-01T20:00:00"
+        ),
     ]
     result = validate_funding_rate_batch(rates)
     assert result.passed
@@ -53,10 +58,19 @@ def test_negative_rate_is_valid():
 
 # -- EMPTY_FIELD -----------------------------------------------
 
-@pytest.mark.parametrize("field", [
-    "exchange", "symbol", "timestamp",
-    "rate", "predicted_rate", "next_funding_time", "source",
-])
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "exchange",
+        "symbol",
+        "timestamp",
+        "rate",
+        "predicted_rate",
+        "next_funding_time",
+        "source",
+    ],
+)
 def test_empty_field_yields_EMPTY_FIELD(field: str):
     r = _funding_rate(**{field: ""})
     result = validate_funding_rate_batch([r])
@@ -67,10 +81,14 @@ def test_empty_field_yields_EMPTY_FIELD(field: str):
 
 # -- INVALID_DECIMAL -------------------------------------------
 
-@pytest.mark.parametrize("field,bad_val", [
-    ("rate", "abc"),
-    ("predicted_rate", "1.2.3"),
-])
+
+@pytest.mark.parametrize(
+    "field,bad_val",
+    [
+        ("rate", "abc"),
+        ("predicted_rate", "1.2.3"),
+    ],
+)
 def test_invalid_decimal_string(field: str, bad_val: str):
     r = _funding_rate(**{field: bad_val})
     result = validate_funding_rate_batch([r])
@@ -80,6 +98,7 @@ def test_invalid_decimal_string(field: str, bad_val: str):
 
 
 # -- PRECISION_OVERFLOW ----------------------------------------
+
 
 def test_precision_overflow_is_warning():
     val = "9" * 39 + ".0"
@@ -93,11 +112,15 @@ def test_precision_overflow_is_warning():
 
 # -- INVALID_TIMESTAMP -----------------------------------------
 
-@pytest.mark.parametrize("bad_ts", [
-    "not-a-date",
-    "2024/01/01T12:00:00",
-    "",
-])
+
+@pytest.mark.parametrize(
+    "bad_ts",
+    [
+        "not-a-date",
+        "2024/01/01T12:00:00",
+        "",
+    ],
+)
 def test_invalid_timestamp(bad_ts: str):
     r = _funding_rate(timestamp=bad_ts)
     result = validate_funding_rate_batch([r])
@@ -116,11 +139,15 @@ def test_invalid_next_funding_time():
 
 # -- FUNDING_RATE_OUT_OF_RANGE ---------------------------------
 
-@pytest.mark.parametrize("field,val", [
-    ("rate", "0.006"),
-    ("predicted_rate", "-0.006"),
-    ("rate", "1.0"),
-])
+
+@pytest.mark.parametrize(
+    "field,val",
+    [
+        ("rate", "0.006"),
+        ("predicted_rate", "-0.006"),
+        ("rate", "1.0"),
+    ],
+)
 def test_rate_out_of_range_warning(field: str, val: str):
     r = _funding_rate(**{field: val})
     result = validate_funding_rate_batch([r])
@@ -131,6 +158,7 @@ def test_rate_out_of_range_warning(field: str, val: str):
 
 
 # -- FUTURE_BEFORE_CURRENT -------------------------------------
+
 
 def test_next_funding_time_before_timestamp():
     r = _funding_rate(
@@ -164,6 +192,7 @@ def test_next_funding_time_ordering_ok():
 
 
 # -- DUPLICATE_TIMESTAMP ---------------------------------------
+
 
 def test_duplicate_timestamp_detected():
     rates = [

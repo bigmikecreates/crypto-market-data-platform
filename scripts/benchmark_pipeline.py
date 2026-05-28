@@ -21,7 +21,7 @@ from typing import Any
 
 import typer
 
-from crypto_market_data_platform.benchmark import RUNNERS
+from crypto_market_data_platform.benchmark import RUNNERS, BenchmarkResult
 from crypto_market_data_platform.benchmark.rules import (
     DEFAULT_RULES,
     VERBOSE_RULES,
@@ -59,7 +59,7 @@ def _cum_pct(current: float, total: float, width: int = 6) -> str:
     pct = (current / total) * 100
     if pct > 100.5:
         return f"{'—':>{width}}"
-    return f"{pct:>{width-1}.0f}%"
+    return f"{pct:>{width - 1}.0f}%"
 
 
 def _rating_color(rating: str) -> str:
@@ -115,7 +115,9 @@ def _compute_ci(values: list[float]) -> tuple[float, float, float]:
 
 def _pipeline_stats(result: Any) -> dict[str, float]:
     pipe = result.stages[: result.pipeline_end_index + 1]
-    file_kb = max((s.file_kb for s in result.stages if s.file_kb is not None), default=0.0)
+    file_kb = max(
+        (s.file_kb for s in result.stages if s.file_kb is not None), default=0.0
+    )
     return {
         "wall_ms": sum(s.wall_ms for s in pipe),
         "cpu_ms": sum(s.cpu_ms for s in pipe),
@@ -130,7 +132,9 @@ def _setup_isolated() -> None:
     try:
         os.sched_setaffinity(0, {cpu})
     except AttributeError:
-        typer.echo("Warning: sched_setaffinity not available on this platform.", err=True)
+        typer.echo(
+            "Warning: sched_setaffinity not available on this platform.", err=True
+        )
         return
     try:
         os.nice(-10)
@@ -141,7 +145,6 @@ def _setup_isolated() -> None:
             err=True,
         )
     pid = os.getpid()
-    cmd = "taskset" if sys.platform == "linux" else "N/A"
     args = " ".join(sys.argv[1:])
     typer.echo(
         f"CPU isolated: pinned to core {cpu}, priority adjusted. "
@@ -284,7 +287,9 @@ def _format_cross_validation_section(
     )
     lines.append("")
 
-    lines.append(f"  GC gen-2: {total_g2} collections  → {'PASS' if total_g2 < 5 else 'WARN' if total_g2 < 20 else 'FAIL'}")
+    lines.append(
+        f"  GC gen-2: {total_g2} collections  → {'PASS' if total_g2 < 5 else 'WARN' if total_g2 < 20 else 'FAIL'}"
+    )
     lines.append(
         (
             "    Zero long-lived garbage."
@@ -305,10 +310,8 @@ def _format_cross_validation_section(
         stages_by_name = {s.name: s for s in result.stages}
 
         candle_s = stages_by_name.get("Candle creation")
-        extract_s = stages_by_name.get("Column extract")
         dec_cast_s = stages_by_name.get("decimal128 cast")
         ts_cast_s = stages_by_name.get("timestamp cast")
-        table_s = stages_by_name.get("Table assembly")
         write_s = stages_by_name.get("Parquet write")
 
         if candle_s:
@@ -370,7 +373,9 @@ def _format_schema_section(schema: dict[str, str]) -> list[str]:
     # Group into decimal128 and others
     dec_cols = {k: v for k, v in schema.items() if "decimal" in v}
     ts_cols = {k: v for k, v in schema.items() if "timestamp" in v}
-    other_cols = {k: v for k, v in schema.items() if k not in dec_cols and k not in ts_cols}
+    other_cols = {
+        k: v for k, v in schema.items() if k not in dec_cols and k not in ts_cols
+    }
 
     dict_suffix = "  (dictionary)"
 
@@ -389,13 +394,25 @@ def _format_schema_section(schema: dict[str, str]) -> list[str]:
 
 @app.command()
 def run(
-    count: int = typer.Option(10000, "--count", "-n", help="Number of candles to generate"),
-    iterations: int = typer.Option(5, "--iterations", "-i", help="Number of benchmark runs (default 5)"),
+    count: int = typer.Option(
+        10000, "--count", "-n", help="Number of candles to generate"
+    ),
+    iterations: int = typer.Option(
+        5, "--iterations", "-i", help="Number of benchmark runs (default 5)"
+    ),
     ts_res: str = typer.Option("s", "--ts-res", help="Timestamp resolution: s or us"),
-    verbose: bool = typer.Option(False, "--verbose", "-v", help="Show fine-grained checkpoint stages"),
-    isolated: bool = typer.Option(False, "--isolated", help="Pin to one CPU and raise priority (opt-in isolation)"),
-    runner_name: str = typer.Option("candle", "--runner", "-r", help="Pipeline runner to benchmark"),
-    output: Path = typer.Option(None, "--output", "-o", help="Write results as JSON to this file"),
+    verbose: bool = typer.Option(
+        False, "--verbose", "-v", help="Show fine-grained checkpoint stages"
+    ),
+    isolated: bool = typer.Option(
+        False, "--isolated", help="Pin to one CPU and raise priority (opt-in isolation)"
+    ),
+    runner_name: str = typer.Option(
+        "candle", "--runner", "-r", help="Pipeline runner to benchmark"
+    ),
+    output: Path = typer.Option(
+        None, "--output", "-o", help="Write results as JSON to this file"
+    ),
 ) -> None:
     # ── resolve runner ────────────────────────────────────────
     runner_cls = RUNNERS.get(runner_name)
@@ -411,7 +428,21 @@ def run(
         _setup_isolated()
 
     # ── warmup: trigger PyArrow one-time init ─────────────────
-    wc = [Candle(exchange="w", symbol="w", timeframe="1h", timestamp="2026-01-01T00:00:00", open="1", high="2", low="1", close="2", volume="1", source="w") for _ in range(10)]
+    wc = [
+        Candle(
+            exchange="w",
+            symbol="w",
+            timeframe="1h",
+            timestamp="2026-01-01T00:00:00",
+            open="1",
+            high="2",
+            low="1",
+            close="2",
+            volume="1",
+            source="w",
+        )
+        for _ in range(10)
+    ]
     _to_decimal128([c.open for c in wc], "open", "warmup")
     _to_timestamp([c.timestamp for c in wc], ts_config)
 
@@ -433,6 +464,7 @@ def run(
 
         results.append(result)
         import shutil
+
         shutil.rmtree(base_path, ignore_errors=True)
 
     tracemalloc.stop()
@@ -492,10 +524,16 @@ def run(
     # Metric definitions
     lines.append("METRIC DEFINITIONS  (μs = microseconds, B = bytes)")
     lines.append("─" * 100)
-    lines.append("Wall-clock (ms) — Real wall time per stage. Target <5 μs/candle total.")
+    lines.append(
+        "Wall-clock (ms) — Real wall time per stage. Target <5 μs/candle total."
+    )
     lines.append("CPU time (ms) — On-CPU time (user + sys). Primary decision metric.")
-    lines.append("MemΔ (MB) — Memory allocated in the stage (tracemalloc positive-only).")
-    lines.append("  Expected: ~120 B/candle for Candle creation, ~50 B/candle for conversions.")
+    lines.append(
+        "MemΔ (MB) — Memory allocated in the stage (tracemalloc positive-only)."
+    )
+    lines.append(
+        "  Expected: ~120 B/candle for Candle creation, ~50 B/candle for conversions."
+    )
     lines.append("Peak (MB) — Highest resident memory watermark.")
     lines.append("GC (g0/g1/g2) — Garbage collector runs per generation.")
     lines.append("File (KB) — Parquet file on disk. Expected 30–40 B/candle.")
@@ -567,7 +605,9 @@ def run(
     total_g0 = sum(s.gc_g0 for s in pipe_stages)
     total_g1 = sum(s.gc_g1 for s in pipe_stages)
     total_g2 = sum(s.gc_g2 for s in pipe_stages)
-    file_kb_total = max((s.file_kb for s in all_stages if s.file_kb is not None), default=0.0)
+    file_kb_total = max(
+        (s.file_kb for s in all_stages if s.file_kb is not None), default=0.0
+    )
 
     lines.append(
         f"{'Pipeline total':<{name_w}} {_fmt(total_wall):>9} {'':>5}"
@@ -593,9 +633,19 @@ def run(
     lines.append("─" * 100)
     lines.append("")
 
-    lines.append(_ci_line("CPU time", [s["cpu_ms"] for s in pipe_stats], "ms", per_candle=True))
-    lines.append(_ci_line("Wall-clock", [s["wall_ms"] for s in pipe_stats], "ms", per_candle=True))
-    lines.append(_ci_line("Memory delta", [s["mem_mb"] for s in pipe_stats], "MB", non_negative=True))
+    lines.append(
+        _ci_line("CPU time", [s["cpu_ms"] for s in pipe_stats], "ms", per_candle=True)
+    )
+    lines.append(
+        _ci_line(
+            "Wall-clock", [s["wall_ms"] for s in pipe_stats], "ms", per_candle=True
+        )
+    )
+    lines.append(
+        _ci_line(
+            "Memory delta", [s["mem_mb"] for s in pipe_stats], "MB", non_negative=True
+        )
+    )
 
     peak_vals = [s["peak_mb"] for s in pipe_stats]
     lines.append(_ci_line("Peak memory", peak_vals, "MB", non_negative=True))
@@ -640,12 +690,14 @@ def run(
 
     # Runner note
     runners_available = ", ".join(RUNNERS)
-    lines.extend([
-        f"Runners available: {runners_available}",
-        "Pass --runner path.to.MyRunner to benchmark a custom pipeline.",
-        "─" * 100,
-        "",
-    ])
+    lines.extend(
+        [
+            f"Runners available: {runners_available}",
+            "Pass --runner path.to.MyRunner to benchmark a custom pipeline.",
+            "─" * 100,
+            "",
+        ]
+    )
 
     report = "\n".join(lines)
     typer.echo(report)
@@ -657,28 +709,30 @@ def run(
         all_stages_raw = []
         for idx, r in enumerate(results):
             s = pipe_stats[idx]
-            all_stages_raw.append({
-                "iteration": idx + 1,
-                "wall_ms": s["wall_ms"],
-                "cpu_ms": s["cpu_ms"],
-                "mem_delta_mb": s["mem_mb"],
-                "peak_mb": s["peak_mb"],
-                "file_kb": s["file_kb"],
-                "stages": [
-                    {
-                        "name": st.name,
-                        "wall_ms": st.wall_ms,
-                        "cpu_ms": st.cpu_ms,
-                        "mem_delta_mb": st.mem_delta_mb,
-                        "peak_mb": st.peak_mb,
-                        "gc_g0": st.gc_g0,
-                        "gc_g1": st.gc_g1,
-                        "gc_g2": st.gc_g2,
-                        "file_kb": st.file_kb,
-                    }
-                    for st in r.stages
-                ],
-            })
+            all_stages_raw.append(
+                {
+                    "iteration": idx + 1,
+                    "wall_ms": s["wall_ms"],
+                    "cpu_ms": s["cpu_ms"],
+                    "mem_delta_mb": s["mem_mb"],
+                    "peak_mb": s["peak_mb"],
+                    "file_kb": s["file_kb"],
+                    "stages": [
+                        {
+                            "name": st.name,
+                            "wall_ms": st.wall_ms,
+                            "cpu_ms": st.cpu_ms,
+                            "mem_delta_mb": st.mem_delta_mb,
+                            "peak_mb": st.peak_mb,
+                            "gc_g0": st.gc_g0,
+                            "gc_g1": st.gc_g1,
+                            "gc_g2": st.gc_g2,
+                            "file_kb": st.file_kb,
+                        }
+                        for st in r.stages
+                    ],
+                }
+            )
 
         data = {
             "count": count,
@@ -688,10 +742,7 @@ def run(
             "isolated": isolated,
             "results": all_stages_raw,
             "schema": median_result.schema,
-            "rules": [
-                {"name": n, "rating": r, "message": m}
-                for n, r, m in outcomes
-            ],
+            "rules": [{"name": n, "rating": r, "message": m} for n, r, m in outcomes],
         }
         output.write_text(json.dumps(data, indent=2))
         typer.echo(f"  Wrote JSON to {output}")
@@ -699,18 +750,23 @@ def run(
 
 @app.command()
 def profile(
-    symbol: str = typer.Option("BTC/USDT", "--symbol", help="Trading pair symbol (FakeProvider)"),
+    symbol: str = typer.Option(
+        "BTC/USDT", "--symbol", help="Trading pair symbol (FakeProvider)"
+    ),
     timeframe: str = typer.Option("1h", "--timeframe", help="Candle timeframe"),
     start: str = typer.Option(
         ..., "--start", help="Start time (ISO-8601, e.g. 2026-05-25)"
     ),
-    end: str = typer.Option(
-        ..., "--end", help="End time (ISO-8601, e.g. 2026-05-27)"
-    ),
+    end: str = typer.Option(..., "--end", help="End time (ISO-8601, e.g. 2026-05-27)"),
     iterations: int = typer.Option(
         3, "--iterations", "-i", help="Benchmark iterations per provider"
     ),
-    verbose: bool = typer.Option(False, "--verbose", "-v", help="Show fine-grained checkpoint stages per provider"),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Show fine-grained checkpoint stages per provider",
+    ),
 ) -> None:
     """Profile each market-data provider (fake, bitfinex, kucoin) with
     the same symbol/timeframe range and print a comparison."""
@@ -730,7 +786,21 @@ def profile(
     ]
 
     # warmup: trigger PyArrow one-time init (~300ms)
-    wc = [Candle(exchange="w", symbol="w", timeframe="1h", timestamp="2026-01-01T00:00:00", open="1", high="2", low="1", close="2", volume="1", source="w") for _ in range(10)]
+    wc = [
+        Candle(
+            exchange="w",
+            symbol="w",
+            timeframe="1h",
+            timestamp="2026-01-01T00:00:00",
+            open="1",
+            high="2",
+            low="1",
+            close="2",
+            volume="1",
+            source="w",
+        )
+        for _ in range(10)
+    ]
     _to_decimal128([c.open for c in wc], "open", "warmup")
     _to_timestamp([c.timestamp for c in wc], ts_config)
 
@@ -745,8 +815,11 @@ def profile(
             tracemalloc.clear_traces()
 
             runner = ProviderCandlePipelineRunner(
-                provider=pinst, symbol=psym, timeframe=timeframe,
-                start=dt_start, end=dt_end,
+                provider=pinst,
+                symbol=psym,
+                timeframe=timeframe,
+                start=dt_start,
+                end=dt_end,
             )
             base_path = f".bench_tmp_{pname}_{i}"
             if verbose:
@@ -834,7 +907,9 @@ def profile(
 
         lines.append(sep)
         peak_stage = max(all_stages, key=lambda s: s.peak_mb)
-        file_kb_total = max((s.file_kb for s in all_stages if s.file_kb is not None), default=0.0)
+        file_kb_total = max(
+            (s.file_kb for s in all_stages if s.file_kb is not None), default=0.0
+        )
         pipeline_mem = sum(max(s.mem_delta_mb, 0) for s in pipe_stages)
         lines.append(
             f"  {'Pipeline total':<{name_w}} {_fmt(total_wall):>9} {_fmt(total_cpu):>9}"
@@ -847,14 +922,26 @@ def profile(
         # Network/CPU Boundary section
         net_wait = total_wall - total_cpu
         ratio = net_wait / total_cpu if total_cpu > 0 else 0
-        regime = "CPU-bound" if ratio < 0.5 else "network-bound" if ratio > 1.5 else "balanced"
+        regime = (
+            "CPU-bound"
+            if ratio < 0.5
+            else "network-bound"
+            if ratio > 1.5
+            else "balanced"
+        )
         lines.append("  ── Network/CPU Boundary ──")
-        lines.append(f"  Network wait:  {net_wait:.2f} ms  (wall - cpu = time outside our process)")
-        lines.append(f"  CPU processing: {total_cpu:.2f} ms  (total CPU for pipeline stages)")
+        lines.append(
+            f"  Network wait:  {net_wait:.2f} ms  (wall - cpu = time outside our process)"
+        )
+        lines.append(
+            f"  CPU processing: {total_cpu:.2f} ms  (total CPU for pipeline stages)"
+        )
         lines.append(f"  Network/CPU ratio: {ratio:.1f}×  → {regime}")
         lines.append("")
 
-        lines.append(f"  Candles: {result.count}  |  Validation issues: {result.validation_issues}")
+        lines.append(
+            f"  Candles: {result.count}  |  Validation issues: {result.validation_issues}"
+        )
         lines.append("")
 
     report = "\n".join(lines)

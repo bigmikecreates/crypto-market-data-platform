@@ -47,7 +47,9 @@ def _to_bfx_timeframe(timeframe: str) -> str:
     return mapped
 
 
-def _parse_row(row: list[Any], exchange: str, symbol: str, timeframe: str, source: str) -> Candle:
+def _parse_row(
+    row: list[Any], exchange: str, symbol: str, timeframe: str, source: str
+) -> Candle:
     mts = int(row[0])
     ts = datetime.fromtimestamp(mts / 1000, tz=timezone.utc)
     return Candle(
@@ -87,9 +89,7 @@ class BitfinexProvider(OHLCVProvider):
         current_start = start_ms
 
         while current_start < end_ms:
-            rows = self._fetch_ohlcv_page(
-                bfx_symbol, bfx_tf, current_start, end_ms
-            )
+            rows = self._fetch_ohlcv_page(bfx_symbol, bfx_tf, current_start, end_ms)
             if not rows:
                 break
 
@@ -119,10 +119,13 @@ class BitfinexProvider(OHLCVProvider):
             f"{_BASE_URL}/candles/trade:{bfx_timeframe}:{bfx_symbol}/hist"
             f"?start={start_ms}&end={end_ms}&limit={_MAX_LIMIT}&sort={_SORT_ASCENDING}"
         )
-        req = urllib.request.Request(url, headers={
-            "Accept": "application/json",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) crypto-market-data-platform/1.0",
-        })
+        req = urllib.request.Request(
+            url,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) crypto-market-data-platform/1.0",
+            },
+        )
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
                 data = json.loads(resp.read().decode())
@@ -137,9 +140,7 @@ class BitfinexProvider(OHLCVProvider):
             ) from None
 
         if isinstance(data, dict) and "error" in data:
-            raise RuntimeError(
-                f"Bitfinex API error for {bfx_symbol}: {data['error']}"
-            )
+            raise RuntimeError(f"Bitfinex API error for {bfx_symbol}: {data['error']}")
 
         if not isinstance(data, list):
             return []
