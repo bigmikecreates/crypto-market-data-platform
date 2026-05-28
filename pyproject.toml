@@ -16,7 +16,8 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    "pytest"
+    "pytest",
+    "httpx",
 ]
 lint = [
     "ruff",
