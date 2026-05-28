@@ -31,7 +31,7 @@ jobs:
         id: smoke
         continue-on-error: true
         run: |
-          python scripts/provider_smoke.py \
+          python -m scripts.smoke \
             --provider ${{ matrix.provider }} \
             --format markdown > /tmp/smoke_report.md
 
