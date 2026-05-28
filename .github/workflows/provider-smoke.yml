@@ -1,0 +1,60 @@
+name: Provider smoke tests
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [bitfinex, bitstamp, bybit, kucoin, mexc]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Run smoke test
+        id: smoke
+        continue-on-error: true
+        run: |
+          python scripts/provider_smoke.py \
+            --provider ${{ matrix.provider }} \
+            --format markdown > /tmp/smoke_report.md
+
+      - name: File or update issue on failure
+        if: steps.smoke.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LABEL="provider-smoke"
+          TITLE="Provider smoke failure: ${{ matrix.provider }}"
+          REPORT="/tmp/smoke_report.md"
+
+          EXISTING=$(gh issue list \
+            --label "$LABEL" \
+            --json title,number \
+            --jq '.[] | select(.title == "'"$TITLE"'") | .number')
+
+          if [ -z "$EXISTING" ]; then
+            gh issue create \
+              --title "$TITLE" \
+              --label "$LABEL" \
+              --body-file "$REPORT"
+          else
+            gh issue edit "$EXISTING" \
+              --body-file "$REPORT"
+          fi
