@@ -5,13 +5,16 @@ import typer
 
 import uvicorn
 
-from crypto_market_data_platform.cli.funding_ingestion_service import FundingIngestionService
-from crypto_market_data_platform.cli.ingestion_service import IngestionService
+from crypto_market_data_platform.ingestion import FundingRateService, OhlcvService
+from crypto_market_data_platform.utils.parquet_viewer import run_inspect
 from crypto_market_data_platform.models.candle import Candle
 from crypto_market_data_platform.models.funding_rate import FundingRate
 from crypto_market_data_platform.providers.bitfinex import BitfinexProvider
+from crypto_market_data_platform.providers.bitstamp import BitstampProvider
+from crypto_market_data_platform.providers.bybit import BybitProvider
 from crypto_market_data_platform.providers.fake import FakeProvider
 from crypto_market_data_platform.providers.kucoin import KuCoinProvider
+from crypto_market_data_platform.providers.mexc import MexcProvider
 from crypto_market_data_platform.query import DuckDBQueryService
 from crypto_market_data_platform.server import create_app
 
@@ -20,7 +23,10 @@ app = typer.Typer(name="cmpd")
 PROVIDERS: dict[str, type] = {
     "fake": FakeProvider,
     "bitfinex": BitfinexProvider,
+    "bitstamp": BitstampProvider,
     "kucoin": KuCoinProvider,
+    "bybit": BybitProvider,
+    "mexc": MexcProvider,
 }
 
 _query_service = DuckDBQueryService()
@@ -55,20 +61,30 @@ def fetch(
         "--output",
         help="Base output directory",
     ),
+    merge_strategy: str = typer.Option(
+        "auto",
+        "--merge-strategy",
+        help="Row merge strategy: auto (default), memory, or duckdb",
+    ),
 ) -> None:
+    if merge_strategy not in ("auto", "memory", "duckdb"):
+        typer.echo(f"Invalid merge strategy '{merge_strategy}'. Use auto, memory, or duckdb.", err=True)
+        raise typer.Exit(code=1)
+
     provider_cls = PROVIDERS.get(provider)
     if provider_cls is None:
         available = ", ".join(PROVIDERS)
         typer.echo(f"Unknown provider '{provider}'. Available: {available}", err=True)
         raise typer.Exit(code=1)
 
-    svc = IngestionService(provider=provider_cls())
+    svc = OhlcvService(provider=provider_cls())
     count = svc.ingest(
         symbol=symbol,
         timeframe=timeframe,
         start=start,
         end=end,
         base_path=output,
+        merge_strategy=merge_strategy,
     )
     typer.echo(f"Wrote {count} candle(s) to {output}/")
 
@@ -103,7 +119,7 @@ def fetch_funding(
         start=start,
         end=end,
     )
-    svc = FundingIngestionService()
+    svc = FundingRateService()
     count = svc.ingest(rates, base_path=output)
     typer.echo(f"Wrote {count} funding rate(s) to {output}/")
 
@@ -217,6 +233,34 @@ def serve(
         host=host,
         port=port,
     )
+
+
+# ── inspect ──────────────────────────────────────────────────────
+
+
+@app.command()
+def inspect(
+    path: str = typer.Option(..., "--path", help="Path to a .parquet file or dataset directory"),
+    limit: int = typer.Option(10, "--limit", "-n", help="Max rows in sample"),
+    start: str = typer.Option(None, "--start", help="Start of timestamp range (ISO-8601), inclusive"),
+    end: str = typer.Option(None, "--end", help="End of timestamp range (ISO-8601), exclusive"),
+    stats_flag: bool = typer.Option(False, "--stats", help="Show column statistics"),
+    verbose_flag: bool = typer.Option(False, "--verbose", help="Show full Parquet metadata"),
+) -> None:
+    """Inspect a parquet file or dataset directory."""
+    try:
+        output = run_inspect(
+            path_str=path,
+            limit=limit,
+            start=start,
+            end=end,
+            show_stats=stats_flag,
+            show_verbose=verbose_flag,
+        )
+        typer.echo(output)
+    except (FileNotFoundError, ValueError) as e:
+        typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1)
 
 
 # ── helpers ──────────────────────────────────────────────────────

@@ -1,6 +1,7 @@
 from collections import defaultdict
 from pathlib import Path
 
+import duckdb
 import pyarrow as pa
 import pyarrow.parquet as pq
 
@@ -10,6 +11,111 @@ from crypto_market_data_platform.models.funding_rate import FundingRate
 from crypto_market_data_platform.validation.patterns import _SIGNED_DECIMAL_PATTERN
 
 _DECIMAL128_TYPE = pa.decimal128(38, 10)
+_ROW_MERGE_THRESHOLD = 50_000
+_CANDLE_KEY_COLS = ["exchange", "symbol", "timeframe", "source", "timestamp"]
+_FUNDING_RATE_KEY_COLS = ["exchange", "symbol", "source", "timestamp"]
+
+
+def _row_key(table: pa.Table, i: int, key_cols: list[str]) -> tuple:
+    return tuple(str(table.column(c)[i].as_py()) for c in key_cols)
+
+
+def _rows_differ(
+    t1: pa.Table, i1: int,
+    t2: pa.Table, i2: int,
+    data_cols: list[str],
+) -> bool:
+    for col in data_cols:
+        if t1.column(col)[i1].as_py() != t2.column(col)[i2].as_py():
+            return True
+    return False
+
+
+def _merge_via_set(
+    existing: pa.Table,
+    incoming: pa.Table,
+    key_cols: list[str],
+) -> pa.Table:
+    if existing.num_rows == 0:
+        return incoming
+
+    all_cols = existing.schema.names
+    data_cols = [c for c in all_cols if c not in key_cols]
+
+    incoming_idx_by_key: dict[tuple, int] = {}
+    for j in range(incoming.num_rows):
+        key = _row_key(incoming, j, key_cols)
+        incoming_idx_by_key[key] = j
+
+    existing_idx_by_key: dict[tuple, int] = {}
+    keep_indices: list[int] = []
+    for i in range(existing.num_rows):
+        key = _row_key(existing, i, key_cols)
+        existing_idx_by_key[key] = i
+        if key not in incoming_idx_by_key:
+            keep_indices.append(i)
+        else:
+            j = incoming_idx_by_key[key]
+            if not _rows_differ(existing, i, incoming, j, data_cols):
+                keep_indices.append(i)
+
+    new_row_indices: list[int] = []
+    for j in range(incoming.num_rows):
+        key = _row_key(incoming, j, key_cols)
+        if key not in existing_idx_by_key:
+            new_row_indices.append(j)
+        else:
+            i = existing_idx_by_key[key]
+            if _rows_differ(existing, i, incoming, j, data_cols):
+                new_row_indices.append(j)
+
+    if not new_row_indices and len(keep_indices) == existing.num_rows:
+        return existing
+
+    parts: list[pa.Table] = []
+    if keep_indices:
+        parts.append(existing.take(keep_indices))
+    if new_row_indices:
+        parts.append(incoming.take(new_row_indices))
+    return pa.concat_tables(parts) if len(parts) > 1 else parts[0]
+
+
+def _merge_via_duckdb(
+    existing: pa.Table,
+    incoming: pa.Table,
+    key_cols: list[str],
+) -> pa.Table:
+    if existing.num_rows == 0:
+        return incoming
+
+    conn = duckdb.connect()
+    conn.register("existing", existing)
+    conn.register("incoming", incoming)
+
+    join_on = " AND ".join(f"e.{c} = i.{c}" for c in key_cols)
+    result = conn.execute(f"""
+        SELECT e.* FROM existing e
+        LEFT JOIN incoming i ON {join_on}
+        WHERE i.{key_cols[0]} IS NULL
+        UNION ALL
+        SELECT * FROM incoming
+    """).to_arrow_table()
+    conn.close()
+    return result
+
+
+def _merge_tables(
+    existing: pa.Table,
+    incoming: pa.Table,
+    key_cols: list[str],
+    strategy: str = "auto",
+) -> pa.Table:
+    effective = strategy
+    if effective == "auto":
+        effective = "duckdb" if existing.num_rows >= _ROW_MERGE_THRESHOLD else "memory"
+    if effective == "duckdb":
+        return _merge_via_duckdb(existing, incoming, key_cols)
+    return _merge_via_set(existing, incoming, key_cols)
 
 
 def _to_decimal128(values: list[str], label: str, candle_key: str) -> pa.Array:
@@ -71,6 +177,7 @@ def write_candles(
     candles: list[Candle],
     base_path: str = "data",
     ts_config: TimestampConfig | None = None,
+    merge_strategy: str = "auto",
 ) -> list[Path]:
     if not candles:
         return []
@@ -90,7 +197,7 @@ def write_candles(
             existing = pq.read_table(str(path))
             if existing.schema != table.schema:
                 existing = existing.cast(table.schema)
-            table = pa.concat_tables([existing, table])
+            table = _merge_tables(existing, table, _CANDLE_KEY_COLS, strategy=merge_strategy)
 
         pq.write_table(table, str(path))
         written.append(path)
@@ -140,6 +247,7 @@ def write_funding_rates(
     rates: list[FundingRate],
     base_path: str = "data",
     ts_config: TimestampConfig | None = None,
+    merge_strategy: str = "auto",
 ) -> list[Path]:
     if not rates:
         return []
@@ -159,7 +267,7 @@ def write_funding_rates(
             existing = pq.read_table(str(path))
             if existing.schema != table.schema:
                 existing = existing.cast(table.schema)
-            table = pa.concat_tables([existing, table])
+            table = _merge_tables(existing, table, _FUNDING_RATE_KEY_COLS, strategy=merge_strategy)
 
         pq.write_table(table, str(path))
         written.append(path)

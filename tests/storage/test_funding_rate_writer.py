@@ -150,4 +150,15 @@ class TestWriteFundingRates:
         table = pq.read_table(str(
             Path(_tmpdir) / "test_exchange" / "PI_XBTUSD" / "funding_rate" / "2024-01-01.parquet"
         ))
-        assert table.num_rows == 2
+        assert table.num_rows == 1  # identical row was skipped
+
+    def test_append_new_rows(self, _tmpdir):
+        r1 = _fr(timestamp="2024-01-01T12:00:00")
+        r2 = _fr(timestamp="2024-01-01T16:00:00")
+        write_funding_rates([r1], base_path=_tmpdir)
+        write_funding_rates([r2], base_path=_tmpdir)
+
+        table = pq.read_table(str(
+            Path(_tmpdir) / "test_exchange" / "PI_XBTUSD" / "funding_rate" / "2024-01-01.parquet"
+        ))
+        assert table.num_rows == 2  # new row was appended
