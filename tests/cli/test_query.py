@@ -174,64 +174,64 @@ class TestDatasetsCommand:
         assert "No parquet files found" in result.stdout
 
 
-class TestCandlesGetCommand:
-    def test_candles_get_all(self, tmp_path: Path) -> None:
+class TestQueryOhlcvCommand:
+    def test_query_ohlcv_all(self, tmp_path: Path) -> None:
         _write_candle_fixtures(str(tmp_path))
         result = runner.invoke(
-            app, ["candles", "get", "--path", str(tmp_path), "--limit", "10"]
+            app, ["query", "ohlcv", "--path", str(tmp_path), "--limit", "10"]
         )
         assert result.exit_code == 0
         assert "exchange" in result.stdout
         assert "ex_a" in result.stdout
         assert "(3 row(s))" in result.stdout
 
-    def test_candles_get_filter_symbol(self, tmp_path: Path) -> None:
+    def test_query_ohlcv_filter_symbol(self, tmp_path: Path) -> None:
         _write_candle_fixtures(str(tmp_path))
         result = runner.invoke(
-            app, ["candles", "get", "--path", str(tmp_path),
+            app, ["query", "ohlcv", "--path", str(tmp_path),
                   "--symbol", "BTC/USDT", "--limit", "10"]
         )
         assert result.exit_code == 0
         assert "(2 row(s))" in result.stdout
 
-    def test_candles_get_no_match(self, tmp_path: Path) -> None:
+    def test_query_ohlcv_no_match(self, tmp_path: Path) -> None:
         _write_candle_fixtures(str(tmp_path))
         result = runner.invoke(
-            app, ["candles", "get", "--path", str(tmp_path),
+            app, ["query", "ohlcv", "--path", str(tmp_path),
                   "--exchange", "nonexistent"]
         )
         assert result.exit_code == 0
         assert "(no results)" in result.stdout
 
 
-class TestFundingGetCommand:
-    def test_funding_get_all(self, tmp_path: Path) -> None:
+class TestQueryFundingRateCommand:
+    def test_funding_rate_all(self, tmp_path: Path) -> None:
         _write_funding_fixtures(str(tmp_path))
         result = runner.invoke(
-            app, ["funding", "get", "--path", str(tmp_path), "--limit", "10"]
+            app, ["query", "funding-rate", "--path", str(tmp_path), "--limit", "10"]
         )
         assert result.exit_code == 0
         assert "exchange" in result.stdout
         assert "ex_a" in result.stdout
         assert "(2 row(s))" in result.stdout
 
-    def test_funding_get_no_match(self, tmp_path: Path) -> None:
+    def test_funding_rate_no_match(self, tmp_path: Path) -> None:
         _write_funding_fixtures(str(tmp_path))
         result = runner.invoke(
-            app, ["funding", "get", "--path", str(tmp_path),
+            app, ["query", "funding-rate", "--path", str(tmp_path),
                   "--symbol", "NONEXISTENT"]
         )
         assert result.exit_code == 0
         assert "(no results)" in result.stdout
 
 
-class TestRawQueryCommand:
+class TestQuerySqlCommand:
     def test_raw_sql(self, tmp_path: Path) -> None:
         _write_candle_fixtures(str(tmp_path))
         glob_path = f"{tmp_path}/ex_a/BTC/USDT/1h/*.parquet"
         result = runner.invoke(
             app, [
-                "query", "--sql",
+                "query", "sql",
                 f"SELECT open FROM read_parquet('{glob_path}') WHERE open = '100'",
                 "--path", str(tmp_path),
             ]

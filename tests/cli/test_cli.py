@@ -59,12 +59,12 @@ class TestFetchCommand:
         assert "Wrote 1 candle(s)" in result.stdout
 
 
-class TestFetchFundingCommand:
-    def test_fetch_funding_creates_parquet(self, tmp_path: Path) -> None:
+    def test_fetch_funding_rate_creates_parquet(self, tmp_path: Path) -> None:
         result = runner.invoke(
             app,
             [
-                "fetch-funding",
+                "fetch",
+                "--mdt", "funding-rate",
                 "--symbol", "BTC/USDT",
                 "--start", "2026-05-27",
                 "--end", "2026-05-28",

@@ -32,13 +32,18 @@ PROVIDERS: dict[str, type] = {
 _query_service = DuckDBQueryService()
 
 
-# ── fetch (existing) ────────────────────────────────────────────
+# ── fetch ────────────────────────────────────────────────────────
 
 
 @app.command()
 def fetch(
+    market_data_type: str = typer.Option(
+        "ohlcv",
+        "--mdt",
+        help="Market data type: ohlcv or funding-rate",
+    ),
     symbol: str = typer.Option("BTC/USDT", "--symbol", help="Trading pair symbol"),
-    timeframe: str = typer.Option("1h", "--timeframe", help="Candle timeframe"),
+    timeframe: str = typer.Option("1h", "--timeframe", help="Candle timeframe (ohlcv only)"),
     start: datetime = typer.Option(
         ...,
         "--start",
@@ -54,7 +59,7 @@ def fetch(
     provider: str = typer.Option(
         "fake",
         "--provider",
-        help="Data provider to use",
+        help="Data provider to use (ohlcv only)",
     ),
     output: str = typer.Option(
         "data",
@@ -67,9 +72,21 @@ def fetch(
         help="Row merge strategy: auto (default), memory, or duckdb",
     ),
 ) -> None:
+    if market_data_type not in ("ohlcv", "funding-rate"):
+        typer.echo(f"Invalid market data type '{market_data_type}'. Use ohlcv or funding-rate.", err=True)
+        raise typer.Exit(code=1)
+
     if merge_strategy not in ("auto", "memory", "duckdb"):
         typer.echo(f"Invalid merge strategy '{merge_strategy}'. Use auto, memory, or duckdb.", err=True)
         raise typer.Exit(code=1)
+
+    if market_data_type == "funding-rate":
+        p = FakeProvider()
+        rates = p.fetch_funding_rates(symbol=symbol, start=start, end=end)
+        svc = FundingRateService()
+        count = svc.ingest(rates, base_path=output, merge_strategy=merge_strategy)
+        typer.echo(f"Wrote {count} funding rate(s) to {output}/")
+        return
 
     provider_cls = PROVIDERS.get(provider)
     if provider_cls is None:
@@ -87,41 +104,6 @@ def fetch(
         merge_strategy=merge_strategy,
     )
     typer.echo(f"Wrote {count} candle(s) to {output}/")
-
-
-# ── fetch-funding (existing) ─────────────────────────────────────
-
-
-@app.command()
-def fetch_funding(
-    symbol: str = typer.Option("BTC/USDT", "--symbol", help="Trading pair symbol"),
-    start: datetime = typer.Option(
-        ...,
-        "--start",
-        formats=["%Y-%m-%dT%H:%M:%S", "%Y-%m-%d"],
-        help="Start time (ISO-8601)",
-    ),
-    end: datetime = typer.Option(
-        ...,
-        "--end",
-        formats=["%Y-%m-%dT%H:%M:%S", "%Y-%m-%d"],
-        help="End time (ISO-8601)",
-    ),
-    output: str = typer.Option(
-        "data",
-        "--output",
-        help="Base output directory",
-    ),
-) -> None:
-    provider = FakeProvider()
-    rates = provider.fetch_funding_rates(
-        symbol=symbol,
-        start=start,
-        end=end,
-    )
-    svc = FundingRateService()
-    count = svc.ingest(rates, base_path=output)
-    typer.echo(f"Wrote {count} funding rate(s) to {output}/")
 
 
 # ── datasets ─────────────────────────────────────────────────────
@@ -149,14 +131,14 @@ def datasets(
         typer.echo("".join(parts))
 
 
-# ── candles ──────────────────────────────────────────────────────
+# ── query group ──────────────────────────────────────────────────
 
-_candles_app = typer.Typer(name="candles")
-app.add_typer(_candles_app)
+_query_app = typer.Typer(name="query")
+app.add_typer(_query_app)
 
 
-@_candles_app.command("get")
-def candles_get(
+@_query_app.command("ohlcv")
+def query_ohlcv(
     path: str = typer.Option("data", "--path", help="Base data directory"),
     exchange: str = typer.Option(None, "--exchange", help="Filter by exchange"),
     symbol: str = typer.Option(None, "--symbol", help="Filter by symbol"),
@@ -174,14 +156,8 @@ def candles_get(
     _print_rows(rows)
 
 
-# ── funding ─────────────────────────────────────────────────────
-
-_funding_app = typer.Typer(name="funding")
-app.add_typer(_funding_app)
-
-
-@_funding_app.command("get")
-def funding_get(
+@_query_app.command("funding-rate")
+def query_funding_rate(
     path: str = typer.Option("data", "--path", help="Base data directory"),
     exchange: str = typer.Option(None, "--exchange", help="Filter by exchange"),
     symbol: str = typer.Option(None, "--symbol", help="Filter by symbol"),
@@ -198,12 +174,9 @@ def funding_get(
     _print_rows(rows)
 
 
-# ── query (raw SQL, escape hatch) ────────────────────────────────
-
-
-@app.command()
-def query(
-    sql: str = typer.Option(..., "--sql", help="SQL query"),
+@_query_app.command("sql")
+def query_sql(
+    sql: str = typer.Argument(..., help="SQL query"),
     path: str = typer.Option("data", "--path", help="Base data directory"),
     limit: int = typer.Option(100, "--limit", "-n", help="Max rows"),
 ) -> None:

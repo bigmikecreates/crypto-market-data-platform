@@ -16,8 +16,8 @@ CLI (cmpd) ──────→ OhlcvService ───→ (merge) ──→ Par
      │                                                  │
      │                                          DuckDBQueryService
      │                                                  │
-     ├── datasets, candles get, funding get, inspect    │
-     ├── query --sql                                    │
+     ├── datasets, inspect                              │
+     ├── query ohlcv, query funding-rate, query sql     │
      └── serve (uvicorn) ───→ FastAPI ───→ REST endpoints
 
 Benchmark (scripts/benchmark_pipeline.py) ───→ synthetic + live provider profiles
@@ -30,13 +30,12 @@ run via `python -m crypto_market_data_platform.cli.main`):
 
 | Command | Description |
 |---------|-------------|
-| `fetch` | Ingest OHLCV candles from a provider (`--merge-strategy auto|memory|duckdb`) |
-| `fetch-funding` | Ingest funding rates (FakeProvider only) |
+| `fetch` | Ingest market data (`--mdt ohlcv` or `funding-rate`; `--merge-strategy auto|memory|duckdb`) |
 | `datasets` | List available Parquet datasets |
-| `candles get` | Query candle data with filters |
-| `funding get` | Query funding rate data with filters |
+| `query ohlcv` | Query candle data with filters |
+| `query funding-rate` | Query funding rate data with filters |
+| `query sql` | Run raw SQL via DuckDB read_parquet |
 | `inspect` | Inspect a Parquet file or dataset (`--path`, `--start`, `--end`, `--stats`, `--verbose`) |
-| `query --sql` | Run raw SQL via DuckDB read_parquet |
 | `serve` | Start the FastAPI REST server |
 
 ## Quickstart
@@ -45,14 +44,17 @@ run via `python -m crypto_market_data_platform.cli.main`):
 # Install
 .venv/bin/pip install -e .
 
-# Fetch fake data (with row-level merge on overlap)
+# Fetch fake OHLCV data (with row-level merge on overlap)
 cmpd fetch --provider fake
+
+# Fetch funding rates
+cmpd fetch --mdt funding-rate --symbol BTC/USDT --start 2026-05-27 --end 2026-05-28
 
 # Inspect the output
 cmpd inspect --path data/fake/ --limit 5 --stats
 
 # Query it back
-cmpd candles get
+cmpd query ohlcv
 
 # Fetch with DuckDB-based merge for large partitions
 cmpd fetch --provider bitfinex --symbol BTC/USDT --start 2025-01-01 --end 2025-02-01 --merge-strategy duckdb
@@ -93,5 +95,5 @@ python scripts/benchmark_pipeline.py profile --provider bitfinex
 - **Benchmark** — synthetic (CPU-bound) and live-provider (network-bound)
   profiling with Network/CPU boundary analysis.
 
-For detailed design decisions behind each choice, see
-[`docs/benchmarks/design-rationale.md`](docs/benchmarks/design-rationale.md).
+For detailed design decisions behind each choice, see the
+[MKDocs documentation site](https://bigmikecreates.github.io/crypto-market-data-platform/).
