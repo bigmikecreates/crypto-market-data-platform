@@ -22,6 +22,9 @@ docs = [
     "mkdocs-material"
 ]
 
+[project.scripts]
+cmpd = "crypto_market_data_platform.cli.main:app"
+
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
