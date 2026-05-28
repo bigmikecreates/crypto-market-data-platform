@@ -1,0 +1,2504 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Local-first cryptocurrency market data ingestion, validation, storage, and query platform.">
+      
+      
+      
+      
+        <link rel="prev" href="../../lessons-from-kucoin-integration/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Design Rationale (full) - Crypto Market Data Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#design-rationale-pipeline-architecture-decisions" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Crypto Market Data Platform" class="md-header__button md-logo" aria-label="Crypto Market Data Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Crypto Market Data Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Design Rationale (full)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bigmikecreates/crypto-market-data-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../philosophy/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Philosophy
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../providers/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Providers
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../data-model/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Data Model
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../benchmark-design/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Benchmark Design
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../performance-notes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Performance Notes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../roadmap/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Roadmap
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../validation-strategy/" class="md-tabs__link">
+          
+  
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Crypto Market Data Platform" class="md-nav__button md-logo" aria-label="Crypto Market Data Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Crypto Market Data Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bigmikecreates/crypto-market-data-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../philosophy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../providers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Providers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmark-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../performance-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    References
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../provider-selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Provider Selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lessons-from-bitfinex-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bitfinex Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lessons-from-kucoin-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KuCoin Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Rationale (full)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Rationale (full)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-string-fields-over-python-decimal-in-candle-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. String fields over Python Decimal in Candle objects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-c-cast-over-python-decimal-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. C++ .cast() over Python Decimal() conversion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-dataclassslotstrue-for-candle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. @dataclass(slots=True) for Candle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-fixed-decimal12838-10-schema-over-dynamic-precision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Fixed decimal128(38, 10) schema over dynamic precision
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-timestamp-as-string-resolved-via-timestampconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Timestamp as string, resolved via TimestampConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-performance-analysis-methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Performance Analysis Methodology
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Performance Analysis Methodology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-two-measurement-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Two Measurement Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-primary-vs-secondary-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Primary vs Secondary Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-fixed-iteration-strategy-confidence-intervals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Fixed-Iteration Strategy + Confidence Intervals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-the-isolated-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 The --isolated Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-reporting-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Reporting Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-metrics-summary-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Metrics Summary (Baseline)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-validation-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Validation Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Validation Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-layered-validation-at-explicit-system-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Layered validation at explicit system boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-provider-informed-refinement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Provider-informed refinement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-string-based-decimal-comparison-no-decimal-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 String-based decimal comparison (no Decimal objects)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-structured-issues-with-severity-levels-not-fail-fast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Structured issues with severity levels (not fail-fast)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-precision-overflow-as-warning-configurable-severity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 Precision overflow as warning (configurable severity)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#76-shared-_decimal_pattern-across-servicestorage-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.6 Shared _DECIMAL_PATTERN across service/storage boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#77-minimal-ohlc-invariant-set-4-checks-instead-of-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.7 Minimal OHLC invariant set (4 checks instead of 7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#78-five-initial-provider-independent-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.8 Five initial provider-independent rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-networkcpu-boundary-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Network/CPU Boundary Measurement
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Network/CPU Boundary Measurement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-the-split-determines-the-optimisation-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 The split determines the optimisation strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-how-the-boundary-is-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 How the boundary is measured
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-what-the-boundary-implies-for-optimisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 What the boundary implies for optimisation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-design-implications-for-the-benchmark-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Design implications for the benchmark suite
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-query-service-layer-read-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Query Service Layer (Read Side)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Query Service Layer (Read Side)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-queryservice-abc-separates-domain-interface-from-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 QueryService ABC separates domain interface from transport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-duckdb-query-engine-sql-on-parquet-without-a-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 DuckDB Query Engine: SQL-on-Parquet without a server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-path-based-file-discovery-with-variable-depth-symbol-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Path-based file discovery with variable-depth symbol handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-duckdb-decimal128-string-conversion-for-model-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 DuckDB decimal128 → string conversion for model compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-server-layer-fastapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Server Layer (FastAPI)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Server Layer (FastAPI)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-fastapi-over-duckdb-for-http-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 FastAPI over DuckDB for HTTP access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-lifespan-managed-middleware-and-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Lifespan-managed middleware and error handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-string-fields-over-python-decimal-in-candle-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. String fields over Python Decimal in Candle objects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-c-cast-over-python-decimal-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. C++ .cast() over Python Decimal() conversion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-dataclassslotstrue-for-candle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. @dataclass(slots=True) for Candle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-fixed-decimal12838-10-schema-over-dynamic-precision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Fixed decimal128(38, 10) schema over dynamic precision
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-timestamp-as-string-resolved-via-timestampconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Timestamp as string, resolved via TimestampConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-performance-analysis-methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Performance Analysis Methodology
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Performance Analysis Methodology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-two-measurement-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Two Measurement Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-primary-vs-secondary-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Primary vs Secondary Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-fixed-iteration-strategy-confidence-intervals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Fixed-Iteration Strategy + Confidence Intervals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-the-isolated-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 The --isolated Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-reporting-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Reporting Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-metrics-summary-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Metrics Summary (Baseline)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-validation-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Validation Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Validation Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-layered-validation-at-explicit-system-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Layered validation at explicit system boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-provider-informed-refinement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Provider-informed refinement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-string-based-decimal-comparison-no-decimal-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 String-based decimal comparison (no Decimal objects)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-structured-issues-with-severity-levels-not-fail-fast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Structured issues with severity levels (not fail-fast)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-precision-overflow-as-warning-configurable-severity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 Precision overflow as warning (configurable severity)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#76-shared-_decimal_pattern-across-servicestorage-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.6 Shared _DECIMAL_PATTERN across service/storage boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#77-minimal-ohlc-invariant-set-4-checks-instead-of-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.7 Minimal OHLC invariant set (4 checks instead of 7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#78-five-initial-provider-independent-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.8 Five initial provider-independent rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-networkcpu-boundary-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Network/CPU Boundary Measurement
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Network/CPU Boundary Measurement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-the-split-determines-the-optimisation-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 The split determines the optimisation strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-how-the-boundary-is-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 How the boundary is measured
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-what-the-boundary-implies-for-optimisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 What the boundary implies for optimisation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-design-implications-for-the-benchmark-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Design implications for the benchmark suite
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-query-service-layer-read-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Query Service Layer (Read Side)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Query Service Layer (Read Side)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-queryservice-abc-separates-domain-interface-from-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 QueryService ABC separates domain interface from transport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-duckdb-query-engine-sql-on-parquet-without-a-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 DuckDB Query Engine: SQL-on-Parquet without a server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-path-based-file-discovery-with-variable-depth-symbol-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Path-based file discovery with variable-depth symbol handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-duckdb-decimal128-string-conversion-for-model-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 DuckDB decimal128 → string conversion for model compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-server-layer-fastapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Server Layer (FastAPI)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Server Layer (FastAPI)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-fastapi-over-duckdb-for-http-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 FastAPI over DuckDB for HTTP access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-lifespan-managed-middleware-and-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Lifespan-managed middleware and error handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="design-rationale-pipeline-architecture-decisions">Design Rationale — Pipeline Architecture Decisions<a class="headerlink" href="#design-rationale-pipeline-architecture-decisions" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>This document records the data-driven reasoning behind key architectural
+decisions in the market data pipeline. Each section states the decision,
+the rationale, and the benchmark evidence that supports it.</p>
+</blockquote>
+<hr />
+<h2 id="1-string-fields-over-python-decimal-in-candle-objects">1. String fields over Python <code>Decimal</code> in <code>Candle</code> objects<a class="headerlink" href="#1-string-fields-over-python-decimal-in-candle-objects" title="Permanent link">&para;</a></h2>
+<p><strong>Decision:</strong> Store <code>open</code>, <code>high</code>, <code>low</code>, <code>close</code>, <code>volume</code> as <code>str</code> in the
+<code>Candle</code> dataclass rather than <code>Decimal</code>.</p>
+<p><strong>Rationale:</strong>
+- <code>str</code> objects are lighter than <code>Decimal</code> objects (~50 B vs ~120 B per field).
+- The values are converted to <code>decimal128(38, 10)</code> at write time via PyArrow's
+  C++ <code>cast()</code> — no Python <code>Decimal</code> objects are created during the write path.
+- Validation (regex match) operates on the string directly without creating
+  intermediate objects.</p>
+<p><strong>Benchmark evidence:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python scripts/benchmark_pipeline.py --count 10000
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Candle creation (10000 candles):
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  Wall:  126.75 ms  (12.6 μs/candle)
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  MemΔ:    3.81 MB  (381 B/candle)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  CPU:   123.84 ms
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>Decimal128 cast (5 columns):
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>  Wall:  ~1.28 ms for 100 candles  (0.256 ms/column)
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  -- done via C++ .cast(), no Python Decimal objects created
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>File size on disk:
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>  20.8 KB for 10000 candles  (2.1 B/candle — with Parquet dictionary encoding)
+</code></pre></div></p>
+<p>The memory per candle (381 B for 10 string fields + dataclass overhead) is
+significantly lower than the equivalent <code>Decimal</code>-based model (~900 B estimated).</p>
+<hr />
+<h2 id="2-c-cast-over-python-decimal-conversion">2. C++ <code>.cast()</code> over Python <code>Decimal()</code> conversion<a class="headerlink" href="#2-c-cast-over-python-decimal-conversion" title="Permanent link">&para;</a></h2>
+<p><strong>Decision:</strong> Convert strings to <code>decimal128</code> at the PyArrow level using
+<code>pa.array(str_values).cast(pa.decimal128(38, 10))</code> rather than constructing
+Python <code>Decimal()</code> objects and passing them to <code>pa.array()</code>.</p>
+<p><strong>Rationale:</strong>
+- The <code>.cast()</code> operation runs in PyArrow's C++ compute layer — no Python
+  <code>Decimal</code> objects are instantiated at any point in the pipeline.
+- The cast is vectorised across the entire column in a single call.
+- Results in zero Python <code>Decimal</code> overhead in the entire write path.</p>
+<p><strong>Benchmark evidence:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>decimal128 cast (5 columns, 100 candles): 1.28 ms total → 0.256 ms/column
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>timestamp cast (1 column, 100 candles):   0.11 ms total → 0.110 ms/column
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Pipeline total (100 candles): 8.32 ms → 83.2 μs/candle
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Pipeline total (10000 candles): 208.04 ms → 20.8 μs/candle
+</code></pre></div></p>
+<p>The primary bottleneck is <code>Candle</code> object creation (61 % of pipeline wall time
+at 10k candles), not the conversion step (which accounts for ~15 %).</p>
+<hr />
+<h2 id="3-dataclassslotstrue-for-candle">3. <code>@dataclass(slots=True)</code> for <code>Candle</code><a class="headerlink" href="#3-dataclassslotstrue-for-candle" title="Permanent link">&para;</a></h2>
+<p><strong>Decision:</strong> Use <code>slots=True</code> to reduce per-instance memory overhead.</p>
+<p><strong>Rationale:</strong>
+- <code>slots=True</code> eliminates the per-instance <code>__dict__</code> (~120 B saved per object).
+- With 10 fields and potentially millions of candles in memory, this is a
+  meaningful saving.
+- The benchmark does not compare <code>slots=True</code> vs <code>slots=False</code> directly, but
+  the per-candle memory measurement (381 B for 10 string fields) is consistent
+  with slots-enabled dataclass overhead.</p>
+<hr />
+<h2 id="4-fixed-decimal12838-10-schema-over-dynamic-precision">4. Fixed <code>decimal128(38, 10)</code> schema over dynamic precision<a class="headerlink" href="#4-fixed-decimal12838-10-schema-over-dynamic-precision" title="Permanent link">&para;</a></h2>
+<p><strong>Decision:</strong> Use <code>decimal128(38, 10)</code> for all five numeric columns (open,
+high, low, close, volume) regardless of ticker or price range.</p>
+<p><strong>Rationale:</strong>
+- <code>decimal128</code> is always 16 bytes regardless of precision/scale — there is no
+  storage benefit to using narrower types.
+- A fixed schema guarantees that DuckDB <code>UNION</code> queries across tickers do not
+  encounter type mismatches.
+- The 38‑digit precision with 10 fractional digits covers all realistic crypto
+  prices (from <code>0.0000000001</code> to <code>9999999999999999999999999999.9999999999</code>).</p>
+<p><strong>Schema as written:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>open:      decimal128(38, 10)
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>high:      decimal128(38, 10)
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>low:       decimal128(38, 10)
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>close:     decimal128(38, 10)
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>volume:    decimal128(38, 10)
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>timestamp: timestamp[s]
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>exchange:  string  (dictionary)
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>symbol:    string  (dictionary)
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>timeframe: string  (dictionary)
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>source:    string  (dictionary)
+</code></pre></div></p>
+<hr />
+<h2 id="5-timestamp-as-string-resolved-via-timestampconfig">5. Timestamp as string, resolved via <code>TimestampConfig</code><a class="headerlink" href="#5-timestamp-as-string-resolved-via-timestampconfig" title="Permanent link">&para;</a></h2>
+<p><strong>Decision:</strong> Store <code>timestamp</code> as <code>str</code> in the <code>Candle</code> dataclass, with a
+<code>TimestampConfig</code> class controlling resolution (<code>s</code> or <code>us</code>) at write time.</p>
+<p><strong>Rationale:</strong>
+- Consistent with the "strings first" pattern used for numeric fields.
+- The <code>TimestampConfig</code> class isolates the resolution choice in one place.
+- Default resolution is <code>"s"</code> (<code>%Y-%m-%dT%H:%M:%S</code>), with <code>"us"</code> available
+  for sub-second precision when needed. Both cost 8 bytes on disk.</p>
+<hr />
+<h2 id="6-performance-analysis-methodology">6. Performance Analysis Methodology<a class="headerlink" href="#6-performance-analysis-methodology" title="Permanent link">&para;</a></h2>
+<h3 id="61-two-measurement-modes">6.1 Two Measurement Modes<a class="headerlink" href="#61-two-measurement-modes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Flag</th>
+<th>Environment</th>
+<th>What it measures</th>
+<th>Use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Default</strong></td>
+<td><em>(none)</em></td>
+<td>Shared core, normal priority, scheduler interference expected</td>
+<td>Real-world performance — includes unavoidable OS noise</td>
+<td>Development, CI, sanity checks</td>
+</tr>
+<tr>
+<td><strong>Isolated</strong></td>
+<td><code>--isolated</code></td>
+<td>Dedicated core via <code>sched_setaffinity</code>, elevated priority via <code>nice(-10)</code></td>
+<td>Ceiling performance — pipeline code cost in near-ideal isolation</td>
+<td>Capacity planning, regression detection, optimisation decisions</td>
+</tr>
+</tbody>
+</table>
+<p>The gap between the two is itself a signal. A wide gap means the pipeline is
+scheduler-sensitive — worth investigating. A narrow gap means the code already
+runs efficiently under real-world conditions.</p>
+<h3 id="62-primary-vs-secondary-metrics">6.2 Primary vs Secondary Metrics<a class="headerlink" href="#62-primary-vs-secondary-metrics" title="Permanent link">&para;</a></h3>
+<p>CPU time is the <strong>decision metric</strong> — it counts only cycles our thread actually
+ran, making it deterministic per-operation and low-noise. Wall-clock is
+secondary — it reflects real-world wait time and includes scheduler artifacts,
+answering "how long did I wait?" rather than "how much work did we do?"</p>
+<p>The CPU/Wall ratio acts as a built-in noise detector. A ratio below 0.8 signals
+preemption or I/O contention — the measurement environment was busy.</p>
+<h3 id="63-fixed-iteration-strategy-confidence-intervals">6.3 Fixed-Iteration Strategy + Confidence Intervals<a class="headerlink" href="#63-fixed-iteration-strategy-confidence-intervals" title="Permanent link">&para;</a></h3>
+<p>Default N=5, user-specified via <code>--iterations</code>. Never adaptive — adaptive or
+run-until-stable strategies hide resource consumption from the user and produce
+unbounded execution time. Fixed N gives predictable cost, and the CI width
+honestly communicates how trustworthy the number is. All N samples contribute
+to the estimate — no outlier removal, no trimmed means, no discarded data.</p>
+<p>A 95% confidence interval is computed using Student's t-distribution (df = N-1),
+with the median as the point estimate. The CI width is a self-calibrating trust
+indicator:</p>
+<ul>
+<li><strong>Tight CI on CPU time at N=5</strong> — you can make optimisation decisions
+  confidently without running more iterations.</li>
+<li><strong>Wide CI on wall-clock</strong> — honestly reflects a noisy or contended
+  environment. Run with <code>--isolated</code> if this matters.</li>
+</ul>
+<p>Format:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Pipeline CPU time (5 runs): 18.3 ms ± 0.3 ms (median, 95% CI [17.9, 18.7])
+</code></pre></div>
+<h3 id="64-the-isolated-mode">6.4 The <code>--isolated</code> Mode<a class="headerlink" href="#64-the-isolated-mode" title="Permanent link">&para;</a></h3>
+<p><strong>Mechanism:</strong>
+- <code>os.sched_setaffinity(0, {cpu})</code> — pins the benchmark process to one logical
+  core so the OS almost never schedules other work on that execution unit.
+- <code>os.nice(-10)</code> — raises scheduling priority so the kernel prefers our thread
+  when dispatching.
+- Prints the equivalent <code>taskset -c &lt;cpu&gt; ...</code> command so the user can run
+  externally if they prefer.
+- Falls back gracefully — if <code>nice(-10)</code> fails (typical for unprivileged users),
+  pinning still applies, priority stays at default, and a note is printed.
+  The flag never fails outright from missing privileges.</p>
+<p><strong>Why the isolated mode is better for analysis:</strong></p>
+<p>On a shared core, scheduler ticks, page reclaim, and cross-process preemption
+jitter both wall-clock and <code>process_time()</code> measurements. With <code>--isolated</code>,
+wall-clock and CPU time converge — both confidence bands collapse. The remaining
+variance comes almost entirely from PyArrow's internal allocation variance and
+Python's GC jitter. This lets a developer compare two commits and trust that a
+2% difference in CPU time is real rather than environmental noise.</p>
+<p><strong>Security / privilege caveats:</strong></p>
+<ul>
+<li><code>nice(-10)</code> requires <code>CAP_SYS_NICE</code> (Linux capability) or root. When
+  unavailable, the tool continues with pinning only and prints a note — it does
+  not fail.</li>
+<li>CPU pinning affects system responsiveness — other processes compete for
+  remaining cores. In CI or shared environments this may degrade co-tenants.</li>
+<li>SMT / hyperthreading means a "dedicated" logical core still shares execution
+  units with its sibling. For true isolation, the sibling must also be idle
+  or the process must be pinned to a whole physical core.</li>
+<li>Hardware interrupts and kernel threads can still preempt on the pinned core.
+  The only way to eliminate those is <code>isolcpus</code> at boot time, which is outside
+  the tool's scope.</li>
+</ul>
+<p><strong>If full priority isolation is needed</strong>, run the tool under
+<code>taskset -c &lt;core&gt;</code> externally using the command printed in the output. This
+keeps the benchmark unprivileged while giving the user full control over
+isolation — CPU isolation and priority elevation are OS-level resource
+management decisions, not pipeline measurement logic. Baking them into the tool
+means the tool must own a privilege boundary (<code>CAP_SYS_NICE</code>, potential root
+execution, security audit surface) for functionality tangential to its core
+purpose. External <code>taskset</code> keeps that boundary at the OS level where it
+belongs — the user decides whether and how to isolate, the tool just prints
+the command they need.</p>
+<p><strong>Why not default — the value of both modes:</strong></p>
+<ul>
+<li><strong>Default mode</strong> answers: <em>How fast does this run on my laptop under normal
+  load?</em> It provides an honest real-world answer. It catches production-relevant
+  overheads (page faults, scheduler jitter, memory pressure) that would be
+  invisible in isolation. This is what users care about day-to-day.</li>
+<li><strong>Isolated mode</strong> answers: <em>How fast could this run if nothing else
+  interfered?</em> It strips systemic noise to reveal the pipeline's inherent cost,
+  enabling confident regression detection across commits. This is a debug and
+  analysis tool, not a production mode.</li>
+<li><strong>Both are needed.</strong> A change that improves isolated time but degrades default
+  time is a real regression masked by noise. A change that improves default time
+  and also improves isolated time is a pure win. The tool reports both
+  transparently, and the comparison drives the right decision.</li>
+</ul>
+<h3 id="65-reporting-output">6.5 Reporting Output<a class="headerlink" href="#65-reporting-output" title="Permanent link">&para;</a></h3>
+<p>Default mode appends:</p>
+<blockquote>
+<p><em>Pass --isolated for dedicated CPU affinity.</em></p>
+</blockquote>
+<p>Isolated mode appends:</p>
+<blockquote>
+<p><em>CPU and wall-clock converged — measurement is stable.</em></p>
+</blockquote>
+<hr />
+<h2 id="key-metrics-summary-baseline">Key Metrics Summary (Baseline)<a class="headerlink" href="#key-metrics-summary-baseline" title="Permanent link">&para;</a></h2>
+<p>| Metric | 100 candles | 10,000 candles | Target | Status |
+|---|---|---|---|---|---|
+| Wall-clock | 8.32 ms (83 μs/c) | 208 ms (21 μs/c) | &lt;5 μs/c | ⚠ Above (CPU-bound) |
+| CPU/Wall | 0.98 | 0.98 | &gt;0.8 | ✅ |
+| Peak memory | 0.54 MB | 3.81 MB | — | ✅ |
+| File size | 6.4 KB (65 B/c) | 20.8 KB (2.1 B/c) | 30–40 B/c | ✅ (compression) |
+| GC gen-2 | 0 | 0 | &lt;5 | ✅ |
+| Bottleneck | Candle creation (22 %) | Candle creation (61 %) | — | CPU, not I/O |</p>
+<p>The current bottleneck is <code>Candle</code> dataclass construction. For real-world usage,
+API latency and rate limits will dominate — the local pipeline overhead (~20 μs
+per candle) is negligible in that context.</p>
+<hr />
+<h2 id="7-validation-strategy">7. Validation Strategy<a class="headerlink" href="#7-validation-strategy" title="Permanent link">&para;</a></h2>
+<h3 id="71-layered-validation-at-explicit-system-boundaries">7.1 Layered validation at explicit system boundaries<a class="headerlink" href="#71-layered-validation-at-explicit-system-boundaries" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Without defined validation gates, checks end up scattered through
+providers, writers, CLI handlers, and benchmark code. This makes it unclear
+which layer is responsible for what, leads to inconsistent enforcement (e.g.,
+the writer checks decimal format but nothing checks OHLC sanity), and forces
+developers to dig through multiple files to trace where a validation gap exists.</p>
+<p><strong>Decision:</strong> Validate at 4 explicit system boundaries — provider → service →
+storage → query — each with a single responsibility.</p>
+<p><strong>Why this solves it:</strong> Each boundary owns a specific contract. The <strong>service
+boundary</strong> catches malformed candles before they reach storage; the <strong>storage
+boundary</strong> catches write errors (wrong partition, schema drift) before they
+reach queries; the <strong>query boundary</strong> catches data-retrieval bugs before they
+reach the user. When a bug surfaces, you know which gate should have caught it
+— and you fix that gate without touching other layers. The boundaries also make
+the system auditable: a review can ask "does every boundary validate its
+contract?" rather than tracing validation logic through the entire call graph.</p>
+<h3 id="72-provider-informed-refinement">7.2 Provider-informed refinement<a class="headerlink" href="#72-provider-informed-refinement" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Building a rigid validation regime on fake data forces you to
+either (a) miss checks that real providers actually need, or (b) waste time
+writing rules for edge cases that don't exist in practice. Both failure modes
+slow down integration and produce a validation layer that is simultaneously
+overbuilt and under-useful.</p>
+<p><strong>Decision:</strong> Start with only provider-independent rules (decimal format,
+timestamp format, OHLC invariants, duplicate detection). Add provider-specific
+checks only after observing real provider behaviour.</p>
+<p><strong>Why this solves it:</strong> Real API quirks — pagination limits, sparse candle
+omission, timestamp alignment — determine what additional validation is
+actually valuable. Writing speculative rules before seeing provider behaviour
+guarantees either gaps or busywork. Provider-informed refinement means
+validation grows only when real data justifies it, keeping the codebase lean
+and the ruleset grounded in observed reality rather than imagined failure
+modes.</p>
+<h3 id="73-string-based-decimal-comparison-no-decimal-objects">7.3 String-based decimal comparison (no <code>Decimal</code> objects)<a class="headerlink" href="#73-string-based-decimal-comparison-no-decimal-objects" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Parsing decimal strings to Python <code>Decimal</code> objects purely for
+comparison (e.g., <code>high &gt;= open</code>) creates transient objects on every
+validation call. This contradicts the project's "strings-first" design choice,
+adds GC pressure, and introduces a Python-object allocation cost into what
+should be a lightweight check.</p>
+<p><strong>Decision:</strong> Implement <code>_decimal_gte(a, b)</code> that compares decimal strings
+directly — integer part comparison with length-aware padding, fractional part
+zero-padded to equal length. No <code>Decimal</code> objects created at any point in
+validation.</p>
+<p><strong>Why this solves it:</strong> <code>_decimal_gte()</code> runs in pure Python without
+allocating a single intermediate object. It is consistent with the model-layer
+decision to keep all numeric fields as strings (Section 1), avoids creating
+Python <code>Decimal</code> objects even transiently, and eliminates the performance
+cliff where a simple comparison forces a full parse-and-allocate round-trip.
+The function is trivially verified — ~20 lines with no dependencies — and
+covers all needed comparison cases (equal, same-integer-different-scale,
+different-integer-length, leading zeros).</p>
+<h3 id="74-structured-issues-with-severity-levels-not-fail-fast">7.4 Structured issues with severity levels (not fail-fast)<a class="headerlink" href="#74-structured-issues-with-severity-levels-not-fail-fast" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> A fail-fast approach — raising an exception on the first invalid
+candle in a batch — hides the full validation picture. If a batch of 1000
+candles contains 50 issues across 4 rule types, an exception on candle index 0
+reveals nothing about the other 49 failures. The caller has to fix, re-run,
+hit the next issue, fix, re-run — an O(n) debugging loop.</p>
+<p><strong>Decision:</strong> Collect all validation issues across the entire batch before
+returning. <code>ValidationResult</code> contains a <code>passed</code> boolean and an <code>issues</code> list.
+The pipeline never aborts mid-check; issues are reported to stderr and writing
+proceeds regardless.</p>
+<p><strong>Why this solves it:</strong> A single pass reveals every problem in the batch —
+the caller sees the full scope of issues in one shot, not one at a time with
+retry cycles. Distributing issues by <code>candle_index</code> and <code>field</code> makes triage
+straightforward (e.g., "all 50 issues are <code>INVALID_DECIMAL</code> on <code>volume</code> — the
+provider is returning volume as a string like <code>'1,234'</code>"). The non-fail-fast
+policy also means the pipeline degrades gracefully: a few malformed candles
+log warnings without aborting an otherwise valid ingestion run, which is
+critical for unattended data collection.</p>
+<h3 id="75-precision-overflow-as-warning-configurable-severity">7.5 Precision overflow as warning (configurable severity)<a class="headerlink" href="#75-precision-overflow-as-warning-configurable-severity" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> The Parquet schema uses <code>decimal128(38, 10)</code>, which supports up
+to 38 significant digits. A 39-digit decimal string from a provider would fail
+at write time with a cryptic Arrow cast error. However, real crypto prices
+rarely exceed 12–15 significant digits, so overflow is virtually impossible in
+practice — a hard error here would create false-positive pipeline failures for
+a scenario that almost never occurs.</p>
+<p><strong>Decision:</strong> Detect digit count exceeding 38 in the validation layer, emit a
+<code>PRECISION_OVERFLOW</code> issue at <code>"warning"</code> severity (controlled by
+<code>_PRECISION_OVERFLOW_SEVERITY</code> at the top of the module). The pipeline
+continues to write; the warning appears in stderr.</p>
+<p><strong>Why this solves it:</strong> The check is cheap (string length minus decimal points)
+and runs during validation, so it catches the edge case before the write path
+hits an Arrow cast error. The <code>"warning"</code> default avoids false-positive
+pipeline aborts for an astronomically unlikely scenario. Setting the severity
+constant to <code>"error"</code> is a one-line change if provider behaviour ever
+justifies fail-fast on overflow — no structural refactor needed, and the
+caller makes the risk decision rather than the library.</p>
+<h3 id="76-shared-_decimal_pattern-across-servicestorage-boundaries">7.6 Shared <code>_DECIMAL_PATTERN</code> across service/storage boundaries<a class="headerlink" href="#76-shared-_decimal_pattern-across-servicestorage-boundaries" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> The writer already validated decimal format at storage time via a
+local <code>_DECIMAL_PATTERN</code> regex. Adding a service-layer validation that
+redefines the same regex creates a drift risk — one boundary could accept
+<code>"1.2.3"</code> while the other rejects it, producing confusing failures where
+validation passes but the write fails.</p>
+<p><strong>Decision:</strong> Define <code>_DECIMAL_PATTERN</code> once in <code>validation/candles.py</code>.
+<code>parquet_writer.py</code> imports it rather than defining its own. The local
+<code>import re</code> and the old regex definition are removed from the writer.</p>
+<p><strong>Why this solves it:</strong> A single regex definition guarantees that the service
+and storage boundaries agree on what constitutes a valid decimal string. If
+the format ever needs adjusting (e.g., allowing negative values for a provider
+that reports signed prices), one edit in the canonical location propagates to
+both layers. The import direction — validation → writer — is intentional: the
+service boundary defines the format contract, and the storage boundary reuses
+it. This is a clean dependency (no circular imports) and eliminates the
+duplication that would inevitably diverge.</p>
+<h3 id="77-minimal-ohlc-invariant-set-4-checks-instead-of-7">7.7 Minimal OHLC invariant set (4 checks instead of 7)<a class="headerlink" href="#77-minimal-ohlc-invariant-set-4-checks-instead-of-7" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Textbook OHLC data has 7 well-known invariants: high≥open,
+high≥close, high≥low, low≤open, low≤close, low≤high, and all fields ≥ 0.
+Implementing all 7 as separate checks duplicates work because some are entailed
+by others — <code>high≥low</code> is guaranteed by <code>high≥open</code> + <code>low≤open</code> (or
+<code>high≥close</code> + <code>low≤close</code>) via transitivity, and non-negativity is already
+enforced by the decimal regex rejecting <code>-</code>.</p>
+<p><strong>Decision:</strong> Implement exactly 4 checks — <code>high ≥ open</code>, <code>high ≥ close</code>,
+<code>low ≤ open</code>, <code>low ≤ close</code>. Skip <code>high ≥ low</code>, <code>low ≤ high</code>, and the four
+non-negativity checks. OHLC checks are skipped entirely if any decimal field
+fails the pattern match.</p>
+<p><strong>Why this solves it:</strong> The 4 selected checks express the canonical OHLC
+relationship directly (the extremes must bound the open and close). <code>high ≥
+low</code> is entailed by <code>high ≥ open</code> combined with <code>low ≤ open</code> (if high ≥ open
+and open ≥ low, then high ≥ low by transitivity) — adding it as a fifth check
+would never fire independently. Non-negativity is delegated to the decimal
+regex, which already rejects the <code>-</code> prefix in <code>INVALID_DECIMAL</code>. Skipping
+checks when decimals are unparseable avoids a double-reporting problem where a
+single malformed field triggers both <code>INVALID_DECIMAL</code> and <code>OHLC_INVARIANT</code>
+for the same root cause. The result is a minimal, non-redundant set that still
+guarantees all 7 textbook invariants.</p>
+<h3 id="78-five-initial-provider-independent-rules">7.8 Five initial provider-independent rules<a class="headerlink" href="#78-five-initial-provider-independent-rules" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Which validation rules belong in the initial implementation?
+Adding too many creates maintenance burden before real providers validate
+their usefulness; adding too few leaves obvious data-quality gaps.</p>
+<p><strong>Decision:</strong> Implement exactly 5 provider-independent rules, deferring
+completeness/gap/scoring rules until real providers expose their behaviour.</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Code</th>
+<th>What it catches</th>
+<th>Why defer beyond this</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Non-empty required fields</td>
+<td><code>EMPTY_FIELD</code></td>
+<td>Null/blank <code>exchange</code>, <code>symbol</code>, etc.</td>
+<td>Trivial guard, no provider-specific knowledge needed</td>
+</tr>
+<tr>
+<td>Decimal format</td>
+<td><code>INVALID_DECIMAL</code></td>
+<td><code>"abc"</code>, <code>"1.2.3"</code>, <code>"-5"</code> in numeric fields</td>
+<td>Regex-based, same contract as Parquet schema</td>
+</tr>
+<tr>
+<td>Timestamp format</td>
+<td><code>INVALID_TIMESTAMP</code></td>
+<td>Non-ISO-8601 strings</td>
+<td>Regex-based, covers <code>s</code> and <code>us</code> formats</td>
+</tr>
+<tr>
+<td>OHLC invariants</td>
+<td><code>OHLC_INVARIANT</code></td>
+<td>high<open, low>close, etc.</td>
+<td>Intrinsic to OHLC data, safe for all providers</td>
+</tr>
+<tr>
+<td>Duplicate timestamp</td>
+<td><code>DUPLICATE_TIMESTAMP</code></td>
+<td>Same <code>exchange/symbol/tf/source/ts</code> within batch</td>
+<td>No pagination/gap knowledge needed</td>
+</tr>
+</tbody>
+</table>
+<p>Deferred — expected candle count, missing interval detection, pagination-aware
+validation, provider scoring — all depend on knowing how real providers
+paginate, cap results, and handle sparse markets. Adding them before Kraken or
+Coinbase would produce rules tuned to fake data that might not match reality.</p>
+<hr />
+<h2 id="8-networkcpu-boundary-measurement">8. Network/CPU Boundary Measurement<a class="headerlink" href="#8-networkcpu-boundary-measurement" title="Permanent link">&para;</a></h2>
+<h3 id="81-the-split-determines-the-optimisation-strategy">8.1 The split determines the optimisation strategy<a class="headerlink" href="#81-the-split-determines-the-optimisation-strategy" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> The synthetic benchmark (10k candles, no network) and the live
+provider benchmarks (24 candles, real API) produce very different profiles, but
+without a first-class metric that distinguishes them, it is easy to optimise the
+wrong thing — spending effort on local pipeline throughput when the real
+bottleneck is network I/O, or vice versa.</p>
+<p><strong>Observation from live profiling:</strong> The CPU/Wall ratio changes by two orders
+of magnitude depending on whether network I/O is present:</p>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>Candles</th>
+<th>Wall (ms)</th>
+<th>CPU (ms)</th>
+<th>Net (ms)</th>
+<th>Net/CPU ratio</th>
+<th>Character</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Synthetic (CandlePipelineRunner)</td>
+<td>10,000</td>
+<td>154.6</td>
+<td>161.1</td>
+<td>−6.5</td>
+<td>−0.0×</td>
+<td><strong>CPU-bound</strong></td>
+</tr>
+<tr>
+<td>FakeProvider</td>
+<td>1</td>
+<td>2.3</td>
+<td>2.1</td>
+<td>0.2</td>
+<td>0.1×</td>
+<td><strong>CPU-bound</strong></td>
+</tr>
+<tr>
+<td>BitfinexProvider</td>
+<td>24</td>
+<td>75.3</td>
+<td>11.3</td>
+<td>64.0</td>
+<td>5.7×</td>
+<td><strong>network-bound</strong></td>
+</tr>
+<tr>
+<td>KuCoinProvider</td>
+<td>24</td>
+<td>280.7</td>
+<td>9.0</td>
+<td>271.7</td>
+<td>30.1×</td>
+<td><strong>network-bound</strong></td>
+</tr>
+</tbody>
+</table>
+<p>(Net = wall − cpu: time spent outside our process — waiting on the network,
+the scheduler, or I/O. A negative value for the synthetic benchmark reflects
+timer granularity noise; it is effectively zero.)</p>
+<p><strong>Why this matters:</strong> A 10× improvement in local pipeline throughput
+(the CPU-bound domain) would reduce the synthetic benchmark by 90%, but
+would reduce Bitfinex ingestion by ~15% and KuCoin ingestion by ~3%. The
+returns are rapidly diminishing for real providers — optimising the CPU path is
+not the lever you think it is once network I/O dominates.</p>
+<h3 id="82-how-the-boundary-is-measured">8.2 How the boundary is measured<a class="headerlink" href="#82-how-the-boundary-is-measured" title="Permanent link">&para;</a></h3>
+<p>The <code>profile</code> command reports a <strong>Network/CPU Boundary</strong> section per provider:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Network wait:  63.95 ms  (wall − cpu = time outside our process)
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>CPU processing: 11.31 ms  (total CPU for pipeline stages)
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Network/CPU ratio: 5.7×  → network-bound
+</code></pre></div>
+<p>The metrics are derived entirely from existing <code>time.perf_counter()</code> and
+<code>time.process_time()</code> instrumentation — no new probes are needed.</p>
+<ul>
+<li><strong>Network wait</strong> = <code>pipeline wall total − pipeline CPU total</code>. This captures
+  all time not spent on our thread: network I/O wait, kernel context switches,
+  scheduler preemption, and PyArrow's internal C-level allocations (which
+  <code>tracemalloc</code> cannot see). In practice, for an idle machine with a live API
+  call, it is almost entirely HTTP round-trip time.</li>
+<li><strong>CPU processing</strong> = sum of <code>process_time()</code> deltas across all pipeline
+  stages. This is cycles our thread actually ran.</li>
+<li><strong>Regime classification:</strong></li>
+<li><code>Net/CPU &lt; 0.5</code> → <strong>CPU-bound</strong> (the pipeline is the bottleneck)</li>
+<li><code>0.5 ≤ Net/CPU ≤ 1.5</code> → <strong>balanced</strong> (neither dominates)</li>
+<li><code>Net/CPU &gt; 1.5</code> → <strong>network-bound</strong> (the network is the bottleneck)</li>
+</ul>
+<h3 id="83-what-the-boundary-implies-for-optimisation">8.3 What the boundary implies for optimisation<a class="headerlink" href="#83-what-the-boundary-implies-for-optimisation" title="Permanent link">&para;</a></h3>
+<p><strong>When CPU-bound</strong> (synthetic benchmark, FakeProvider):
+Optimise the local pipeline: Candle object creation, decimal128 casting,
+validation throughput. Every CPU cycle saved translates directly to real
+wall-clock savings. The current bottleneck is Candle dataclass construction
+(~64% of pipeline CPU at 10k candles — see Section 6).</p>
+<p><strong>When network-bound</strong> (Bitfinex, KuCoin):
+Optimise I/O concurrency: larger batch sizes per request, parallel symbol
+fetching, connection reuse, WebSocket streaming. CPU savings in the pipeline
+are overwhelmed by HTTP round-trip time — a 50% pipeline improvement saves
+~5ms out of 75ms (Bitfinex) or ~4ms out of 281ms (KuCoin). The returns are
+modest until I/O is addressed.</p>
+<p><strong>The key insight:</strong> the same benchmark framework must measure both regimes
+because the same ingestion pipeline transitions between them depending on
+whether a provider call is in-flight. A single "throughput" number is
+misleading — you need to know whether you are CPU-bound or network-bound to
+know what to fix.</p>
+<h3 id="84-design-implications-for-the-benchmark-suite">8.4 Design implications for the benchmark suite<a class="headerlink" href="#84-design-implications-for-the-benchmark-suite" title="Permanent link">&para;</a></h3>
+<p>The project maintains two benchmark paths that exercise different regimes:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Regime</th>
+<th>What it measures</th>
+<th>Primary audience</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>run --runner candle</code></td>
+<td>CPU-bound</td>
+<td>Pipeline code throughput (Candle → Parquet)</td>
+<td>Regression gate for core pipeline</td>
+</tr>
+<tr>
+<td><code>profile</code></td>
+<td>mixed (network + CPU)</td>
+<td>End-to-end provider ingestion cost</td>
+<td>Provider integration, capacity planning</td>
+</tr>
+</tbody>
+</table>
+<p>Both use the same <code>BenchmarkContext</code>/<code>StageMetrics</code>/<code>BenchmarkResult</code>
+infrastructure. The <code>profile</code> command adds the Network/CPU boundary
+interpretation layer on top. Neither path is a subset of the other — they are
+complementary views of the same system at different abstraction levels.</p>
+<hr />
+<h2 id="9-query-service-layer-read-side">9. Query Service Layer (Read Side)<a class="headerlink" href="#9-query-service-layer-read-side" title="Permanent link">&para;</a></h2>
+<h3 id="91-queryservice-abc-separates-domain-interface-from-transport">9.1 QueryService ABC separates domain interface from transport<a class="headerlink" href="#91-queryservice-abc-separates-domain-interface-from-transport" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> The first query implementation (DuckDB over local Parquet files) is
+convenient for development but should not be hard-coded into CLI commands or
+future API layers. A REST API, a gRPC service, or an analytics pipeline all
+need the same five operations — list datasets, get candles, get funding rates,
+get summary, raw SQL — and should not care which engine provides them.</p>
+<p><strong>Decision:</strong> Define a <code>QueryService</code> ABC with five abstract methods in
+<code>query/service.py</code>. <code>DuckDBQueryService</code> is the sole concrete implementation
+today; future implementations (Postgres, HTTP proxy, InfluxDB) implement the
+same ABC without changing consumers.</p>
+<p><strong>Why this solves it:</strong> The CLI commands, the FastAPI server, and any future
+consumer all depend on <code>QueryService</code> via dependency injection — they never
+import <code>DuckDBQueryService</code> directly. Adding a new engine means writing a new
+subclass and wiring it into <code>ServerConfig</code>; no consumer code changes.</p>
+<h3 id="92-duckdb-query-engine-sql-on-parquet-without-a-server">9.2 DuckDB Query Engine: SQL-on-Parquet without a server<a class="headerlink" href="#92-duckdb-query-engine-sql-on-parquet-without-a-server" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Parquet files are not directly queryable by SQL without an
+intermediate engine. Copying them into a database adds latency and storage
+overhead. The query layer should read Parquet files in place.</p>
+<p><strong>Decision:</strong> Use DuckDB's <code>read_parquet()</code> function to query partitioned
+Parquet files directly — no import step, no database server, no schema
+registration. Connection-per-query (connect, execute, close) avoids state
+management.</p>
+<p><strong>Why this solves it:</strong> DuckDB reads the Parquet schema at query time, so
+schema changes (e.g., adding a new column) are automatically picked up. There
+is no data ingestion step — the CLI writer produces Parquet files, and the
+query service reads them in the same format. Connection-per-query is cheap for
+DuckDB (in-process, no network) and eliminates connection-pool complexity.</p>
+<h3 id="93-path-based-file-discovery-with-variable-depth-symbol-handling">9.3 Path-based file discovery with variable-depth symbol handling<a class="headerlink" href="#93-path-based-file-discovery-with-variable-depth-symbol-handling" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Symbols containing <code>/</code> (e.g. <code>BTC/USDT</code>) create variable-depth
+directory trees: <code>{base}/{exchange}/BTC/USDT/{timeframe}/{date}.parquet</code>. A
+fixed <code>parts[-3]</code> approach for extracting the symbol breaks when the symbol
+contains slashes.</p>
+<p><strong>Decision:</strong> Use the penultimate directory component as the anchor. If it is
+<code>"funding_rate"</code>, the path is a funding rate dataset; otherwise it is a
+timeframe identifier for candles. The symbol is reconstructed by joining all
+parts between the exchange (index 0) and the anchor.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>{exchange}/{symbol...}/{timeframe}/{date}.parquet
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>                   ^^^^^^^^^^^^
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>                   anchor = parts[-2]
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>                   symbol = &quot;/&quot;.join(parts[1:-2])
+</code></pre></div>
+<p><strong>Why this solves it:</strong> The penultimate anchor is always either a timeframe
+(<code>"1h"</code>, <code>"1d"</code>) or <code>"funding_rate"</code> — neither contains <code>/</code>. This makes the
+discovery algorithm independent of symbol depth: <code>BTC/USDT</code> (2 parts) and
+<code>BTC-USD</code> (1 part) both work without special cases.</p>
+<h3 id="94-duckdb-decimal128-string-conversion-for-model-compatibility">9.4 DuckDB decimal128 → string conversion for model compatibility<a class="headerlink" href="#94-duckdb-decimal128-string-conversion-for-model-compatibility" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> The Parquet schema stores prices as <code>decimal128(38,10)</code>, but the
+<code>Candle</code> model stores them as <code>str</code>. DuckDB returns <code>decimal128</code> values as
+Python <code>Decimal</code> objects, which would need to be converted back to strings
+before constructing <code>Candle</code> instances.</p>
+<p><strong>Decision:</strong> Cast decimal128 columns to <code>VARCHAR</code> in the SQL query:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="k">open</span><span class="p">::</span><span class="nb">VARCHAR</span><span class="p">,</span><span class="w"> </span><span class="n">high</span><span class="p">::</span><span class="nb">VARCHAR</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">read_parquet</span><span class="p">([...])</span>
+</code></pre></div>
+The <code>_rows_to_dicts()</code> helper also normalises any remaining <code>Decimal</code> and
+<code>datetime</code> objects to strings via <code>isinstance</code> checks.</p>
+<p><strong>Why this solves it:</strong> The cast is done in DuckDB's C++ engine, not in Python.
+The resulting values are already strings matching the model types. The
+<code>isinstance</code> fallback catches columns that are not explicitly cast (e.g. custom
+queries via <code>raw_sql()</code>).</p>
+<hr />
+<h2 id="10-server-layer-fastapi">10. Server Layer (FastAPI)<a class="headerlink" href="#10-server-layer-fastapi" title="Permanent link">&para;</a></h2>
+<h3 id="101-fastapi-over-duckdb-for-http-access">10.1 FastAPI over DuckDB for HTTP access<a class="headerlink" href="#101-fastapi-over-duckdb-for-http-access" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> The query service currently requires Python and the project
+package to be installed. Analysts, dashboards, and external tools need HTTP
+access to the data without installing Python dependencies.</p>
+<p><strong>Decision:</strong> Build a FastAPI application (<code>server/app.py</code>) that wraps the
+<code>QueryService</code> ABC. The <code>create_app()</code> factory accepts a <code>ServerConfig</code> with
+the <code>QueryService</code> implementation injected, defaulting to <code>DuckDBQueryService</code>.
+Endpoints mirror the ABC methods:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>QueryService method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/health</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/datasets</code></td>
+<td><code>list_datasets()</code></td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/candles</code></td>
+<td><code>get_candles()</code></td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/funding-rates</code></td>
+<td><code>get_funding_rates()</code></td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/summary</code></td>
+<td><code>get_summary()</code></td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/query</code></td>
+<td><code>raw_sql()</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why this solves it:</strong> The server is a thin HTTP adapter over the existing
+ABC — zero new query logic. Because it depends on <code>QueryService</code> (not
+<code>DuckDBQueryService</code>), swapping the backend (Postgres, remote proxy) requires
+only changing the injected implementation in <code>ServerConfig</code>.</p>
+<h3 id="102-lifespan-managed-middleware-and-error-handling">10.2 Lifespan-managed middleware and error handling<a class="headerlink" href="#102-lifespan-managed-middleware-and-error-handling" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> A production HTTP server needs CORS headers (for browser clients),
+consistent error responses (for API consumers), and lifecycle management
+(startup/shutdown hooks). Adding these ad-hoc leads to inconsistent behaviour.</p>
+<p><strong>Decision:</strong> Register three infrastructure components in <code>create_app()</code>:</p>
+<ol>
+<li><strong><code>lifespan</code> context manager</strong> — placeholder for startup/shutdown logic
+   (connection pool warm-up, resource cleanup).</li>
+<li><strong><code>CORSMiddleware</code></strong> — <code>allow_origins=["*"]</code> for development; scoped in
+   production via <code>ServerConfig</code>.</li>
+<li><strong>Global <code>@app.exception_handler(Exception)</code></strong> — catches unhandled
+   exceptions and returns <code>{"error": "&lt;message&gt;", "code": 500}</code> instead of
+   the default HTML 500 page.</li>
+</ol>
+<p><strong>Why this solves it:</strong> CORS is required for any browser-based client; the
+wildcard default avoids mysterious "blocked by CORS" errors during development.
+The global error handler guarantees that every response is JSON, not HTML —
+critical for programmatic API consumers. The lifespan context manager provides
+a hook for future startup tasks (loading models, warming DuckDB caches)
+without scattering <code>@app.on_event</code> decorators across routers.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.top", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
