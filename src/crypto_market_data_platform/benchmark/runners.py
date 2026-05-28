@@ -12,7 +12,7 @@ from crypto_market_data_platform.benchmark.core import (
 )
 from crypto_market_data_platform.config import TimestampConfig
 from crypto_market_data_platform.models.candle import Candle
-from crypto_market_data_platform.providers.base import MarketDataProvider
+from crypto_market_data_platform.providers.base import OHLCVProvider
 from crypto_market_data_platform.storage.parquet_writer import (
     _to_decimal128,
     _to_timestamp,
@@ -179,7 +179,7 @@ class CandlePipelineRunner(PipelineRunner):
 class ProviderCandlePipelineRunner(PipelineRunner):
     def __init__(
         self,
-        provider: MarketDataProvider,
+        provider: OHLCVProvider,
         symbol: str = "BTC/USDT",
         timeframe: str = "1h",
         start: datetime | None = None,

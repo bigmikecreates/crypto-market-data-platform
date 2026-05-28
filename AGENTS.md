@@ -42,7 +42,7 @@ infrastructure already proven at scale.
 When adding a provider:
 
 - preserve FakeProvider behaviour
-- implement the existing MarketDataProvider interface
+- implement the existing OHLCVProvider interface
 - document symbol and timeframe mappings
 - document timestamp semantics
 - add fixture-based tests that do not require live network access

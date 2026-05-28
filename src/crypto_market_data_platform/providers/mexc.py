@@ -8,35 +8,29 @@ from typing import Any
 from crypto_market_data_platform.models.candle import Candle
 from crypto_market_data_platform.providers.base import OHLCVProvider
 
-_BASE_URL = "https://api.kucoin.com/api/v1/market/candles"
+_BASE_URL = "https://api.mexc.com/api/v3/klines"
 
 _TIMEFRAME_MAP: dict[str, str] = {
-    "1m": "1min",
-    "3m": "3min",
-    "5m": "5min",
-    "15m": "15min",
-    "30m": "30min",
-    "1h": "1hour",
-    "2h": "2hour",
-    "4h": "4hour",
-    "6h": "6hour",
-    "8h": "8hour",
-    "12h": "12hour",
-    "1d": "1day",
-    "1w": "1week",
+    "1m": "1m",
+    "5m": "5m",
+    "15m": "15m",
+    "30m": "30m",
+    "1h": "60m",
+    "4h": "4h",
+    "1d": "1d",
+    "1w": "1W",
+    "1M": "1M",
 }
 
-_MAX_LIMIT = 1500
-_RATE_LIMIT_SLEEP = 0.1
+_MAX_LIMIT = 500
+_RATE_LIMIT_SLEEP = 0.05
 
 
-def _to_kc_symbol(symbol: str) -> str:
-    if "-" in symbol:
-        return symbol.upper()
-    return symbol.replace("/", "-").upper()
+def _to_mexc_symbol(symbol: str) -> str:
+    return symbol.replace("/", "").upper()
 
 
-def _to_kc_timeframe(timeframe: str) -> str:
+def _to_mexc_timeframe(timeframe: str) -> str:
     mapped = _TIMEFRAME_MAP.get(timeframe)
     if mapped is None:
         raise ValueError(
@@ -47,25 +41,26 @@ def _to_kc_timeframe(timeframe: str) -> str:
 
 
 def _parse_row(row: list[str], exchange: str, symbol: str, timeframe: str, source: str) -> Candle:
-    ts = datetime.fromtimestamp(int(row[0]), tz=timezone.utc)
+    mts = int(row[0])
+    ts = datetime.fromtimestamp(mts / 1000, tz=timezone.utc)
     return Candle(
         exchange=exchange,
         symbol=symbol,
         timeframe=timeframe,
         timestamp=ts.strftime("%Y-%m-%dT%H:%M:%S"),
         open=row[1],
-        high=row[3],
-        low=row[4],
-        close=row[2],
+        high=row[2],
+        low=row[3],
+        close=row[4],
         volume=row[5],
         source=source,
     )
 
 
-class KuCoinProvider(OHLCVProvider):
+class MexcProvider(OHLCVProvider):
     def __init__(self, rate_limit_sleep: float = _RATE_LIMIT_SLEEP) -> None:
-        self._exchange = "kucoin"
-        self._source = "kucoin"
+        self._exchange = "mexc"
+        self._source = "mexc"
         self._rate_limit_sleep = rate_limit_sleep
 
     def fetch_ohlcv(
@@ -75,46 +70,48 @@ class KuCoinProvider(OHLCVProvider):
         start: datetime,
         end: datetime,
     ) -> list[Candle]:
-        kc_symbol = _to_kc_symbol(symbol)
-        kc_tf = _to_kc_timeframe(timeframe)
+        mexc_symbol = _to_mexc_symbol(symbol)
+        mexc_tf = _to_mexc_timeframe(timeframe)
 
-        start_ts = int(start.timestamp())
-        end_ts = int(end.timestamp())
+        start_ms = int(start.timestamp() * 1000)
+        end_ms = int(end.timestamp() * 1000)
 
         candles: list[Candle] = []
-        current_start = start_ts
+        current_start = start_ms
 
-        while current_start < end_ts:
-            rows = self._fetch_ohlcv_page(kc_symbol, kc_tf, current_start, end_ts)
+        while current_start < end_ms:
+            rows = self._fetch_ohlcv_page(
+                mexc_symbol, mexc_tf, current_start, end_ms
+            )
             if not rows:
                 break
 
             for row in rows:
-                candle_ts = int(row[0])
-                if candle_ts < start_ts or candle_ts >= end_ts:
+                mts = int(row[0])
+                if mts < start_ms or mts >= end_ms:
                     continue
                 c = _parse_row(row, self._exchange, symbol, timeframe, self._source)
                 candles.append(c)
 
-            last_ts = int(rows[-1][0])
+            last_mts = int(rows[-1][0])
             if len(rows) < _MAX_LIMIT:
                 break
-            current_start = last_ts + 1
+            current_start = last_mts + 1
             time.sleep(self._rate_limit_sleep)
 
         return candles
 
     def _fetch_ohlcv_page(
         self,
-        kc_symbol: str,
-        kc_timeframe: str,
-        start_ts: int,
-        end_ts: int,
+        mexc_symbol: str,
+        mexc_timeframe: str,
+        start_ms: int,
+        end_ms: int,
     ) -> list[list[str]]:
         url = (
             f"{_BASE_URL}"
-            f"?symbol={kc_symbol}&type={kc_timeframe}"
-            f"&startAt={start_ts}&endAt={end_ts}"
+            f"?symbol={mexc_symbol}&interval={mexc_timeframe}"
+            f"&startTime={start_ms}&endTime={end_ms}&limit={_MAX_LIMIT}"
         )
         req = urllib.request.Request(url, headers={
             "Accept": "application/json",
@@ -122,7 +119,7 @@ class KuCoinProvider(OHLCVProvider):
         })
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
-                data = json.loads(resp.read().decode())
+                data: Any = json.loads(resp.read().decode())
         except urllib.error.HTTPError as e:
             body = e.read().decode()
             try:
@@ -130,16 +127,12 @@ class KuCoinProvider(OHLCVProvider):
             except json.JSONDecodeError:
                 err_info = body
             raise RuntimeError(
-                f"KuCoin API error for {kc_symbol}: {err_info}"
+                f"MEXC API error for {mexc_symbol}: {err_info}"
             ) from None
 
-        if data.get("code") != "200000":
+        if not isinstance(data, list):
             raise RuntimeError(
-                f"KuCoin API error for {kc_symbol}: code={data.get('code')} "
-                f"msg={data.get('msg', 'unknown')}"
+                f"MEXC API error for {mexc_symbol}: unexpected response {data}"
             )
 
-        rows = data.get("data", [])
-        if not isinstance(rows, list):
-            return []
-        return rows
+        return data

@@ -4,7 +4,7 @@ from datetime import datetime
 from crypto_market_data_platform.models.candle import Candle
 
 
-class MarketDataProvider(ABC):
+class OHLCVProvider(ABC):
     @abstractmethod
     def fetch_ohlcv(
         self,

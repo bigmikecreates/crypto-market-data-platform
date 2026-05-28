@@ -11,7 +11,7 @@ FastAPI server, and a staged benchmark pipeline.
 ```
 Provider → Candle[]/FundingRate[] → validation → ParquetWriter → data/{exchange}/…
                                                                       ↓
-CLI (cmpd) ──────→ IngestionService ────────→ Parquet files
+CLI (cmpd) ──────→ OhlcvService ────────→ Parquet files
      │                                            │
      │                                    DuckDBQueryService
      │                                            │

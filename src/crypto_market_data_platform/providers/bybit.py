@@ -8,35 +8,33 @@ from typing import Any
 from crypto_market_data_platform.models.candle import Candle
 from crypto_market_data_platform.providers.base import OHLCVProvider
 
-_BASE_URL = "https://api.kucoin.com/api/v1/market/candles"
+_BASE_URL = "https://api.bybit.com/v5/market/kline"
 
 _TIMEFRAME_MAP: dict[str, str] = {
-    "1m": "1min",
-    "3m": "3min",
-    "5m": "5min",
-    "15m": "15min",
-    "30m": "30min",
-    "1h": "1hour",
-    "2h": "2hour",
-    "4h": "4hour",
-    "6h": "6hour",
-    "8h": "8hour",
-    "12h": "12hour",
-    "1d": "1day",
-    "1w": "1week",
+    "1m": "1",
+    "3m": "3",
+    "5m": "5",
+    "15m": "15",
+    "30m": "30",
+    "1h": "60",
+    "2h": "120",
+    "4h": "240",
+    "6h": "360",
+    "12h": "720",
+    "1d": "D",
+    "1w": "W",
+    "1M": "M",
 }
 
-_MAX_LIMIT = 1500
-_RATE_LIMIT_SLEEP = 0.1
+_MAX_LIMIT = 1000
+_RATE_LIMIT_SLEEP = 0.2
 
 
-def _to_kc_symbol(symbol: str) -> str:
-    if "-" in symbol:
-        return symbol.upper()
-    return symbol.replace("/", "-").upper()
+def _to_bybit_symbol(symbol: str) -> str:
+    return symbol.replace("/", "").upper()
 
 
-def _to_kc_timeframe(timeframe: str) -> str:
+def _to_bybit_timeframe(timeframe: str) -> str:
     mapped = _TIMEFRAME_MAP.get(timeframe)
     if mapped is None:
         raise ValueError(
@@ -47,25 +45,26 @@ def _to_kc_timeframe(timeframe: str) -> str:
 
 
 def _parse_row(row: list[str], exchange: str, symbol: str, timeframe: str, source: str) -> Candle:
-    ts = datetime.fromtimestamp(int(row[0]), tz=timezone.utc)
+    mts = int(row[0])
+    ts = datetime.fromtimestamp(mts / 1000, tz=timezone.utc)
     return Candle(
         exchange=exchange,
         symbol=symbol,
         timeframe=timeframe,
         timestamp=ts.strftime("%Y-%m-%dT%H:%M:%S"),
         open=row[1],
-        high=row[3],
-        low=row[4],
-        close=row[2],
+        high=row[2],
+        low=row[3],
+        close=row[4],
         volume=row[5],
         source=source,
     )
 
 
-class KuCoinProvider(OHLCVProvider):
+class BybitProvider(OHLCVProvider):
     def __init__(self, rate_limit_sleep: float = _RATE_LIMIT_SLEEP) -> None:
-        self._exchange = "kucoin"
-        self._source = "kucoin"
+        self._exchange = "bybit"
+        self._source = "bybit"
         self._rate_limit_sleep = rate_limit_sleep
 
     def fetch_ohlcv(
@@ -75,46 +74,50 @@ class KuCoinProvider(OHLCVProvider):
         start: datetime,
         end: datetime,
     ) -> list[Candle]:
-        kc_symbol = _to_kc_symbol(symbol)
-        kc_tf = _to_kc_timeframe(timeframe)
+        bybit_symbol = _to_bybit_symbol(symbol)
+        bybit_tf = _to_bybit_timeframe(timeframe)
 
-        start_ts = int(start.timestamp())
-        end_ts = int(end.timestamp())
+        start_ms = int(start.timestamp() * 1000)
+        end_ms = int(end.timestamp() * 1000)
 
         candles: list[Candle] = []
-        current_start = start_ts
+        current_start = start_ms
 
-        while current_start < end_ts:
-            rows = self._fetch_ohlcv_page(kc_symbol, kc_tf, current_start, end_ts)
+        while current_start < end_ms:
+            rows = self._fetch_ohlcv_page(
+                bybit_symbol, bybit_tf, current_start, end_ms
+            )
             if not rows:
                 break
 
+            rows.reverse()
+
             for row in rows:
-                candle_ts = int(row[0])
-                if candle_ts < start_ts or candle_ts >= end_ts:
+                mts = int(row[0])
+                if mts < start_ms or mts >= end_ms:
                     continue
                 c = _parse_row(row, self._exchange, symbol, timeframe, self._source)
                 candles.append(c)
 
-            last_ts = int(rows[-1][0])
+            last_mts = int(rows[-1][0])
             if len(rows) < _MAX_LIMIT:
                 break
-            current_start = last_ts + 1
+            current_start = last_mts + 1
             time.sleep(self._rate_limit_sleep)
 
         return candles
 
     def _fetch_ohlcv_page(
         self,
-        kc_symbol: str,
-        kc_timeframe: str,
-        start_ts: int,
-        end_ts: int,
+        bybit_symbol: str,
+        bybit_timeframe: str,
+        start_ms: int,
+        end_ms: int,
     ) -> list[list[str]]:
         url = (
             f"{_BASE_URL}"
-            f"?symbol={kc_symbol}&type={kc_timeframe}"
-            f"&startAt={start_ts}&endAt={end_ts}"
+            f"?category=spot&symbol={bybit_symbol}&interval={bybit_timeframe}"
+            f"&start={start_ms}&end={end_ms}&limit={_MAX_LIMIT}"
         )
         req = urllib.request.Request(url, headers={
             "Accept": "application/json",
@@ -122,7 +125,7 @@ class KuCoinProvider(OHLCVProvider):
         })
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
-                data = json.loads(resp.read().decode())
+                data: Any = json.loads(resp.read().decode())
         except urllib.error.HTTPError as e:
             body = e.read().decode()
             try:
@@ -130,16 +133,16 @@ class KuCoinProvider(OHLCVProvider):
             except json.JSONDecodeError:
                 err_info = body
             raise RuntimeError(
-                f"KuCoin API error for {kc_symbol}: {err_info}"
+                f"Bybit API error for {bybit_symbol}: {err_info}"
             ) from None
 
-        if data.get("code") != "200000":
+        if data.get("retCode") != 0:
             raise RuntimeError(
-                f"KuCoin API error for {kc_symbol}: code={data.get('code')} "
-                f"msg={data.get('msg', 'unknown')}"
+                f"Bybit API error for {bybit_symbol}: retCode={data.get('retCode')} "
+                f"retMsg={data.get('retMsg', 'unknown')}"
             )
 
-        rows = data.get("data", [])
+        rows = data.get("result", {}).get("list", [])
         if not isinstance(rows, list):
             return []
         return rows

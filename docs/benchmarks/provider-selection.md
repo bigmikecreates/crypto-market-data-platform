@@ -78,7 +78,7 @@ edge-case tests against a validation layer already proven at scale.
   `decimal128(38,10)` casts per page exercise the C++ `.cast()` path
   with real data.
 - **Provider adapter parsing:** Real JSON response with real Kraken
-  naming conventions exercises the `MarketDataProvider` interface.
+  naming conventions exercises the `OHLCVProvider` interface.
 
 **Expected MVP use:**
 - Implement as the first real provider.
@@ -154,7 +154,7 @@ edge-case tests against a validation layer already proven at scale.
 - **Multi-category dispatch:** The provider adapter must route
   based on `category` — tests adapter design flexibility.
 - **Different response envelope:** Yet another JSON structure
-  to parse — confirms the `MarketDataProvider` interface is
+  to parse — confirms the `OHLCVProvider` interface is
   general enough.
 - **Third behaviour baseline:** Two data points (Bitfinex, KuCoin)
   may reveal a pattern; three starts to prove it.

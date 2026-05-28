@@ -2,10 +2,10 @@ from datetime import datetime, timezone
 
 from crypto_market_data_platform.models.candle import Candle
 from crypto_market_data_platform.models.funding_rate import FundingRate
-from crypto_market_data_platform.providers.base import MarketDataProvider
+from crypto_market_data_platform.providers.base import OHLCVProvider
 
 
-class FakeProvider(MarketDataProvider):
+class FakeProvider(OHLCVProvider):
     def fetch_ohlcv(
         self,
         symbol: str,

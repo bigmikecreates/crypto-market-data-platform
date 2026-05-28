@@ -28,9 +28,9 @@ class TestBitfinexProvider:
         self.start = datetime(2024, 1, 1, tzinfo=timezone.utc)
         self.end = datetime(2024, 1, 2, tzinfo=timezone.utc)
 
-    def test_provider_is_market_data_provider(self) -> None:
-        from crypto_market_data_platform.providers.base import MarketDataProvider
-        assert isinstance(self.provider, MarketDataProvider)
+    def test_provider_is_ohlcv_provider(self) -> None:
+        from crypto_market_data_platform.providers.base import OHLCVProvider
+        assert isinstance(self.provider, OHLCVProvider)
 
     def test_returns_list_of_candles(self) -> None:
         rows = _load_fixture("bitfinex_ohlc.json")

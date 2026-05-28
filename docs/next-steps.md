@@ -2,23 +2,41 @@
 
 ## Done
 
-- [x] Wire funding rate ingestion into CLI (FakeProvider + `FundingIngestionService` + `fetch-funding` command)
+- [x] Bitfinex, KuCoin, Bybit, MEXC providers — all with fixture-based tests
+- [x] Wire funding rate ingestion into CLI (FakeProvider + `FundingRateService` + `fetch-funding` command)
 - [x] DuckDB query engine: `QueryService` ABC + `DuckDBQueryService` + CLI commands
 - [x] FastAPI server (`create_app()`, CORS, error handling, Dockerfile)
 - [x] REST endpoint definitions (health, datasets, candles, funding-rates, summary, query)
+- [x] Docs pass — MkDocs Material site with 8 pages, GitHub Pages CI/CD via `mkdocs gh-deploy`
 
-## Next
+## Next (per #11 ranking)
 
-- [ ] **Bybit provider** (#2) — third live provider, tests provider ranking
-- [ ] **Kraken provider** (#3) — edge-case: 720-candle limit, sparse markets
+1. [ ] **Bitstamp** — low-friction OHLC endpoint
+2. [ ] **Gate.io** — broad altcoin coverage
+3. [ ] **Coinbase Exchange** — clean API, gap-interval semantics
+4. [ ] **OKX** — strategic Asia liquidity venue
+5. [ ] **Gemini** — regulated US venue
+6. [ ] **HTX / Huobi** — Asia liquidity, timestamp caveats
+7. [ ] **Kraken** — low priority: since-based pagination, 720-candle limit
+
+Also:
 - [ ] **CI workflow** — provider smoke tests (`--live` flag, off by default)
-- [ ] **Docs pass** — README updated with FundingRate, KuCoin, Network/CPU boundary, QueryService, server
+- [ ] **Provider profile documentation** — per-provider docs write-up
+
+## Deferred — ingestion network I/O optimisation
+
+Benchmark profiles show real ingestion is overwhelmingly network-bound
+(Net/CPU: Bitfinex 5.7×, KuCoin 30.1×).  Deferred until broad OHLCV
+provider coverage is reached:
+
+- [ ] Per-request latency tracking (page-level timing in fetch loop)
+- [ ] Connection pooling (urllib.request → httpx keep-alive)
+- [ ] Throughput reporting (candles/s during long backfills)
+- [ ] Adaptive rate limiting (react to 429s, not hardcoded sleep)
+- [ ] Concurrent page fetching (ThreadPoolExecutor for disjoint ranges)
 
 ## Tracking
 
-- [#7](https://github.com/bigmikecreates/crypto-market-data-platform/issues/7) — Umbrella: query service layer
-- [#6](https://github.com/bigmikecreates/crypto-market-data-platform/issues/6) — Engine: DuckDB impl + CLI (done)
-- [#8](https://github.com/bigmikecreates/crypto-market-data-platform/issues/8) — Server: FastAPI hosting (done)
-- [#9](https://github.com/bigmikecreates/crypto-market-data-platform/issues/9) — API: REST endpoints (done)
-- [#2](https://github.com/bigmikecreates/crypto-market-data-platform/issues/2) — Bybit provider (pending)
-- [#3](https://github.com/bigmikecreates/crypto-market-data-platform/issues/3) — Kraken provider (pending)
+- [#11](https://github.com/bigmikecreates/crypto-market-data-platform/issues/11) — Umbrella: data source provider implementation
+- [#7](https://github.com/bigmikecreates/crypto-market-data-platform/issues/7) — Umbrella: query service layer (code done, issues stale)
+- [#3](https://github.com/bigmikecreates/crypto-market-data-platform/issues/3) — Kraken provider (low priority, ranked 8th)

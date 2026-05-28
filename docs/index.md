@@ -43,7 +43,7 @@ automation, and documentation.
 ```
 Provider → Candle[]/FundingRate[] → validation → ParquetWriter → data/{exchange}/…
                                                                         ↓
-CLI (cmpd) ──────→ IngestionService ────────→ Parquet files
+CLI (cmpd) ──────→ OhlcvService ────────→ Parquet files
      │                                            │
      │                                    DuckDBQueryService
      │                                            │

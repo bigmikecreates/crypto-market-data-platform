@@ -24,7 +24,7 @@ graph LR
 
 ### Write path
 
-1. **Provider** — an exchange-specific adapter implementing `MarketDataProvider`
+1. **Provider** — an exchange-specific adapter implementing `OHLCVProvider`
    (`providers/base.py`). Returns `list[Candle]` from raw API responses.
 2. **Model** — `Candle` or `FundingRate` dataclass with all-string fields
    (`models/`).

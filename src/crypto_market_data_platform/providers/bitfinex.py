@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from crypto_market_data_platform.models.candle import Candle
-from crypto_market_data_platform.providers.base import MarketDataProvider
+from crypto_market_data_platform.providers.base import OHLCVProvider
 
 _BASE_URL = "https://api-pub.bitfinex.com/v2"
 
@@ -64,7 +64,7 @@ def _parse_row(row: list[Any], exchange: str, symbol: str, timeframe: str, sourc
     )
 
 
-class BitfinexProvider(MarketDataProvider):
+class BitfinexProvider(OHLCVProvider):
     def __init__(self, rate_limit_sleep: float = _RATE_LIMIT_SLEEP) -> None:
         self._exchange = "bitfinex"
         self._source = "bitfinex"

@@ -2,10 +2,10 @@
 
 ## Provider Contract
 
-All providers implement `MarketDataProvider` (`providers/base.py`):
+All providers implement `OHLCVProvider` (`providers/base.py`):
 
 ```python
-class MarketDataProvider(ABC):
+class OHLCVProvider(ABC):
     @abstractmethod
     def fetch_ohlcv(
         self,
@@ -62,7 +62,7 @@ benchmarking. No network access. All numeric fields are hardcoded strings.
 ## Adding a New Provider
 
 1. Create `providers/{name}.py` with a class implementing
-   `MarketDataProvider`
+   `OHLCVProvider`
 2. Define symbol and timeframe mappers (`_to_{name}_symbol()`,
    `_to_{name}_timeframe()`)
 3. Implement `_parse_row()` to convert raw API row → `Candle`
