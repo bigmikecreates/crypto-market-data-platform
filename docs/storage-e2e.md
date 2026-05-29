@@ -51,138 +51,71 @@ cmpd fetch --provider bitfinex --symbol BTC/USD --timeframe 1h --start 2024-01-0
 ## Stage 1 — Provider
 
 Each provider adapter (`providers/bitfinex.py`, `providers/kucoin.py`, etc.)
-implements the `OHLCVProvider` interface:
-
-```python
-class OHLCVProvider(ABC):
-    def fetch_ohlcv(
-        self, symbol: str, timeframe: str,
-        start: datetime, end: datetime,
-    ) -> list[Candle]: ...
-```
-
-The provider:
-
-1. Converts canonical symbol/timeframe to the exchange's native naming
-2. Constructs the API URL with `start`/`end` parameters
-3. Loops paginated responses (if needed)
-4. Maps each raw JSON row to a `Candle` dataclass with all-string fields
-
-A candle arrives as:
-
-```python
-Candle(
-    exchange="bitfinex",
-    symbol="BTC/USD",
-    timeframe="1h",
-    timestamp="2024-01-01T00:00:00",
-    open="42331",
-    high="42591",
-    low="42331",
-    close="42522",
-    volume="9.03426154",
-    source="bitfinex",
-)
-```
+implements the `OHLCVProvider` interface. The provider converts the canonical
+symbol/timeframe to the exchange's native naming, constructs the API URL,
+loops paginated responses, and maps each raw JSON row to a `Candle` dataclass
+with all-string fields.
 
 All numeric fields are strings at this point. This keeps the provider boundary
 simple — no type casting, no Decimal imports, no schema decisions.
+
+→ See `OHLCVProvider` in the [Python API Reference](reference/python-api.md)
+for the exact method signature.
 
 ---
 
 ## Stage 2 — Validation
 
-`validate_candle_batch()` (`validation/candles.py`) runs per-candle checks on
-the string values:
-
-| Check | Rule |
-|---|---|
-| `EMPTY_FIELD` | No field is blank |
-| `INVALID_DECIMAL` | OHLCV values match signed decimal regex |
-| `NEGATIVE_VALUE` | No negative prices/volume |
-| `PRECISION_OVERFLOW` | >38 digits (warning) |
-| `INVALID_TIMESTAMP` | ISO-8601 format |
-| `OHLC_INVARIANT` | `high ≥ open/close ≥ low` |
-| `DUPLICATE_TIMESTAMP` | No duplicate key within batch |
-
+`validate_candle_batch()` runs per-candle checks on the string values.
 Validation is **advisory** — issues are printed to stderr but writes proceed.
 The persisted data can be inspected later to diagnose provider issues.
+
+→ See [Validation Rules Reference](reference/validation-rules.md) for the
+exact rule codes and descriptions.
 
 ---
 
 ## Stage 3 — Partition Routing
 
-Each candle is routed to a file based on its date:
-
-```python
-def _path_for_candle(c: Candle, base_path: str) -> Path:
-    date_str = c.timestamp[:10]
-    return Path(base_path) / c.exchange / c.symbol / c.timeframe / f"{date_str}.parquet"
-```
-
-Resulting layout:
+Each candle is routed to a file based on its date.
 
 ```
-data/
-└── bitfinex/
-    └── BTC/
-        └── USD/
-            └── 1h/
-                ├── 2024-01-01.parquet   (24 rows)
-                └── 2024-01-02.parquet   (24 rows)
+data/{exchange}/{symbol}/{timeframe}/{date}.parquet
 ```
 
-Candles are grouped by target path via `defaultdict(list)` so each partition is
-processed independently.
+Candles are grouped by target path so each partition is processed independently.
+
+→ See [Parquet Schema Reference](reference/parquet-schema.md) for the
+exact partition layout and path helpers.
 
 ---
 
 ## Stage 4 — Type Casting
 
-`candle_to_table()` (`storage/parquet_writer.py:44`) converts a group of same-partition
-candles into a single PyArrow table:
-
-```python
-{
-    "exchange":  string,
-    "symbol":    string,
-    "timeframe": string,
-    "timestamp": cast(string → timestamp[s]),
-    "open":      cast(string → decimal128(38, 10)),
-    "high":      cast(string → decimal128(38, 10)),
-    "low":       cast(string → decimal128(38, 10)),
-    "close":     cast(string → decimal128(38, 10)),
-    "volume":    cast(string → decimal128(38, 10)),
-    "source":    string,
-}
-```
+`candle_to_table()` converts a group of same-partition candles into a single
+PyArrow table by casting string fields to their Parquet types. String columns
+(`exchange`, `symbol`, `timeframe`, `source`) remain as strings. Numeric
+columns are cast via PyArrow's C++ `.cast()` to `decimal128(38,10)`. Timestamp
+columns are cast to `timestamp[s]` (or `timestamp[us]` depending on config).
 
 ### Why `decimal128(38, 10)`?
 
-| Type | Exact? | Sortable? | Query cost | Storage |
-|---|---|---|---|---|
-| `decimal128(38,10)` | Yes | Yes | Native | 16 bytes/val |
-| `float64` | No — rounding errors | Approx | Native | 8 bytes/val |
-| `utf8` | Yes | No — text sort | CAST per query | Variable |
-| `int64 * scale` | Yes | Yes | Native but manual | 8 bytes/val |
-
 `decimal128(38,10)` is the only type that provides exact decimal arithmetic,
-native DuckDB sort/filter, and a fixed schema independent of ticker price ranges.
-UTF8 would save the write-time `.cast()` kernel but push that cost to every
-read query, break sort order, and lose predicate pushdown.
-
-The cast is a C++ PyArrow kernel operating on arrays, not per-row Python —
-the cost is negligible for any realistic partition size.
+native DuckDB sort/filter, and a fixed schema independent of ticker price
+ranges. UTF8 would save the write-time `.cast()` kernel but push that cost
+to every read query, break sort order, and lose predicate pushdown.
 
 ### Why strings until storage?
-
-The `Candle` model uses strings for two reasons:
 
 1. **Provider boundary stays simple** — most APIs return prices as JSON strings;
    providers just pass them through without import or type-conversion overhead
 2. **Single schema authority** — the storage boundary owns the Parquet type
-   decision. Changing column types (e.g. `decimal128(38,8)`) requires changing
-   one function, not six providers
+   decision. Changing column types requires changing one function, not six
+   providers.
+
+→ See `candle_to_table()` in the [Python API Reference](reference/python-api.md)
+for the exact function signature, and [Parquet Schema Reference](reference/parquet-schema.md)
+for the full column-type mapping.
 
 ---
 
@@ -210,85 +143,34 @@ This matches the duplicate-detection key used in validation.
 
 ### Algorithm
 
-For each partition file that exists:
-
-```
-existing = read_parquet(path)
-
-for each incoming_row:
-    if key in existing:
-        if data differs → replace (keep incoming, drop existing)
-        if data identical → skip
-    else:
-        append (new row)
-
-result = (unchanged existing rows) + (updated rows) + (new rows)
-write result back to path
-```
+For each partition file that exists: read existing rows, merge incoming rows
+by key (skip identical, replace changed, append new), write back.
 
 ### Merge strategies
 
 Two implementations, selected automatically or by user override:
 
-| Strategy | How it works | Used when | Memory |
-|---|---|---|---|
-| `memory` (set-based) | Python `set` of row keys, linear scan | `< 50K` rows/partition | ~7.5 MB at 50K rows |
-| `duckdb` (SQL anti-join) | `LEFT JOIN ... WHERE NULL` + `UNION ALL` via DuckDB | `≥ 50K` rows/partition | Minimal (C++ memory) |
-
-The threshold `_ROW_MERGE_THRESHOLD = 50_000` was chosen so the Python key set
-never exceeds ~10 MB. At typical granularities:
-
-| Timeframe | Rows/day | Key set memory | Strategy |
-|---|---|---|---|
-| 1h | 24 | ~4 KB | `memory` |
-| 5m | 288 | ~43 KB | `memory` |
-| 1m | 1,440 | ~216 KB | `memory` |
-| 1s | 86,400 | ~13 MB | `duckdb` |
-
-User can override with `--merge-strategy`:
-
-```bash
-cmpd fetch --merge-strategy duckdb  # force DuckDB path
-cmpd fetch --merge-strategy memory  # force set-based path
-```
+- **`memory` (set-based)** — Python `set` of row keys, linear scan. Used for
+  partitions with fewer than 50,000 rows.
+- **`duckdb` (SQL anti-join)** — `LEFT JOIN ... WHERE NULL` + `UNION ALL` via
+  DuckDB. Used for partitions with 50,000+ rows.
 
 ### Properties
 
-- **Idempotent**: fetching the same range twice produces identical files (no row
-  bloat)
+- **Idempotent**: fetching the same range twice produces identical files.
 - **Self-healing**: a corrected candle from the provider replaces the stale
-  version on the next fetch
-- **Append-safe**: new rows (timestamps not yet in the file) are added without
-  affecting existing rows
+  version on the next fetch.
+- **Append-safe**: new rows are added without affecting existing rows.
+
+→ See merge function signatures and strategy details in the
+[Python API Reference](reference/python-api.md).
 
 ---
 
 ## Funding Rate Variant
 
-Funding rates follow the same stages with a different column set:
-
-```
-exchange, symbol, timestamp, rate, predicted_rate, next_funding_time, source
-```
-
-And a different path:
-
-```
-data/{exchange}/{symbol}/funding_rate/{date}.parquet
-```
-
+Funding rates follow the same stages with a different column set and path.
 The merge key omits `timeframe` (funding rates have no timeframe field).
 
----
-
-## CLI integration
-
-The `--merge-strategy` option is exposed on `cmpd fetch`:
-
-```
-cmpd fetch --help
-
-  --merge-strategy TEXT  Row merge strategy: auto (default), memory, or duckdb
-```
-
-It flows through: `CLI → OhlcvService.ingest() → write_candles() → _merge_tables()`.
+→ See [Parquet Schema Reference](reference/parquet-schema.md) for the
+exact column set and partition layout for funding rates.

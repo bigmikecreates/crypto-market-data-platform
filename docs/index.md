@@ -61,13 +61,16 @@ Benchmark (scripts/benchmark_pipeline.py) ───→ synthetic + live provider
 pip install -e .
 
 # Fetch fake data
-python -m crypto_market_data_platform.cli.main fetch --provider fake
+cmpd fetch --start 2026-01-01 --end 2026-01-02
 
 # Query it back
-python -m crypto_market_data_platform.cli.main candles get
+cmpd query ohlcv --limit 5
+
+# Inspect a parquet file
+cmpd inspect --path data --limit 5
 
 # Start the API server
-python -m crypto_market_data_platform.cli.main serve --port 8000
+cmpd serve --port 8000
 
 # Benchmark the pipeline
 python scripts/benchmark_pipeline.py --count 10000
@@ -80,10 +83,12 @@ python scripts/benchmark_pipeline.py profile --provider bitfinex
 
 | Command | Description |
 |---------|-------------|
-| `fetch` | Ingest OHLCV candles from a provider |
-| `fetch-funding` | Ingest funding rates (FakeProvider only) |
+| `fetch` | Ingest market data (OHLCV or funding-rate) |
 | `datasets` | List available Parquet datasets |
-| `candles get` | Query candle data with filters |
-| `funding get` | Query funding rate data with filters |
-| `query --sql` | Run raw SQL via DuckDB `read_parquet` |
+| `inspect` | Inspect a Parquet file or dataset directory |
+| `query ohlcv` | Query candle data with filters |
+| `query funding-rate` | Query funding rate data with filters |
+| `query sql` | Run raw SQL via DuckDB `read_parquet` |
 | `serve` | Start the FastAPI REST server |
+
+→ See [CLI Reference](reference/cli.md) for full command options.

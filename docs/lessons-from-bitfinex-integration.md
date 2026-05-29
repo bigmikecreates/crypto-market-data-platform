@@ -7,10 +7,9 @@ phase held up under real-world data.
 
 ### 1. Four OHLC invariant checks caught a field-ordering bug
 
-Bitfinex returns candle data in non-standard order:
-`[MTS, OPEN, CLOSE, HIGH, LOW, VOLUME]`. During initial adapter
-development, an incorrect field mapping would have assigned the close
-price to the high field. The `high >= open` invariant would have failed
+Bitfinex returns candle data in non-standard order (close before high).
+During initial adapter development, an incorrect field mapping would have
+assigned the close price to the high field. The `high >= open` invariant would have failed
 on the very first candle — immediately signalling a parsing problem
 rather than silently writing corrupted data.
 
@@ -75,9 +74,8 @@ must be tested with a live API call at least once during development
 to uncover transport-layer issues (WAF blocks, DNS resolution, TLS
 version incompatibilities, redirect handling, rate-limit headers).
 
-**Action for future providers:** Always make at least one live API
-call during implementation. Add a `--live` flag to the test suite
-for provider adapters (off by default, documented as a smoke test).
+→ See [Python API Reference](reference/python-api.md) for the exact
+field order and URL details for each provider.
 
 ### 2. Bitfinex's field ordering is non-standard and poorly documented
 
@@ -86,10 +84,8 @@ The response format `[MTS, OPEN, CLOSE, HIGH, LOW, VOLUME]` places
 `[timestamp, open, high, low, close, volume]`. This is a known
 Bitfinex quirk that is not prominently called out in their API docs.
 
-**Action for future providers:** Always verify the response field order
-against the raw API documentation before mapping to the `Candle` model.
-Add an explicit comment in the provider adapter showing the exact
-field positions.
+→ See [Python API Reference](reference/python-api.md) for the exact
+field positions for each provider.
 
 ### 3. Symbol mapping is not trivially automatable
 
@@ -98,11 +94,8 @@ USDT pairs require different handling (`BTC/USDT` → `tBTCUST`, where
 `UST` is Bitfinex's native code for USDT). A general-purpose symbol
 normaliser would require a full mapping table for every exchange.
 
-**Action for future providers:** Accept native exchange symbols
-directly. Document the symbol format in the provider's docstring so
-users know what to pass. Canonical-to-native conversion is a
-convenience, not a requirement, and should be explicitly mapped
-for common pairs rather than guessed via string manipulation.
+→ See [Python API Reference](reference/python-api.md) for symbol
+mapping details per provider.
 
 ### 4. Rate-limit behaviour requires empirical verification
 
@@ -112,10 +105,8 @@ penalty duration) can only be determined empirically. A
 `rate_limit_sleep` parameter with a configurable default allows
 tuning without code changes.
 
-**Action for future providers:** Make rate-limit parameters
-configurable at construction time. Default to a conservative value.
-Log warnings when the provider detects rate-limit errors (HTTP 429)
-so the user can adjust.
+→ See [Python API Reference](reference/python-api.md) for rate-limit
+configuration per provider.
 
 ### 5. The last candle in a Bitfinex response may be incomplete
 
@@ -124,7 +115,7 @@ Bitfinex returns only fully-closed candles within the requested
 time range. This was verified empirically — no candle stripping
 logic is needed.
 
-**Action for future providers:** Do not assume the presence or
+*Action for future providers:* Do not assume the presence or
 absence of a partial candle. Empirically verify each provider's
 behaviour during implementation and document it in the adapter.
 
@@ -143,6 +134,6 @@ However, fixtures do not cover:
 - Empty responses for valid but data-less ranges
 - Partial or truncated responses
 
-**Action for future providers:** Maintain both fixture-based tests
+*Action for future providers:* Maintain both fixture-based tests
 (for CI) and a separate manual smoke test script (for development)
 that makes real API calls and prints the results.

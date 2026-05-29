@@ -63,24 +63,12 @@ edge-case tests against a validation layer already proven at scale.
   which makes debugging the provider adapter simpler during initial
   integration.
 
-**Validation value:**
-- **Large batch size:** 10,000 candles per call stresses
-  `Candle` list construction, `validate_candle_batch()`, and
-  `write_candles()` in a single page — no pagination header needed.
-- **Date partition stress:** 10,000 candles at 1m granularity span
-  ~7 days — enough to exercise multi-partition writes and row-count
-  verification without looping.
-- **Timestamp ordering:** Candles arrive ascending; the pipeline
-  confirms this invariant and surfaces any provider deviation.
-- **Append/write correctness:** Multiple fetches for the same range
-  exercise the existing-file append path in `write_candles()`.
-- **Decimal conversion at scale:** 10,000 numeric string →
-  `decimal128(38,10)` casts per page exercise the C++ `.cast()` path
-  with real data.
-- **Provider adapter parsing:** Real JSON response with real Kraken
-  naming conventions exercises the `OHLCVProvider` interface.
+**Validation value:** Large batch size stresses the full pipeline
+(`Candle` construction, validation, decimal conversion, multi-partition
+writes) in a single page. Timestamp ordering, append/write correctness,
+and decimal conversion at scale are all exercised with real data.
 
-**Expected MVP use:**
+**Expected MVP use:****
 - Implement as the first real provider.
 - Fetch enough candles to span multiple date partitions.
 - Validate row counts per partition.
@@ -109,18 +97,8 @@ edge-case tests against a validation layer already proven at scale.
 - Known behaviour: intervals with no trades may be omitted —
   this is the first test of our completeness assumptions.
 
-**Validation value:**
-- **Pagination/windowing behaviour:** The pipeline must loop to
-  cover a full date range — exercises the page-loop contract in
-  `fetch_ohlcv(..., start, end)`.
-- **Sparse/no-tick interval handling:** Omitted intervals test
-  whether row counts match expected partition size.
-- **Missing interval classification:** First real data where
-  "gap" is a normal property, not a bug.
-- **Timeframe mapping:** Different symbol → interval conventions
-  from Bitfinex.
-- **Provider-specific response parsing:** Different JSON envelope,
-  different error signalling.
+**Validation value:** Pagination loop, sparse interval handling,
+missing interval classification, and different JSON response format.
 
 **Expected use after Bitfinex:**
 - Test how validation handles omitted no-trade intervals.
@@ -150,14 +128,8 @@ edge-case tests against a validation layer already proven at scale.
 - Good third-provider comparison once the validation layer is
   stable against Bitfinex and KuCoin.
 
-**Validation value:**
-- **Multi-category dispatch:** The provider adapter must route
-  based on `category` — tests adapter design flexibility.
-- **Different response envelope:** Yet another JSON structure
-  to parse — confirms the `OHLCVProvider` interface is
-  general enough.
-- **Third behaviour baseline:** Two data points (Bitfinex, KuCoin)
-  may reveal a pattern; three starts to prove it.
+**Validation value:** Multi-category dispatch, different response
+envelope, third behaviour baseline to confirm the pattern.
 
 **Expected use:**
 - Confirm that the provider adapter pattern generalises beyond

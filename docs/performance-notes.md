@@ -4,33 +4,18 @@
 
 ### Local pipeline (synthetic benchmark)
 
-At 10,000 candles, the local pipeline (Candle creation → validation → Parquet
-write) shows:
-
-| Metric | Value | Note |
-|--------|-------|------|
-| Throughput | ~48,000 candles/s | 208 ms for 10k candles, single-threaded |
-| CPU efficiency | 98 % | Wall-clock ≈ CPU time — minimal I/O wait |
-| Memory per candle | ~381 B | String fields + `slots=True` dataclass overhead |
-| Storage per candle | ~2.1 B | With Parquet dictionary compression on string columns |
-| Bottleneck | Candle construction | ~61 % of pipeline CPU at 10k |
-
 The bottleneck is `Candle` dataclass creation, not decimal128 casting or
 Parquet writing. For real workloads, API latency dominates — the local
 pipeline overhead is negligible.
 
 ### Live provider profiles
 
-| Provider | Candles | Wall (ms) | CPU (ms) | Net (ms) | Net/CPU | Regime |
-|----------|---------|-----------|---------|----------|---------|--------|
-| Synthetic | 10,000 | 154.6 | 161.1 | −6.5 | −0.0× | CPU-bound |
-| Bitfinex | 24 | 75.3 | 11.3 | 64.0 | 5.7× | Network-bound |
-| KuCoin | 24 | 280.7 | 9.0 | 271.7 | 30.1× | Network-bound |
+A 10× improvement in local pipeline throughput would reduce synthetic time by
+90 %, but would reduce Bitfinex ingestion by ~15 % and KuCoin ingestion by ~3 %.
+The optimisation lever changes entirely once network I/O is in play.
 
-Key insight: a 10× improvement in local pipeline throughput would reduce
-synthetic time by 90 %, but would reduce Bitfinex ingestion by ~15 % and
-KuCoin ingestion by ~3 %. The optimisation lever changes entirely once
-network I/O is in play.
+→ See [Benchmark Design](benchmark-design.md) for the exact metrics tables,
+baseline measurements, and live provider profiles.
 
 ## How to interpret benchmark tables
 

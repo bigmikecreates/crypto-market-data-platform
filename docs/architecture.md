@@ -53,17 +53,14 @@ across tickers never hit type mismatches.
 
 ### Path-based file discovery
 
-Parquet files are organised as:
-
-```
-data/{exchange}/{symbol}/{timeframe}/{date}.parquet
-data/{exchange}/{symbol}/funding_rate/{date}.parquet
-```
-
+Parquet files are organised hierarchically by exchange, symbol, and timeframe.
 Because symbols can contain `/` (e.g. `BTC/USDT`), the discovery algorithm
 uses the penultimate directory component as an anchor — if it is a timeframe
 (e.g. `1h`) the dataset is candles; if it is `funding_rate`, it is funding
-rates. This makes discovery depth-independent.
+rates.
+
+→ See [Parquet Schema Reference](reference/parquet-schema.md) for the
+exact directory layout.
 
 ### Connection-per-query DuckDB usage
 
@@ -81,21 +78,5 @@ schema is read at query time, so schema changes are automatically picked up.
 Each boundary has a single responsibility. When a bug surfaces, you know which
 gate should have caught it.
 
-## What exists now vs planned
-
-| Component | Status |
-|-----------|--------|
-| `Candle` / `FundingRate` models | Stable |
-| `FakeProvider` | Stable |
-| `BitfinexProvider` | Stable |
-| `KuCoinProvider` | Stable |
-| `BybitProvider` | Planned (#2) |
-| `KrakenProvider` | Planned (#3) |
-| Validation (candles) | Stable |
-| Validation (funding rates) | Stable |
-| Parquet writer | Stable |
-| `DuckDBQueryService` | Stable |
-| FastAPI server | Stable |
-| Benchmark pipeline | Stable |
-| Provider profiling | Stable |
-| CI workflow | Planned |
+→ See [Python API Reference](reference/python-api.md) for the full list of
+implemented components and their public signatures.

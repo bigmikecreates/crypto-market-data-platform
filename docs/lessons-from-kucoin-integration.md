@@ -7,20 +7,14 @@ phase held up under real-world data.
 
 ### 1. The provider adapter pattern absorbed KuCoin's differences cleanly
 
-KuCoin differs from the Bitfinex model in several ways:
+KuCoin differed from the Bitfinex model in API response envelope,
+timestamp precision, batch size, and naming conventions. Every difference
+was handled inside `providers/kucoin.py`. No changes were needed to
+`Candle`, validation, or the writer. This confirms that the provider
+boundary design generalises beyond a single exchange.
 
-- Different API response envelope (`{"code": "200000", "data": [...]}`
-  vs raw array)
-- Seconds-precision timestamps (Bitfinex uses milliseconds)
-- Smaller max batch (1500 vs 10000)
-- Standard field order `[time, open, close, high, low, volume, turnover]`
-  (no field-ordering surprise)
-- Hyphen-separated symbols (`BTC-USDT` vs `tBTCUSD`)
-- Different timeframe labels (`1hour` vs `1h`)
-
-Every difference was handled inside `providers/kucoin.py`. No changes
-were needed to `Candle`, validation, or the writer. This confirms that
-the provider boundary design generalises beyond a single exchange.
+→ See [Python API Reference](reference/python-api.md) for the exact
+KuCoin API endpoint, field order, symbol format, and limit.
 
 ### 2. Pre-emptive User-Agent header avoids WAF issues
 
@@ -66,7 +60,7 @@ part of the `Candle` model. The adapter simply ignores it (row indexing
 stops at `volume=row[5]`). This is fine — no need to extend the model
 for provider-specific extra fields.
 
-**Action for future providers:** Expect extra trailing fields in some
+*Action for future providers:* Expect extra trailing fields in some
 responses. They can be silently ignored as long as the required fields
 are present at known indices.
 
@@ -76,7 +70,7 @@ Like Bitfinex (and unlike Kraken), KuCoin returns only fully-closed
 candles. The 48 candles from a 2-day window are exactly `2 * 24 = 48`,
 confirming no partial candle is included. No stripping logic needed.
 
-**Action for future providers:** Verify partial-candle behaviour
+*Action for future providers:* Verify partial-candle behaviour
 empirically. Do not assume either behaviour from documentation alone.
 
 ### 3. Pagination not exercised at typical ranges
@@ -98,7 +92,7 @@ HTTP 4xx/5xx status codes. The error-handling pattern was copied from
 Bitfinex but had to be adapted to check `data.get("code") != "200000"`
 on every response instead of catching HTTPError exceptions.
 
-**Action for future providers:** Verify the error-reporting mechanism
+*Action for future providers:* Verify the error-reporting mechanism
 for each provider during implementation. Do not assume HTTP status
 codes are reliable — some providers return 200 with embedded errors.
 
@@ -122,7 +116,7 @@ data within the time window and relies on `len(rows) < 1500` to detect
 the last page. This is simpler than Bitfinex's explicit `limit=10000`
 parameter approach.
 
-**Action for future providers:** Document whether the max batch size
+*Action for future providers:* Document whether the max batch size
 is parameterised (like Bitfinex's `limit=10000`) or server-enforced
 (like KuCoin's implicit 1500). This affects how the adapter detects
 the final page.

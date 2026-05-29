@@ -48,18 +48,24 @@ plugins:
 
 nav:
   - Home: index.md
-  - Philosophy: philosophy.md
   - Architecture: architecture.md
-  - Providers: providers.md
+  - Philosophy: philosophy.md
   - Data Model: data-model.md
+  - Providers: providers.md
+  - Validation Strategy: validation-strategy.md
+  - Storage E2E: storage-e2e.md
   - Benchmark Design: benchmark-design.md
   - Performance Notes: performance-notes.md
   - Roadmap: roadmap.md
-  - API Reference: api-reference.md
-  - References:
-    - Validation Strategy: validation-strategy.md
-    - Storage E2E: storage-e2e.md
-    - Provider Selection: benchmarks/provider-selection.md
+  - API Reference:
+    - CLI Commands: reference/cli.md
+    - HTTP API: reference/http-api.md
+    - Python API: reference/python-api.md
+    - Parquet Schema: reference/parquet-schema.md
+    - Validation Rules: reference/validation-rules.md
+  - Lessons Learned:
     - Bitfinex Integration: lessons-from-bitfinex-integration.md
     - KuCoin Integration: lessons-from-kucoin-integration.md
+  - References:
+    - Provider Selection: benchmarks/provider-selection.md
     - Design Rationale (full): benchmarks/design-rationale.md

@@ -15,35 +15,6 @@ The project should use a general methodology that is relevant to:
 
 The validation strategy should be refined iteratively as each real provider is added.
 
-## Current Validation State
-
-The current `Candle` model is a lightweight `@dataclass(slots=True)` where all fields are strings:
-
-- exchange
-- symbol
-- timeframe
-- timestamp
-- open
-- high
-- low
-- close
-- volume
-- source
-
-The fake provider currently returns one hardcoded candle using string numeric fields and `timestamp=start.isoformat()`.
-
-The Parquet writer currently performs storage-bound validation:
-
-- numeric fields are checked against a decimal-string regex
-- numeric fields are cast to `decimal128(38, 10)`
-- timestamp strings are cast to the configured Arrow timestamp type
-
-This means the current validation approach is mostly:
-
-- structural shape via the `Candle` dataclass
-- parse/cast validation at Parquet write time
-- no explicit domain-level market-data validation yet
-
 ## Core Principle
 
 Use layered validation with provider-informed refinement.
@@ -146,64 +117,27 @@ This is currently mostly handled by the `Candle` dataclass constructor, but beca
 
 ### 2. Type / Parse Validation
 
-Question:
+Question: *Can values be parsed into the types required by storage and analysis?*
 
-```text
-Can values be parsed into the types required by storage and analysis?
-```
-
-Rules:
-
-- `open`, `high`, `low`, `close`, and `volume` must be decimal-compatible strings
-- `timestamp` must be parseable/castable into the configured timestamp type
-- `exchange`, `symbol`, `timeframe`, and `source` must be non-empty strings
-
-This validation can initially reuse the same assumptions currently enforced by the Parquet writer, but should eventually move into a dedicated validation module.
+→ See [Validation Rules Reference](reference/validation-rules.md) for the
+exact rule codes (`INVALID_DECIMAL`, `INVALID_TIMESTAMP`, etc.).
 
 ### 3. Market-Data Domain Invariant Validation
 
-Question:
+Question: *Does the candle make sense as OHLCV market data?*
 
-```text
-Does the candle make sense as OHLCV market data?
-```
-
-Provider-independent rules:
-
-- open >= 0
-- high >= 0
-- low >= 0
-- close >= 0
-- volume >= 0
-- high >= open
-- high >= close
-- high >= low
-- low <= open
-- low <= close
-- low <= high
-
-These rules are safe to implement early because they are intrinsic to OHLCV data.
+→ See [Validation Rules Reference](reference/validation-rules.md) for the
+exact OHLC invariant checks (`high >= open`, `low <= close`, etc.).
 
 ### 4. Time-Series Validation
 
-Question:
+Question: *Does the candle batch make sense as timestamped data?*
 
-```text
-Does the candle batch make sense as timestamped data?
-```
+Initial rules: timestamps should be sortable, not duplicate within a batch,
+and fall within the requested range where applicable.
 
-Initial rules:
-
-- timestamps should be sortable
-- timestamps should not duplicate within the same `exchange/symbol/timeframe/source` batch
-- timestamps should fall within the requested start/end range where applicable
-
-Provider-informed rules to add later:
-
-- timestamp alignment to timeframe boundaries
-- open-time vs close-time semantics
-- start/end inclusive or exclusive behaviour
-- whether the latest partial candle is included
+Provider-informed rules to add later: timestamp alignment to timeframe
+boundaries, open-time vs close-time semantics, and partial candle behaviour.
 
 ### 5. Completeness Validation
 
@@ -228,79 +162,20 @@ Completeness validation should be added after Kraken or another real provider cl
 
 ### 6. Provider Contract Validation
 
-Question:
+Question: *Does each provider adapter obey the project's provider contract?*
 
-```text
-Does each provider adapter obey the project's provider contract?
-```
-
-Each provider should prove that it:
-
-- returns `list[Candle]`
-- uses the canonical `Candle` schema
-- returns timestamps in a documented format
-- documents timestamp semantics
-- handles unsupported symbols/timeframes clearly
-- does not silently return malformed data
-- preserves fake provider behaviour while adding real providers
-
-Provider contract tests should use fixtures where possible so tests do not require live network access.
+Each provider should prove that it returns `list[Candle]`, uses the canonical
+schema, documents timestamp semantics, and handles unsupported symbols/timeframes
+without silently returning malformed data. Tests should use fixtures where
+possible to avoid requiring live network access.
 
 ### 7. Storage Validation
 
-Question:
+Question: *Did the validated records land correctly in storage?*
 
-```text
-Did the validated records land correctly in storage?
-```
-
-Rules:
-
-- written paths match candle dates
-- each partition contains only rows belonging to that partition
-- written row count matches expected row count for that partition
-- Parquet schema matches the expected schema
-- numeric columns are `decimal128(38, 10)`
-- timestamp column respects `TimestampConfig`
-- writer logic does not induce duplicate rows
-
-This layer is important because storage bugs can be misdiagnosed as provider bugs. For example, if the writer duplicates rows, later validation may incorrectly suggest that the provider returned duplicate candles.
-
-## Recommended Data Structures
-
-Validation should return structured issues rather than immediately throwing exceptions for every case.
-
-```python
-from dataclasses import dataclass
-
-
-@dataclass(slots=True)
-class ValidationIssue:
-    severity: str       # "error" | "warning"
-    code: str           # e.g. "INVALID_DECIMAL", "OHLC_INVARIANT", "DUPLICATE_TIMESTAMP"
-    message: str
-    candle_index: int | None = None
-    field: str | None = None
-
-
-@dataclass(slots=True)
-class ValidationResult:
-    passed: bool
-    issues: list[ValidationIssue]
-```
-
-This allows callers to decide whether to fail fast, log warnings, emit reports, or continue.
-
-## Recommended Pipeline
-
-```text
-Provider.fetch_ohlcv()
-    -> list[Candle]
-    -> validate_candle_batch()
-    -> write_candles()
-    -> verify_written_dataset()
-    -> IngestionReport
-```
+→ See [Validation Rules Reference](reference/validation-rules.md) for the
+exact storage validation rules (partition correctness, schema correctness,
+row-count checking, duplicate detection).
 
 ## Sequencing
 

@@ -46,51 +46,26 @@ Lightweight validation | Validation checks (regex format match, decimal string c
 
 ## Parquet schema
 
-All numeric columns are written as `decimal128(38,10)`:
+All numeric columns are written as `decimal128(38,10)` at the storage
+boundary. This provides exact decimal arithmetic, native DuckDB sort/filter,
+and a fixed schema independent of ticker price ranges.
 
-| Column | Parquet type | Notes |
-|--------|-------------|-------|
-| `open` | `decimal128(38, 10)` | |
-| `high` | `decimal128(38, 10)` | |
-| `low` | `decimal128(38, 10)` | |
-| `close` | `decimal128(38, 10)` | |
-| `volume` | `decimal128(38, 10)` | |
-| `timestamp` | `timestamp[s]` or `timestamp[us]` | Controlled by `TimestampConfig` |
-| `exchange` | `string` (dictionary encoded) | |
-| `symbol` | `string` (dictionary encoded) | |
-| `timeframe` | `string` (dictionary encoded) | Candle only |
-| `rate` | `decimal128(38, 10)` | Funding rate only |
-| `predicted_rate` | `decimal128(38, 10)` | Funding rate only |
-| `next_funding_time` | `timestamp[s]` | Funding rate only |
-| `source` | `string` (dictionary encoded) | |
-
-`decimal128(38,10)` supports up to 38 significant digits with 10 fractional
-places — covering prices from `0.0000000001` to `9999999999999999999999999999.9999999999`.
-Since `decimal128` is always 16 bytes regardless of precision/scale, a fixed
-schema costs nothing and guarantees cross-ticker DuckDB `UNION` queries work
-without type mismatches.
+→ See [Parquet Schema Reference](reference/parquet-schema.md) for the full
+column-type mapping, dictionary encoding details, and partition layout.
 
 ## Timestamp handling
 
 Timestamps are stored as strings in the model (`"2026-05-27T12:00:00"`) and
-converted to `timestamp[s]` or `timestamp[us]` at write time. Resolution is
-controlled by `TimestampConfig`:
+converted to `timestamp[s]` or `timestamp[us]` at write time according to
+`TimestampConfig`.
 
-```python
-@dataclass(slots=True)
-class TimestampConfig:
-    resolution: str = "s"  # "s" or "us"
-```
-
-The `_to_timestamp()` function casts string arrays to the configured type
-via PyArrow `.cast()`.
+→ See `TimestampConfig` in the [Python API Reference](reference/python-api.md)
+for the full dataclass definition.
 
 ## Query-side normalisation
 
-When reading back, `DuckDBQueryService._rows_to_dicts()` converts:
+When reading back, returned data is normalised so the round-trip
+(write `str` → store `decimal128` → read `str`) is transparent:
 
-- `Decimal` → `str`  (so prices match the model type)
-- `datetime` → ISO-8601 string (so timestamps match the model type)
-
-This ensures the round-trip (write `str` → store `decimal128` → read `str`)
-is transparent to the consumer.
+- `Decimal` → `str` (prices match the model type)
+- `datetime` → ISO-8601 string (timestamps match the model type)

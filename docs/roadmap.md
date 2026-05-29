@@ -2,9 +2,9 @@
 
 ## Short-term
 
-- [ ] **Bybit provider** (#2) — third live provider, validates provider
+- [ ] **Bybit provider** — third live provider, validates provider
       ranking and abstraction pattern at scale
-- [ ] **Kraken provider** (#3) — edge-case provider with 720-candle limit
+- [ ] **Kraken provider** — edge-case provider with 720-candle limit
       and sparse market coverage; tests infrastructure at known
       constraints
 - [ ] **CI workflow** — automated provider smoke tests (`--live` flag,
@@ -35,11 +35,4 @@
 - [ ] **Market data observability** — ingestion health metrics, provider
       latency dashboards, data freshness alerts
 
-## Issue tracking
-
-- [#7](https://github.com/bigmikecreates/crypto-market-data-platform/issues/7) — Umbrella: query service layer
-- [#6](https://github.com/bigmikecreates/crypto-market-data-platform/issues/6) — Engine: DuckDB impl + CLI (done)
-- [#8](https://github.com/bigmikecreates/crypto-market-data-platform/issues/8) — Server: FastAPI hosting (done)
-- [#9](https://github.com/bigmikecreates/crypto-market-data-platform/issues/9) — API: REST endpoints (done)
-- [#2](https://github.com/bigmikecreates/crypto-market-data-platform/issues/2) — Bybit provider
-- [#3](https://github.com/bigmikecreates/crypto-market-data-platform/issues/3) — Kraken provider
+Issue tracking is managed on GitHub.
