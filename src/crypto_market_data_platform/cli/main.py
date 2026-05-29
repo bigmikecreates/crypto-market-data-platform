@@ -38,13 +38,15 @@ _query_service = DuckDBQueryService()
 @app.command()
 def fetch(
     market_data_type: str = typer.Option(
-        "ohlcv",
+        ...,
         "--mdt",
         help="Market data type: ohlcv or funding-rate",
     ),
-    symbol: str = typer.Option("BTC/USDT", "--symbol", help="Trading pair symbol"),
+    symbol: str = typer.Option(
+        ..., "--symbol", help="Trading pair symbol"
+    ),
     timeframe: str = typer.Option(
-        "1h", "--timeframe", help="Candle timeframe (ohlcv only)"
+        ..., "--timeframe", help="Candle timeframe (ohlcv only)"
     ),
     start: datetime = typer.Option(
         ...,
@@ -59,7 +61,7 @@ def fetch(
         help="End time (ISO-8601)",
     ),
     provider: str = typer.Option(
-        "fake",
+        ...,
         "--provider",
         help="Data provider to use (ohlcv only)",
     ),
