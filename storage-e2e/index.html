@@ -11,6 +11,10 @@
       
       
       
+        <link rel="prev" href="../validation-strategy/">
+      
+      
+        <link rel="next" href="../benchmark-design/">
       
       
         
@@ -21,7 +25,7 @@
     
     
       
-        <title>Storage: End-to-End Write Path - Crypto Market Data Platform</title>
+        <title>Storage E2E - Crypto Market Data Platform</title>
       
     
     
@@ -108,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Storage: End-to-End Write Path
+              Storage E2E
             
           </span>
         </div>
@@ -232,6 +236,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../philosophy/" class="md-tabs__link">
         
   
@@ -251,13 +274,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="../architecture/" class="md-tabs__link">
+      <a href="../data-model/" class="md-tabs__link">
         
   
   
     
   
-  Architecture
+  Data Model
 
       </a>
     </li>
@@ -289,13 +312,34 @@
   
   
     <li class="md-tabs__item">
-      <a href="../data-model/" class="md-tabs__link">
+      <a href="../validation-strategy/" class="md-tabs__link">
         
   
   
     
   
-  Data Model
+  Validation Strategy
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Storage E2E
 
       </a>
     </li>
@@ -367,7 +411,27 @@
     
     
       <li class="md-tabs__item">
-        <a href="../validation-strategy/" class="md-tabs__link">
+        <a href="../lessons-from-bitfinex-integration/" class="md-tabs__link">
+          
+  
+  
+  Lessons Learned
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../benchmarks/provider-selection/" class="md-tabs__link">
           
   
   
@@ -464,6 +528,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../philosophy/" class="md-nav__link">
         
   
@@ -491,14 +582,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
+      <a href="../data-model/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Data Model
   
 
     
@@ -545,14 +636,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../data-model/" class="md-nav__link">
+      <a href="../validation-strategy/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Data Model
+    Validation Strategy
   
 
     
@@ -561,6 +652,235 @@
   
 
       </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Storage E2E
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Storage E2E
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stage-1-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stage 1 — Provider
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stage-2-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stage 2 — Validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stage-3-partition-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stage 3 — Partition Routing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stage-4-type-casting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stage 4 — Type Casting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stage 4 — Type Casting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-decimal12838-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why decimal128(38, 10)?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-strings-until-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why strings until storage?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stage-5-row-level-upsert-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stage 5 — Row-Level Upsert Merge
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stage 5 — Row-Level Upsert Merge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#merge-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merge key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merge-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merge strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#funding-rate-variant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Funding Rate Variant
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -666,17 +986,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    References
+    Lessons Learned
   
 
     
@@ -687,72 +1007,16 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
             <span class="md-nav__icon md-icon"></span>
             
   
-    References
+    Lessons Learned
   
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../validation-strategy/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Validation Strategy
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../benchmarks/provider-selection/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Provider Selection
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -797,6 +1061,93 @@
     
   
     KuCoin Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    References
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmarks/provider-selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Provider Selection
   
 
     
@@ -1026,17 +1377,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#cli-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CLI integration
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1104,172 +1444,52 @@
 <hr />
 <h2 id="stage-1-provider">Stage 1 — Provider<a class="headerlink" href="#stage-1-provider" title="Permanent link">&para;</a></h2>
 <p>Each provider adapter (<code>providers/bitfinex.py</code>, <code>providers/kucoin.py</code>, etc.)
-implements the <code>OHLCVProvider</code> interface:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">OHLCVProvider</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">fetch_ohlcv</span><span class="p">(</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeframe</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        <span class="n">start</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Candle</span><span class="p">]:</span> <span class="o">...</span>
-</code></pre></div>
-<p>The provider:</p>
-<ol>
-<li>Converts canonical symbol/timeframe to the exchange's native naming</li>
-<li>Constructs the API URL with <code>start</code>/<code>end</code> parameters</li>
-<li>Loops paginated responses (if needed)</li>
-<li>Maps each raw JSON row to a <code>Candle</code> dataclass with all-string fields</li>
-</ol>
-<p>A candle arrives as:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">Candle</span><span class="p">(</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">exchange</span><span class="o">=</span><span class="s2">&quot;bitfinex&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;BTC/USD&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">timeframe</span><span class="o">=</span><span class="s2">&quot;1h&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">timestamp</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="nb">open</span><span class="o">=</span><span class="s2">&quot;42331&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">high</span><span class="o">=</span><span class="s2">&quot;42591&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">low</span><span class="o">=</span><span class="s2">&quot;42331&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">close</span><span class="o">=</span><span class="s2">&quot;42522&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">volume</span><span class="o">=</span><span class="s2">&quot;9.03426154&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;bitfinex&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="p">)</span>
-</code></pre></div>
+implements the <code>OHLCVProvider</code> interface. The provider converts the canonical
+symbol/timeframe to the exchange's native naming, constructs the API URL,
+loops paginated responses, and maps each raw JSON row to a <code>Candle</code> dataclass
+with all-string fields.</p>
 <p>All numeric fields are strings at this point. This keeps the provider boundary
 simple — no type casting, no Decimal imports, no schema decisions.</p>
+<p>→ See <code>OHLCVProvider</code> in the <a href="/reference/#/python-api">Python API Reference</a>
+for the exact method signature.</p>
 <hr />
 <h2 id="stage-2-validation">Stage 2 — Validation<a class="headerlink" href="#stage-2-validation" title="Permanent link">&para;</a></h2>
-<p><code>validate_candle_batch()</code> (<code>validation/candles.py</code>) runs per-candle checks on
-the string values:</p>
-<table>
-<thead>
-<tr>
-<th>Check</th>
-<th>Rule</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>EMPTY_FIELD</code></td>
-<td>No field is blank</td>
-</tr>
-<tr>
-<td><code>INVALID_DECIMAL</code></td>
-<td>OHLCV values match signed decimal regex</td>
-</tr>
-<tr>
-<td><code>NEGATIVE_VALUE</code></td>
-<td>No negative prices/volume</td>
-</tr>
-<tr>
-<td><code>PRECISION_OVERFLOW</code></td>
-<td>&gt;38 digits (warning)</td>
-</tr>
-<tr>
-<td><code>INVALID_TIMESTAMP</code></td>
-<td>ISO-8601 format</td>
-</tr>
-<tr>
-<td><code>OHLC_INVARIANT</code></td>
-<td><code>high ≥ open/close ≥ low</code></td>
-</tr>
-<tr>
-<td><code>DUPLICATE_TIMESTAMP</code></td>
-<td>No duplicate key within batch</td>
-</tr>
-</tbody>
-</table>
-<p>Validation is <strong>advisory</strong> — issues are printed to stderr but writes proceed.
+<p><code>validate_candle_batch()</code> runs per-candle checks on the string values.
+Validation is <strong>advisory</strong> — issues are printed to stderr but writes proceed.
 The persisted data can be inspected later to diagnose provider issues.</p>
+<p>→ See <a href="/reference/#/validation-rules">Validation Rules Reference</a> for the
+exact rule codes and descriptions.</p>
 <hr />
 <h2 id="stage-3-partition-routing">Stage 3 — Partition Routing<a class="headerlink" href="#stage-3-partition-routing" title="Permanent link">&para;</a></h2>
-<p>Each candle is routed to a file based on its date:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">_path_for_candle</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Candle</span><span class="p">,</span> <span class="n">base_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">date_str</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">timestamp</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">base_path</span><span class="p">)</span> <span class="o">/</span> <span class="n">c</span><span class="o">.</span><span class="n">exchange</span> <span class="o">/</span> <span class="n">c</span><span class="o">.</span><span class="n">symbol</span> <span class="o">/</span> <span class="n">c</span><span class="o">.</span><span class="n">timeframe</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">.parquet&quot;</span>
+<p>Each candle is routed to a file based on its date.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>data/{exchange}/{symbol}/{timeframe}/{date}.parquet
 </code></pre></div>
-<p>Resulting layout:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>data/
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>└── bitfinex/
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    └── BTC/
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>        └── USD/
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>            └── 1h/
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>                ├── 2024-01-01.parquet   (24 rows)
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>                └── 2024-01-02.parquet   (24 rows)
-</code></pre></div>
-<p>Candles are grouped by target path via <code>defaultdict(list)</code> so each partition is
-processed independently.</p>
+<p>Candles are grouped by target path so each partition is processed independently.</p>
+<p>→ See <a href="/reference/#/parquet-schema">Parquet Schema Reference</a> for the
+exact partition layout and path helpers.</p>
 <hr />
 <h2 id="stage-4-type-casting">Stage 4 — Type Casting<a class="headerlink" href="#stage-4-type-casting" title="Permanent link">&para;</a></h2>
-<p><code>candle_to_table()</code> (<code>storage/parquet_writer.py:44</code>) converts a group of same-partition
-candles into a single PyArrow table:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="s2">&quot;exchange&quot;</span><span class="p">:</span>  <span class="n">string</span><span class="p">,</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="s2">&quot;symbol&quot;</span><span class="p">:</span>    <span class="n">string</span><span class="p">,</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="s2">&quot;timeframe&quot;</span><span class="p">:</span> <span class="n">string</span><span class="p">,</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">cast</span><span class="p">(</span><span class="n">string</span> <span class="err">→</span> <span class="n">timestamp</span><span class="p">[</span><span class="n">s</span><span class="p">]),</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="s2">&quot;open&quot;</span><span class="p">:</span>      <span class="n">cast</span><span class="p">(</span><span class="n">string</span> <span class="err">→</span> <span class="n">decimal128</span><span class="p">(</span><span class="mi">38</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="s2">&quot;high&quot;</span><span class="p">:</span>      <span class="n">cast</span><span class="p">(</span><span class="n">string</span> <span class="err">→</span> <span class="n">decimal128</span><span class="p">(</span><span class="mi">38</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="s2">&quot;low&quot;</span><span class="p">:</span>       <span class="n">cast</span><span class="p">(</span><span class="n">string</span> <span class="err">→</span> <span class="n">decimal128</span><span class="p">(</span><span class="mi">38</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="s2">&quot;close&quot;</span><span class="p">:</span>     <span class="n">cast</span><span class="p">(</span><span class="n">string</span> <span class="err">→</span> <span class="n">decimal128</span><span class="p">(</span><span class="mi">38</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="s2">&quot;volume&quot;</span><span class="p">:</span>    <span class="n">cast</span><span class="p">(</span><span class="n">string</span> <span class="err">→</span> <span class="n">decimal128</span><span class="p">(</span><span class="mi">38</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span>
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span>    <span class="n">string</span><span class="p">,</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="p">}</span>
-</code></pre></div>
+<p><code>candle_to_table()</code> converts a group of same-partition candles into a single
+PyArrow table by casting string fields to their Parquet types. String columns
+(<code>exchange</code>, <code>symbol</code>, <code>timeframe</code>, <code>source</code>) remain as strings. Numeric
+columns are cast via PyArrow's C++ <code>.cast()</code> to <code>decimal128(38,10)</code>. Timestamp
+columns are cast to <code>timestamp[s]</code> (or <code>timestamp[us]</code> depending on config).</p>
 <h3 id="why-decimal12838-10">Why <code>decimal128(38, 10)</code>?<a class="headerlink" href="#why-decimal12838-10" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Type</th>
-<th>Exact?</th>
-<th>Sortable?</th>
-<th>Query cost</th>
-<th>Storage</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>decimal128(38,10)</code></td>
-<td>Yes</td>
-<td>Yes</td>
-<td>Native</td>
-<td>16 bytes/val</td>
-</tr>
-<tr>
-<td><code>float64</code></td>
-<td>No — rounding errors</td>
-<td>Approx</td>
-<td>Native</td>
-<td>8 bytes/val</td>
-</tr>
-<tr>
-<td><code>utf8</code></td>
-<td>Yes</td>
-<td>No — text sort</td>
-<td>CAST per query</td>
-<td>Variable</td>
-</tr>
-<tr>
-<td><code>int64 * scale</code></td>
-<td>Yes</td>
-<td>Yes</td>
-<td>Native but manual</td>
-<td>8 bytes/val</td>
-</tr>
-</tbody>
-</table>
 <p><code>decimal128(38,10)</code> is the only type that provides exact decimal arithmetic,
-native DuckDB sort/filter, and a fixed schema independent of ticker price ranges.
-UTF8 would save the write-time <code>.cast()</code> kernel but push that cost to every
-read query, break sort order, and lose predicate pushdown.</p>
-<p>The cast is a C++ PyArrow kernel operating on arrays, not per-row Python —
-the cost is negligible for any realistic partition size.</p>
+native DuckDB sort/filter, and a fixed schema independent of ticker price
+ranges. UTF8 would save the write-time <code>.cast()</code> kernel but push that cost
+to every read query, break sort order, and lose predicate pushdown.</p>
 <h3 id="why-strings-until-storage">Why strings until storage?<a class="headerlink" href="#why-strings-until-storage" title="Permanent link">&para;</a></h3>
-<p>The <code>Candle</code> model uses strings for two reasons:</p>
 <ol>
 <li><strong>Provider boundary stays simple</strong> — most APIs return prices as JSON strings;
    providers just pass them through without import or type-conversion overhead</li>
 <li><strong>Single schema authority</strong> — the storage boundary owns the Parquet type
-   decision. Changing column types (e.g. <code>decimal128(38,8)</code>) requires changing
-   one function, not six providers</li>
+   decision. Changing column types requires changing one function, not six
+   providers.</li>
 </ol>
+<p>→ See <code>candle_to_table()</code> in the <a href="/reference/#/python-api">Python API Reference</a>
+for the exact function signature, and <a href="/reference/#/parquet-schema">Parquet Schema Reference</a>
+for the full column-type mapping.</p>
 <hr />
 <h2 id="stage-5-row-level-upsert-merge">Stage 5 — Row-Level Upsert Merge<a class="headerlink" href="#stage-5-row-level-upsert-merge" title="Permanent link">&para;</a></h2>
 <p>This is the most important recent addition. When a partition file already exists,
@@ -1277,120 +1497,38 @@ the old behaviour was blind <code>concat_tables</code> — which could produce d
 if the same time range was fetched twice.</p>
 <h3 id="merge-key">Merge key<a class="headerlink" href="#merge-key" title="Permanent link">&para;</a></h3>
 <p>The row identity key for candles:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>(exchange, symbol, timeframe, source, timestamp)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>(exchange, symbol, timeframe, source, timestamp)
 </code></pre></div>
 <p>For funding rates:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>(exchange, symbol, source, timestamp)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>(exchange, symbol, source, timestamp)
 </code></pre></div>
 <p>This matches the duplicate-detection key used in validation.</p>
 <h3 id="algorithm">Algorithm<a class="headerlink" href="#algorithm" title="Permanent link">&para;</a></h3>
-<p>For each partition file that exists:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>existing = read_parquet(path)
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>for each incoming_row:
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    if key in existing:
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>        if data differs → replace (keep incoming, drop existing)
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>        if data identical → skip
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    else:
-<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>        append (new row)
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
-<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>result = (unchanged existing rows) + (updated rows) + (new rows)
-<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>write result back to path
-</code></pre></div>
+<p>For each partition file that exists: read existing rows, merge incoming rows
+by key (skip identical, replace changed, append new), write back.</p>
 <h3 id="merge-strategies">Merge strategies<a class="headerlink" href="#merge-strategies" title="Permanent link">&para;</a></h3>
 <p>Two implementations, selected automatically or by user override:</p>
-<table>
-<thead>
-<tr>
-<th>Strategy</th>
-<th>How it works</th>
-<th>Used when</th>
-<th>Memory</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>memory</code> (set-based)</td>
-<td>Python <code>set</code> of row keys, linear scan</td>
-<td><code>&lt; 50K</code> rows/partition</td>
-<td>~7.5 MB at 50K rows</td>
-</tr>
-<tr>
-<td><code>duckdb</code> (SQL anti-join)</td>
-<td><code>LEFT JOIN ... WHERE NULL</code> + <code>UNION ALL</code> via DuckDB</td>
-<td><code>≥ 50K</code> rows/partition</td>
-<td>Minimal (C++ memory)</td>
-</tr>
-</tbody>
-</table>
-<p>The threshold <code>_ROW_MERGE_THRESHOLD = 50_000</code> was chosen so the Python key set
-never exceeds ~10 MB. At typical granularities:</p>
-<table>
-<thead>
-<tr>
-<th>Timeframe</th>
-<th>Rows/day</th>
-<th>Key set memory</th>
-<th>Strategy</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1h</td>
-<td>24</td>
-<td>~4 KB</td>
-<td><code>memory</code></td>
-</tr>
-<tr>
-<td>5m</td>
-<td>288</td>
-<td>~43 KB</td>
-<td><code>memory</code></td>
-</tr>
-<tr>
-<td>1m</td>
-<td>1,440</td>
-<td>~216 KB</td>
-<td><code>memory</code></td>
-</tr>
-<tr>
-<td>1s</td>
-<td>86,400</td>
-<td>~13 MB</td>
-<td><code>duckdb</code></td>
-</tr>
-</tbody>
-</table>
-<p>User can override with <code>--merge-strategy</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span>--merge-strategy<span class="w"> </span>duckdb<span class="w">  </span><span class="c1"># force DuckDB path</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span>--merge-strategy<span class="w"> </span>memory<span class="w">  </span><span class="c1"># force set-based path</span>
-</code></pre></div>
+<ul>
+<li><strong><code>memory</code> (set-based)</strong> — Python <code>set</code> of row keys, linear scan. Used for
+  partitions with fewer than 50,000 rows.</li>
+<li><strong><code>duckdb</code> (SQL anti-join)</strong> — <code>LEFT JOIN ... WHERE NULL</code> + <code>UNION ALL</code> via
+  DuckDB. Used for partitions with 50,000+ rows.</li>
+</ul>
 <h3 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Idempotent</strong>: fetching the same range twice produces identical files (no row
-  bloat)</li>
+<li><strong>Idempotent</strong>: fetching the same range twice produces identical files.</li>
 <li><strong>Self-healing</strong>: a corrected candle from the provider replaces the stale
-  version on the next fetch</li>
-<li><strong>Append-safe</strong>: new rows (timestamps not yet in the file) are added without
-  affecting existing rows</li>
+  version on the next fetch.</li>
+<li><strong>Append-safe</strong>: new rows are added without affecting existing rows.</li>
 </ul>
+<p>→ See merge function signatures and strategy details in the
+<a href="/reference/#/python-api">Python API Reference</a>.</p>
 <hr />
 <h2 id="funding-rate-variant">Funding Rate Variant<a class="headerlink" href="#funding-rate-variant" title="Permanent link">&para;</a></h2>
-<p>Funding rates follow the same stages with a different column set:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>exchange, symbol, timestamp, rate, predicted_rate, next_funding_time, source
-</code></pre></div>
-<p>And a different path:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>data/{exchange}/{symbol}/funding_rate/{date}.parquet
-</code></pre></div>
-<p>The merge key omits <code>timeframe</code> (funding rates have no timeframe field).</p>
-<hr />
-<h2 id="cli-integration">CLI integration<a class="headerlink" href="#cli-integration" title="Permanent link">&para;</a></h2>
-<p>The <code>--merge-strategy</code> option is exposed on <code>cmpd fetch</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>cmpd fetch --help
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>  --merge-strategy TEXT  Row merge strategy: auto (default), memory, or duckdb
-</code></pre></div>
-<p>It flows through: <code>CLI → OhlcvService.ingest() → write_candles() → _merge_tables()</code>.</p>
+<p>Funding rates follow the same stages with a different column set and path.
+The merge key omits <code>timeframe</code> (funding rates have no timeframe field).</p>
+<p>→ See <a href="/reference/#/parquet-schema">Parquet Schema Reference</a> for the
+exact column set and partition layout for funding rates.</p>
 
 
 
