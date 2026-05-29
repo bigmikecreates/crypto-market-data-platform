@@ -43,7 +43,7 @@ Query candle data.
 | `limit` | `100` | Max rows (1–10 000) |
 | `order` | `DESC` | Sort order (`DESC` or `ASC`) |
 
-**Response:** `list[Candle]` (see [Data Model](../data-model.md))
+**Response:** `list[Candle]` (see [Data Model](/data-model/))
 
 ## `GET /funding-rates`
 
@@ -59,7 +59,7 @@ Query funding rate data.
 | `limit` | `100` | Max rows (1–10 000) |
 | `order` | `DESC` | Sort order (`DESC` or `ASC`) |
 
-**Response:** `list[FundingRate]` (see [Data Model](../data-model.md))
+**Response:** `list[FundingRate]` (see [Data Model](/data-model/))
 
 ## `GET /summary`
 

@@ -43,6 +43,9 @@ markdown_extensions:
   - toc:
       permalink: true
 
+exclude_docs: |
+  reference/
+
 plugins:
   - search
 
@@ -57,12 +60,6 @@ nav:
   - Benchmark Design: benchmark-design.md
   - Performance Notes: performance-notes.md
   - Roadmap: roadmap.md
-  - API Reference:
-    - CLI Commands: reference/cli.md
-    - HTTP API: reference/http-api.md
-    - Python API: reference/python-api.md
-    - Parquet Schema: reference/parquet-schema.md
-    - Validation Rules: reference/validation-rules.md
   - Lessons Learned:
     - Bitfinex Integration: lessons-from-bitfinex-integration.md
     - KuCoin Integration: lessons-from-kucoin-integration.md

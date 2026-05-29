@@ -50,7 +50,7 @@ All numeric columns are written as `decimal128(38,10)` at the storage
 boundary. This provides exact decimal arithmetic, native DuckDB sort/filter,
 and a fixed schema independent of ticker price ranges.
 
-→ See [Parquet Schema Reference](reference/parquet-schema.md) for the full
+→ See [Parquet Schema Reference](/reference/#/parquet-schema) for the full
 column-type mapping, dictionary encoding details, and partition layout.
 
 ## Timestamp handling
@@ -59,7 +59,7 @@ Timestamps are stored as strings in the model (`"2026-05-27T12:00:00"`) and
 converted to `timestamp[s]` or `timestamp[us]` at write time according to
 `TimestampConfig`.
 
-→ See `TimestampConfig` in the [Python API Reference](reference/python-api.md)
+→ See `TimestampConfig` in the [Python API Reference](/reference/#/python-api)
 for the full dataclass definition.
 
 ## Query-side normalisation

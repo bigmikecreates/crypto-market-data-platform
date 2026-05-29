@@ -27,10 +27,18 @@ jobs:
         run: |
           pip install -e .[docs]
 
-      - name: Build docs
+      - name: Build MkDocs user guide
         run: |
           mkdocs build --strict
 
-      - name: Deploy built site to gh-pages
+      - name: Copy Docsify API reference into site
         run: |
-          mkdocs gh-deploy --force
+          mkdir -p site/reference/
+          cp reference/index.html site/reference/index.html
+          cp docs/reference/*.md site/reference/
+
+      - name: Deploy built site to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site

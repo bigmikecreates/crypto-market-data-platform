@@ -68,3 +68,17 @@ Prefer focused tests for:
 - partitioned storage writes
 - timestamp handling
 - decimal conversion
+
+## Drift Evaluation (Pending — not yet implemented)
+
+Drift detection between source code and API reference docs.
+
+Planned approach:
+- Manifest generation scripts in Repo A (CLI tree, OpenAPI schema, Python API surface)
+- Doc parsing scripts for the Docsify-rendered API reference pages
+- LLM evaluation (Azure OpenAI, probable) comparing manifests against doc content
+- CI workflow (weekly cron + manual trigger) producing structured drift reports
+- Reports archived to a dedicated `reports/` branch
+- GitHub Issue creation on drift detection
+
+Not yet started. Implementation deferred to a future iteration.

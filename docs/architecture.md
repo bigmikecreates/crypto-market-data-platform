@@ -59,7 +59,7 @@ uses the penultimate directory component as an anchor — if it is a timeframe
 (e.g. `1h`) the dataset is candles; if it is `funding_rate`, it is funding
 rates.
 
-→ See [Parquet Schema Reference](reference/parquet-schema.md) for the
+→ See [Parquet Schema Reference](/reference/#/parquet-schema) for the
 exact directory layout.
 
 ### Connection-per-query DuckDB usage
@@ -78,5 +78,5 @@ schema is read at query time, so schema changes are automatically picked up.
 Each boundary has a single responsibility. When a bug surfaces, you know which
 gate should have caught it.
 
-→ See [Python API Reference](reference/python-api.md) for the full list of
+→ See [Python API Reference](/reference/#/python-api) for the full list of
 implemented components and their public signatures.

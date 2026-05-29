@@ -21,7 +21,7 @@ interface.
 
 ## Adding a New Provider
 
-See `docs/reference/python-api.md` for exact provider signatures, URL
+See [Python API Reference](/reference/#/python-api) for exact provider signatures, URL
 endpoints, field orders, symbol mappings, rate limits, and pagination
 details.
 
