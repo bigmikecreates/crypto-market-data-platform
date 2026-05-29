@@ -69,7 +69,7 @@ Prefer focused tests for:
 - timestamp handling
 - decimal conversion
 
-## Drift Evaluation (Pending — not yet implemented)
+## Drift Evaluation (Pending — tracked in issue #17)
 
 Drift detection between source code and API reference docs.
 
@@ -81,4 +81,4 @@ Planned approach:
 - Reports archived to a dedicated `reports/` branch
 - GitHub Issue creation on drift detection
 
-Not yet started. Implementation deferred to a future iteration.
+Not yet started. Tracked in issue [#17](https://github.com/bigmikecreates/crypto-market-data-platform/issues/17).

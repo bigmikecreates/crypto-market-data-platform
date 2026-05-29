@@ -1,6 +1,12 @@
 # Python API Reference
 
+---
+
 ## `crypto_market_data_platform.providers`
+
+All providers implement the abstract base class `OHLCVProvider`.
+
+### Import
 
 ```python
 from crypto_market_data_platform.providers import (
@@ -9,30 +15,57 @@ from crypto_market_data_platform.providers import (
 )
 ```
 
-All providers implement the abstract base class:
+### `OHLCVProvider`
+
+Abstract base class for all providers.
+
+#### Usage
 
 ```python
 class OHLCVProvider(ABC):
-    @abstractmethod
     def fetch_ohlcv(
         self, symbol: str, timeframe: str,
         start: datetime, end: datetime,
     ) -> list[Candle]: ...
 ```
 
-`FakeProvider` also exposes:
+#### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `symbol` | `str` | Trading pair symbol (e.g. `"BTC/USDT"`) |
+| `timeframe` | `str` | Candle interval (e.g. `"1h"`, `"1d"`) |
+| `start` | `datetime` | Start of range (inclusive) |
+| `end` | `datetime` | End of range (exclusive) |
+
+### `FakeProvider`
+
+Synthetic data provider for testing. Also exposes `fetch_funding_rates`.
+
+#### Usage
 
 ```python
-class FakeProvider(OHLCVProvider):
-    def fetch_funding_rates(
-        self, symbol: str,
-        start: datetime, end: datetime,
-    ) -> list[FundingRate]: ...
+provider = FakeProvider()
+candles = provider.fetch_ohlcv("BTC/USDT", "1h", start, end)
+rates = provider.fetch_funding_rates("BTC/USDT", start, end)
+```
+
+#### Examples
+
+```python
+>>> from crypto_market_data_platform.providers import FakeProvider
+>>> from datetime import datetime, timezone
+>>> p = FakeProvider()
+>>> candles = p.fetch_ohlcv("BTC/USDT", "1h",
+...     datetime(2026, 5, 27, tzinfo=timezone.utc),
+...     datetime(2026, 5, 28, tzinfo=timezone.utc))
+>>> len(candles)
+1
 ```
 
 ### Provider details
 
-#### BitfinexProvider
+#### `BitfinexProvider`
 
 ```python
 class BitfinexProvider(OHLCVProvider):
@@ -49,7 +82,7 @@ class BitfinexProvider(OHLCVProvider):
 | Timeframe mapping | `1h` → `1h`, `1d` → `1D`, `1w` → `1W`, `14d` → `14D` |
 | User-Agent | Required (Cloudflare WAF) |
 
-#### BitstampProvider
+#### `BitstampProvider`
 
 ```python
 class BitstampProvider(OHLCVProvider):
@@ -62,7 +95,7 @@ class BitstampProvider(OHLCVProvider):
 | Response format | Dict rows with keys `timestamp`, `open`, `high`, `low`, `close`, `volume` |
 | Step map | `1m` → 60, `1h` → 3600, `1d` → 86400 (seconds-based) |
 
-#### BybitProvider
+#### `BybitProvider`
 
 ```python
 class BybitProvider(OHLCVProvider):
@@ -78,7 +111,7 @@ class BybitProvider(OHLCVProvider):
 | Sort | Descending (requires `.reverse()`) |
 | Error check | `data.get("retCode") != 0` |
 
-#### KuCoinProvider
+#### `KuCoinProvider`
 
 ```python
 class KuCoinProvider(OHLCVProvider):
@@ -93,7 +126,7 @@ class KuCoinProvider(OHLCVProvider):
 | Timestamps | Seconds (`int(row[0])`) |
 | Error reporting | HTTP 200 with `code` field in JSON body |
 
-#### MexcProvider
+#### `MexcProvider`
 
 ```python
 class MexcProvider(OHLCVProvider):
@@ -111,10 +144,16 @@ class MexcProvider(OHLCVProvider):
 
 ## `crypto_market_data_platform.models`
 
+Data model classes.
+
+### Import
+
 ```python
 from crypto_market_data_platform.models.candle import Candle
 from crypto_market_data_platform.models.funding_rate import FundingRate
 ```
+
+### Models
 
 | Model | Fields |
 |-------|--------|
@@ -127,6 +166,10 @@ All fields are `str`. Numeric values are parsed and cast at write time.
 
 ## `crypto_market_data_platform.validation`
 
+Batch validation functions.
+
+### Import
+
 ```python
 from crypto_market_data_platform.validation import (
     validate_candle_batch,
@@ -136,13 +179,49 @@ from crypto_market_data_platform.validation import (
 )
 ```
 
-```python
-def validate_candle_batch(candles: list[Candle]) -> ValidationResult:
-    """Validates a batch of candles. Returns all issues (non-fail-fast)."""
+### `validate_candle_batch`
 
-def validate_funding_rate_batch(rates: list[FundingRate]) -> ValidationResult:
-    """Validates a batch of funding rates."""
+Validates a batch of candles. Returns all issues (non-fail-fast).
+
+#### Usage
+
+```python
+result = validate_candle_batch(candles)
 ```
+
+#### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `candles` | `list[Candle]` | Candle batch to validate |
+
+#### Examples
+
+```python
+>>> from crypto_market_data_platform.validation import validate_candle_batch
+>>> from crypto_market_data_platform.models.candle import Candle
+>>> candles = [Candle("fake", "BTC/USDT", "1h", "2026-05-27T00:00:00",
+...     "100", "110", "90", "105", "10", "fake")]
+>>> result = validate_candle_batch(candles)
+>>> result.passed
+True
+```
+
+### `validate_funding_rate_batch`
+
+Validates a batch of funding rates.
+
+#### Usage
+
+```python
+result = validate_funding_rate_batch(rates)
+```
+
+#### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `rates` | `list[FundingRate]` | Funding rate batch to validate |
 
 ### Data structures
 
@@ -176,8 +255,9 @@ See [Validation Rules](validation-rules.md) for the full rule catalogue.
 
 ## `crypto_market_data_platform.storage`
 
-Low-level write functions. Prefer `OhlcvService` / `FundingRateService`
-for normal use.
+Low-level write functions. Prefer `OhlcvService` / `FundingRateService` for normal use.
+
+### Import
 
 ```python
 from crypto_market_data_platform.storage.parquet_writer import (
@@ -197,37 +277,77 @@ _CANDLE_KEY_COLS = ["exchange", "symbol", "timeframe", "source", "timestamp"]
 _FUNDING_RATE_KEY_COLS = ["exchange", "symbol", "source", "timestamp"]
 ```
 
-### Functions
+### `candle_to_table`
+
+Converts `Candle` objects to a PyArrow Table with decimal128 and timestamp casts.
+
+#### Usage
 
 ```python
-def candle_to_table(
-    candles: list[Candle],
-    ts_config: TimestampConfig,
-) -> pa.Table:
-    """Converts Candle objects to a PyArrow Table with decimal128 and timestamp casts."""
-
-def funding_rate_to_table(
-    rates: list[FundingRate],
-    ts_config: TimestampConfig,
-) -> pa.Table:
-    """Converts FundingRate objects to a PyArrow Table."""
-
-def write_candles(
-    candles: list[Candle],
-    base_path: str = "data",
-    ts_config: TimestampConfig | None = None,
-    merge_strategy: str = "auto",
-) -> list[Path]:
-    """Groups candles by partition, merges with existing files, writes Parquet."""
-
-def write_funding_rates(
-    rates: list[FundingRate],
-    base_path: str = "data",
-    ts_config: TimestampConfig | None = None,
-    merge_strategy: str = "auto",
-) -> list[Path]:
-    """Groups funding rates by partition, merges with existing files, writes Parquet."""
+table = candle_to_table(candles, ts_config)
 ```
+
+#### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `candles` | `list[Candle]` | required | Candle objects to convert |
+| `ts_config` | `TimestampConfig` | required | Timestamp resolution configuration |
+
+### `funding_rate_to_table`
+
+Converts `FundingRate` objects to a PyArrow Table.
+
+#### Usage
+
+```python
+table = funding_rate_to_table(rates, ts_config)
+```
+
+#### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `rates` | `list[FundingRate]` | required | Funding rate objects to convert |
+| `ts_config` | `TimestampConfig` | required | Timestamp resolution configuration |
+
+### `write_candles`
+
+Groups candles by partition, merges with existing files, writes Parquet.
+
+#### Usage
+
+```python
+paths = write_candles(candles, base_path="data", ts_config=None, merge_strategy="auto")
+```
+
+#### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `candles` | `list[Candle]` | required | Candle batch to write |
+| `base_path` | `str` | `"data"` | Base output directory |
+| `ts_config` | `TimestampConfig \| None` | `None` | Timestamp resolution (defaults to second resolution) |
+| `merge_strategy` | `str` | `"auto"` | Row merge strategy: `"auto"`, `"memory"`, or `"duckdb"` |
+
+### `write_funding_rates`
+
+Groups funding rates by partition, merges with existing files, writes Parquet.
+
+#### Usage
+
+```python
+paths = write_funding_rates(rates, base_path="data", ts_config=None, merge_strategy="auto")
+```
+
+#### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `rates` | `list[FundingRate]` | required | Funding rate batch to write |
+| `base_path` | `str` | `"data"` | Base output directory |
+| `ts_config` | `TimestampConfig \| None` | `None` | Timestamp resolution (defaults to second resolution) |
+| `merge_strategy` | `str` | `"auto"` | Row merge strategy: `"auto"`, `"memory"`, or `"duckdb"` |
 
 ### Merge functions
 
@@ -295,99 +415,128 @@ See [Parquet Schema](parquet-schema.md) for the full column type mapping.
 
 High-level ingestion services that combine fetching, validation, and storage.
 
+### Import
+
 ```python
 from crypto_market_data_platform.ingestion import OhlcvService, FundingRateService
 ```
 
+### `OhlcvService`
+
+#### Usage
+
 ```python
-class OhlcvService:
-    def __init__(
-        self,
-        provider: OHLCVProvider,
-        ts_config: TimestampConfig | None = None,
-    ) -> None: ...
-
-    def ingest(
-        self,
-        symbol: str,
-        timeframe: str,
-        start: datetime,
-        end: datetime,
-        base_path: str = "data",
-        merge_strategy: str = "auto",
-    ) -> int:
-        """Fetch → validate → write. Returns candle count."""
-
-
-class FundingRateService:
-    def __init__(
-        self,
-        ts_config: TimestampConfig | None = None,
-    ) -> None: ...
-
-    def ingest(
-        self,
-        rates: list[FundingRate],
-        base_path: str = "data",
-        merge_strategy: str = "auto",
-    ) -> int:
-        """Validate → write. Returns row count."""
+service = OhlcvService(provider, ts_config=None)
+count = service.ingest(symbol, timeframe, start, end, base_path="data", merge_strategy="auto")
 ```
+
+#### Parameters — constructor
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `provider` | `OHLCVProvider` | required | Provider instance for fetching data |
+| `ts_config` | `TimestampConfig \| None` | `None` | Timestamp resolution configuration |
+
+#### Parameters — `ingest`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `symbol` | `str` | required | Trading pair symbol |
+| `timeframe` | `str` | required | Candle interval |
+| `start` | `datetime` | required | Start of range (inclusive) |
+| `end` | `datetime` | required | End of range (exclusive) |
+| `base_path` | `str` | `"data"` | Base output directory |
+| `merge_strategy` | `str` | `"auto"` | Row merge strategy |
+
+#### Examples
+
+```python
+>>> from crypto_market_data_platform.ingestion import OhlcvService
+>>> from crypto_market_data_platform.providers import FakeProvider
+>>> from datetime import datetime, timezone
+>>> service = OhlcvService(FakeProvider())
+>>> count = service.ingest("BTC/USDT", "1h",
+...     datetime(2026, 5, 27, tzinfo=timezone.utc),
+...     datetime(2026, 5, 28, tzinfo=timezone.utc))
+>>> count
+1
+```
+
+### `FundingRateService`
+
+#### Usage
+
+```python
+service = FundingRateService(ts_config=None)
+count = service.ingest(rates, base_path="data", merge_strategy="auto")
+```
+
+#### Parameters — constructor
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ts_config` | `TimestampConfig \| None` | `None` | Timestamp resolution configuration |
+
+#### Parameters — `ingest`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `rates` | `list[FundingRate]` | required | Funding rates to validate and write |
+| `base_path` | `str` | `"data"` | Base output directory |
+| `merge_strategy` | `str` | `"auto"` | Row merge strategy |
 
 ---
 
 ## `crypto_market_data_platform.query`
 
+Query interface for stored datasets.
+
+### Import
+
 ```python
 from crypto_market_data_platform.query import QueryService, DuckDBQueryService
 ```
 
+### `QueryService`
+
+Abstract base class.
+
+#### Usage
+
 ```python
 class QueryService(ABC):
-    @abstractmethod
     def list_datasets(self, base_path: str = "data") -> dict[str, list[str]]: ...
+    def get_candles(self, base_path: str = "data", exchange: str | None = None,
+        symbol: str | None = None, timeframe: str | None = None,
+        start: str | None = None, end: str | None = None,
+        limit: int = 100, order: str = "DESC") -> list[Candle]: ...
+    def get_funding_rates(self, base_path: str = "data",
+        exchange: str | None = None, symbol: str | None = None,
+        start: str | None = None, end: str | None = None,
+        limit: int = 100, order: str = "DESC") -> list[FundingRate]: ...
+    def get_summary(self, base_path: str = "data") -> list[dict[str, Any]]: ...
+    def raw_sql(self, sql: str, base_path: str = "data") -> list[dict[str, Any]]: ...
+```
 
-    @abstractmethod
-    def get_candles(
-        self,
-        base_path: str = "data",
-        exchange: str | None = None,
-        symbol: str | None = None,
-        timeframe: str | None = None,
-        start: str | None = None,
-        end: str | None = None,
-        limit: int = 100,
-        order: str = "DESC",
-    ) -> list[Candle]: ...
+### `DuckDBQueryService`
 
-    @abstractmethod
-    def get_funding_rates(
-        self,
-        base_path: str = "data",
-        exchange: str | None = None,
-        symbol: str | None = None,
-        start: str | None = None,
-        end: str | None = None,
-        limit: int = 100,
-        order: str = "DESC",
-    ) -> list[FundingRate]: ...
+Implementation backed by DuckDB `read_parquet`.
 
-    @abstractmethod
-    def get_summary(
-        self,
-        base_path: str = "data",
-    ) -> list[dict[str, Any]]: ...
+#### Usage
 
-    @abstractmethod
-    def raw_sql(
-        self,
-        sql: str,
-        base_path: str = "data",
-    ) -> list[dict[str, Any]]: ...
+```python
+qs = DuckDBQueryService()
+datasets = qs.list_datasets()
+candles = qs.get_candles(exchange="bitfinex", limit=5)
+```
 
+#### Examples
 
-class DuckDBQueryService(QueryService):
-    """Implementation backed by DuckDB read_parquet."""
+```python
+>>> from crypto_market_data_platform.query import DuckDBQueryService
+>>> qs = DuckDBQueryService()
+>>> qs.list_datasets()
+{'candle': ['bitfinex/BTC/USD/1h']}
 ```
 
 ### Internal helpers
@@ -423,47 +572,95 @@ def DuckDBQueryService._build_query(
 
 ## `crypto_market_data_platform.config`
 
+Configuration types.
+
+### Import
+
 ```python
 from crypto_market_data_platform.config import TimestampConfig
 ```
 
+### `TimestampConfig`
+
+#### Usage
+
 ```python
-@dataclass(slots=True)
-class TimestampConfig:
-    resolution: str = "s"  # "s" or "us"
-    # Computed:
-    #   format: str          — "%Y-%m-%dT%H:%M:%S" or "%Y-%m-%dT%H:%M:%S.%f"
-    #   parquet_type: pa.DataType  — pa.timestamp("s") or pa.timestamp("us")
+config = TimestampConfig(resolution="s")
 ```
+
+#### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `resolution` | `str` | `"s"` | Timestamp resolution: `"s"` (seconds) or `"us"` (microseconds) |
+
+Computed properties:
+
+| Property | `"s"` (default) | `"us"` |
+|----------|-----------------|--------|
+| `format` | `"%Y-%m-%dT%H:%M:%S"` | `"%Y-%m-%dT%H:%M:%S.%f"` |
+| `parquet_type` | `pa.timestamp("s")` | `pa.timestamp("us")` |
 
 ---
 
 ## `crypto_market_data_platform.server`
+
+REST server factory and configuration.
+
+### Import
 
 ```python
 from crypto_market_data_platform.server import create_app
 from crypto_market_data_platform.server.config import ServerConfig
 ```
 
-```python
-def create_app(config: ServerConfig | None = None) -> FastAPI:
-    """Factory function. Creates FastAPI app with all routers mounted.
-    Injects query_service and base_path into app.state.
-    Adds CORSMiddleware (allow all origins/methods/headers).
-    Adds global exception handler returning {"error": <msg>, "code": 500}.
-    Includes 6 routers: health, datasets, candles, funding, query, summary."""
+### `create_app`
 
-@dataclass(slots=True)
-class ServerConfig:
-    host: str = "127.0.0.1"
-    port: int = 8000
-    base_path: str = "data"
-    query_service: QueryService = field(default_factory=DuckDBQueryService)
+Factory function. Creates FastAPI app with all routers mounted.
+
+#### Usage
+
+```python
+app = create_app(config)
 ```
+
+#### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `config` | `ServerConfig \| None` | `None` | Server configuration (uses defaults if `None`) |
+
+### `ServerConfig`
+
+#### Usage
+
+```python
+config = ServerConfig(host="127.0.0.1", port=8000, base_path="data")
+```
+
+#### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `host` | `str` | `"127.0.0.1"` | Bind address |
+| `port` | `int` | `8000` | Bind port |
+| `base_path` | `str` | `"data"` | Base data directory |
+| `query_service` | `QueryService` | `DuckDBQueryService()` | Query service instance |
+
+### App behaviour
+
+- Injects `query_service` and `base_path` into `app.state`.
+- Adds `CORSMiddleware` (allow all origins/methods/headers).
+- Adds global exception handler returning `{"error": <msg>, "code": 500}`.
+- Includes 6 routers: health, datasets, candles, funding, query, summary.
 
 ---
 
 ## `crypto_market_data_platform.benchmark`
+
+Performance benchmark tooling.
+
+### Import
 
 ```python
 from crypto_market_data_platform.benchmark import (
@@ -473,35 +670,57 @@ from crypto_market_data_platform.benchmark import (
 )
 ```
 
+### `PipelineRunner`
+
+Abstract base class for benchmark runners.
+
+#### Usage
+
 ```python
 class PipelineRunner(ABC):
-    @abstractmethod
-    def run_coarse(
-        self, count: int,
-        ts_config: TimestampConfig,
-        base_path: str,
-    ) -> BenchmarkResult: ...
-
-    def run_verbose(
-        self, count: int,
-        ts_config: TimestampConfig,
-        base_path: str,
-    ) -> BenchmarkResult: ...
-
-class CandlePipelineRunner(PipelineRunner):
-    """Synthetic benchmark: creates Candle objects → table → write → read."""
-
-class ProviderCandlePipelineRunner(PipelineRunner):
-    """Live provider benchmark: fetches real candles → validate → write → read."""
-    def __init__(
-        self,
-        provider: OHLCVProvider,
-        symbol: str = "BTC/USDT",
-        timeframe: str = "1h",
-        start: datetime | None = None,
-        end: datetime | None = None,
-    ) -> None: ...
+    def run_coarse(self, count: int, ts_config: TimestampConfig,
+        base_path: str) -> BenchmarkResult: ...
+    def run_verbose(self, count: int, ts_config: TimestampConfig,
+        base_path: str) -> BenchmarkResult: ...
 ```
+
+### `CandlePipelineRunner`
+
+Synthetic benchmark: creates `Candle` objects → table → write → read.
+
+#### Usage
+
+```python
+runner = CandlePipelineRunner()
+result = runner.run_coarse(count=1000, ts_config=ts_config, base_path="/tmp/bench")
+```
+
+### `ProviderCandlePipelineRunner`
+
+Live provider benchmark: fetches real candles → validate → write → read.
+
+#### Usage
+
+```python
+runner = ProviderCandlePipelineRunner(
+    provider=BitfinexProvider(),
+    symbol="BTC/USD",
+    timeframe="1h",
+    start=datetime(2026, 1, 1, tzinfo=timezone.utc),
+    end=datetime(2026, 1, 2, tzinfo=timezone.utc),
+)
+result = runner.run_coarse(count=1, ts_config=ts_config, base_path="/tmp/bench")
+```
+
+#### Parameters — constructor
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `provider` | `OHLCVProvider` | required | Provider to benchmark |
+| `symbol` | `str` | `"BTC/USDT"` | Trading pair symbol |
+| `timeframe` | `str` | `"1h"` | Candle interval |
+| `start` | `datetime \| None` | `None` | Start of range |
+| `end` | `datetime \| None` | `None` | End of range |
 
 ### Dataclasses
 
@@ -529,18 +748,32 @@ def evaluate_rules(
 
 ## `crypto_market_data_platform.utils`
 
+Utility functions.
+
+### Import
+
 ```python
 from crypto_market_data_platform.utils.parquet_viewer import run_inspect
 ```
 
+### `run_inspect`
+
+Inspect a Parquet file or directory. Returns formatted text output.
+
+#### Usage
+
 ```python
-def run_inspect(
-    path_str: str,
-    limit: int = 10,
-    start: str | None = None,
-    end: str | None = None,
-    show_stats: bool = False,
-    show_verbose: bool = False,
-) -> str:
-    """Inspect a Parquet file or directory. Returns formatted text output."""
+output = run_inspect(path_str, limit=10, start=None, end=None,
+    show_stats=False, show_verbose=False)
 ```
+
+#### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `path_str` | `str` | required | Path to a `.parquet` file or dataset directory |
+| `limit` | `int` | `10` | Max rows in sample output |
+| `start` | `str \| None` | `None` | Start of timestamp range (inclusive), ISO-8601 |
+| `end` | `str \| None` | `None` | End of timestamp range (exclusive), ISO-8601 |
+| `show_stats` | `bool` | `False` | Show column statistics |
+| `show_verbose` | `bool` | `False` | Show full Parquet metadata |

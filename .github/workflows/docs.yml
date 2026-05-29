@@ -14,12 +14,12 @@ jobs:
 
     steps:
       - name: Checkout docs source branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: docs/mkdocs-material
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -38,7 +38,7 @@ jobs:
           cp docs/reference/*.md site/reference/
 
       - name: Deploy built site to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
