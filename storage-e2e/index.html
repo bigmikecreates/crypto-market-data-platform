@@ -1450,14 +1450,14 @@ loops paginated responses, and maps each raw JSON row to a <code>Candle</code> d
 with all-string fields.</p>
 <p>All numeric fields are strings at this point. This keeps the provider boundary
 simple — no type casting, no Decimal imports, no schema decisions.</p>
-<p>→ See <code>OHLCVProvider</code> in the <a href="/reference/#/python-api">Python API Reference</a>
+<p>→ See <code>OHLCVProvider</code> in the <a href="../reference/python-api/">Python API Reference</a>
 for the exact method signature.</p>
 <hr />
 <h2 id="stage-2-validation">Stage 2 — Validation<a class="headerlink" href="#stage-2-validation" title="Permanent link">&para;</a></h2>
 <p><code>validate_candle_batch()</code> runs per-candle checks on the string values.
 Validation is <strong>advisory</strong> — issues are printed to stderr but writes proceed.
 The persisted data can be inspected later to diagnose provider issues.</p>
-<p>→ See <a href="/reference/#/validation-rules">Validation Rules Reference</a> for the
+<p>→ See <a href="../reference/validation-rules/">Validation Rules Reference</a> for the
 exact rule codes and descriptions.</p>
 <hr />
 <h2 id="stage-3-partition-routing">Stage 3 — Partition Routing<a class="headerlink" href="#stage-3-partition-routing" title="Permanent link">&para;</a></h2>
@@ -1465,7 +1465,7 @@ exact rule codes and descriptions.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>data/{exchange}/{symbol}/{timeframe}/{date}.parquet
 </code></pre></div>
 <p>Candles are grouped by target path so each partition is processed independently.</p>
-<p>→ See <a href="/reference/#/parquet-schema">Parquet Schema Reference</a> for the
+<p>→ See <a href="../reference/parquet-schema/">Parquet Schema Reference</a> for the
 exact partition layout and path helpers.</p>
 <hr />
 <h2 id="stage-4-type-casting">Stage 4 — Type Casting<a class="headerlink" href="#stage-4-type-casting" title="Permanent link">&para;</a></h2>
@@ -1487,8 +1487,8 @@ to every read query, break sort order, and lose predicate pushdown.</p>
    decision. Changing column types requires changing one function, not six
    providers.</li>
 </ol>
-<p>→ See <code>candle_to_table()</code> in the <a href="/reference/#/python-api">Python API Reference</a>
-for the exact function signature, and <a href="/reference/#/parquet-schema">Parquet Schema Reference</a>
+<p>→ See <code>candle_to_table()</code> in the <a href="../reference/python-api/">Python API Reference</a>
+for the exact function signature, and <a href="../reference/parquet-schema/">Parquet Schema Reference</a>
 for the full column-type mapping.</p>
 <hr />
 <h2 id="stage-5-row-level-upsert-merge">Stage 5 — Row-Level Upsert Merge<a class="headerlink" href="#stage-5-row-level-upsert-merge" title="Permanent link">&para;</a></h2>
@@ -1522,12 +1522,12 @@ by key (skip identical, replace changed, append new), write back.</p>
 <li><strong>Append-safe</strong>: new rows are added without affecting existing rows.</li>
 </ul>
 <p>→ See merge function signatures and strategy details in the
-<a href="/reference/#/python-api">Python API Reference</a>.</p>
+<a href="../reference/python-api/">Python API Reference</a>.</p>
 <hr />
 <h2 id="funding-rate-variant">Funding Rate Variant<a class="headerlink" href="#funding-rate-variant" title="Permanent link">&para;</a></h2>
 <p>Funding rates follow the same stages with a different column set and path.
 The merge key omits <code>timeframe</code> (funding rates have no timeframe field).</p>
-<p>→ See <a href="/reference/#/parquet-schema">Parquet Schema Reference</a> for the
+<p>→ See <a href="../reference/parquet-schema/">Parquet Schema Reference</a> for the
 exact column set and partition layout for funding rates.</p>
 
 

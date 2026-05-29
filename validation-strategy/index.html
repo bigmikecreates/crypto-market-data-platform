@@ -1648,11 +1648,11 @@
 <p>This is currently mostly handled by the <code>Candle</code> dataclass constructor, but because all fields are strings, this only confirms shape, not semantic validity.</p>
 <h3 id="2-type-parse-validation">2. Type / Parse Validation<a class="headerlink" href="#2-type-parse-validation" title="Permanent link">&para;</a></h3>
 <p>Question: <em>Can values be parsed into the types required by storage and analysis?</em></p>
-<p>→ See <a href="/reference/#/validation-rules">Validation Rules Reference</a> for the
+<p>→ See <a href="../reference/validation-rules/">Validation Rules Reference</a> for the
 exact rule codes (<code>INVALID_DECIMAL</code>, <code>INVALID_TIMESTAMP</code>, etc.).</p>
 <h3 id="3-market-data-domain-invariant-validation">3. Market-Data Domain Invariant Validation<a class="headerlink" href="#3-market-data-domain-invariant-validation" title="Permanent link">&para;</a></h3>
 <p>Question: <em>Does the candle make sense as OHLCV market data?</em></p>
-<p>→ See <a href="/reference/#/validation-rules">Validation Rules Reference</a> for the
+<p>→ See <a href="../reference/validation-rules/">Validation Rules Reference</a> for the
 exact OHLC invariant checks (<code>high &gt;= open</code>, <code>low &lt;= close</code>, etc.).</p>
 <h3 id="4-time-series-validation">4. Time-Series Validation<a class="headerlink" href="#4-time-series-validation" title="Permanent link">&para;</a></h3>
 <p>Question: <em>Does the candle batch make sense as timestamped data?</em></p>
@@ -1683,7 +1683,7 @@ without silently returning malformed data. Tests should use fixtures where
 possible to avoid requiring live network access.</p>
 <h3 id="7-storage-validation">7. Storage Validation<a class="headerlink" href="#7-storage-validation" title="Permanent link">&para;</a></h3>
 <p>Question: <em>Did the validated records land correctly in storage?</em></p>
-<p>→ See <a href="/reference/#/validation-rules">Validation Rules Reference</a> for the
+<p>→ See <a href="../reference/validation-rules/">Validation Rules Reference</a> for the
 exact storage validation rules (partition correctness, schema correctness,
 row-count checking, duplicate detection).</p>
 <h2 id="sequencing">Sequencing<a class="headerlink" href="#sequencing" title="Permanent link">&para;</a></h2>

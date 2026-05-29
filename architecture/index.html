@@ -1337,7 +1337,7 @@ Because symbols can contain <code>/</code> (e.g. <code>BTC/USDT</code>), the dis
 uses the penultimate directory component as an anchor — if it is a timeframe
 (e.g. <code>1h</code>) the dataset is candles; if it is <code>funding_rate</code>, it is funding
 rates.</p>
-<p>→ See <a href="/reference/#/parquet-schema">Parquet Schema Reference</a> for the
+<p>→ See <a href="../reference/parquet-schema/">Parquet Schema Reference</a> for the
 exact directory layout.</p>
 <h3 id="connection-per-query-duckdb-usage">Connection-per-query DuckDB usage<a class="headerlink" href="#connection-per-query-duckdb-usage" title="Permanent link">&para;</a></h3>
 <p>DuckDB connects, executes, and closes per query. This is cheap for an
@@ -1352,7 +1352,7 @@ schema is read at query time, so schema changes are automatically picked up.</p>
 </ol>
 <p>Each boundary has a single responsibility. When a bug surfaces, you know which
 gate should have caught it.</p>
-<p>→ See <a href="/reference/#/python-api">Python API Reference</a> for the full list of
+<p>→ See <a href="../reference/python-api/">Python API Reference</a> for the full list of
 implemented components and their public signatures.</p>
 
 

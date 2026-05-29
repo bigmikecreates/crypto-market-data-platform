@@ -206,18 +206,18 @@ Error: [Errno 13] Permission denied
 
 Query stored datasets.
 
-### `cmpd query ohlcv`
+#### `cmpd query ohlcv`
 
 Query candle data.
 
-#### Usage
+##### Usage
 
 ```bash
 cmpd query ohlcv [--path DIR] [--exchange EXCH] [--symbol SYM]
     [--timeframe TF] [--start TS] [--end TS] [--limit N]
 ```
 
-#### Options
+##### Options
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -229,7 +229,7 @@ cmpd query ohlcv [--path DIR] [--exchange EXCH] [--symbol SYM]
 | `--end` | ISO-8601 | — | End timestamp (exclusive) |
 | `--limit`, `-n` | `int` | `10` | Max rows |
 
-#### Examples
+##### Examples
 
 Success:
 
@@ -248,18 +248,18 @@ $ cmpd query ohlcv --exchange nonexistent --symbol "NONEXISTENT"
 (no results)
 ```
 
-### `cmpd query funding-rate`
+#### `cmpd query funding-rate`
 
 Query funding rate data.
 
-#### Usage
+##### Usage
 
 ```bash
 cmpd query funding-rate [--path DIR] [--exchange EXCH] [--symbol SYM]
     [--start TS] [--end TS] [--limit N]
 ```
 
-#### Options
+##### Options
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -270,7 +270,7 @@ cmpd query funding-rate [--path DIR] [--exchange EXCH] [--symbol SYM]
 | `--end` | ISO-8601 | — | End timestamp (exclusive) |
 | `--limit`, `-n` | `int` | `10` | Max rows |
 
-#### Examples
+##### Examples
 
 Success:
 
@@ -289,17 +289,17 @@ $ cmpd query funding-rate --exchange nonexistent --symbol "NONEXISTENT"
 (no results)
 ```
 
-### `cmpd query sql`
+#### `cmpd query sql`
 
 Run raw SQL via DuckDB.
 
-#### Usage
+##### Usage
 
 ```bash
 cmpd query sql "SELECT ..." [--path DIR] [--limit N]
 ```
 
-#### Options
+##### Options
 
 | Parameter | Type | Position | Default | Description |
 |-----------|------|----------|---------|-------------|
@@ -309,7 +309,7 @@ cmpd query sql "SELECT ..." [--path DIR] [--limit N]
 
 Use `read_parquet('data/**/*.parquet')` to query all stored data.
 
-#### Examples
+##### Examples
 
 Success:
 
@@ -331,4 +331,4 @@ CatalogException: Catalog Error: Table with name nonexistent does not exist!
 
 ---
 
-See [Python API Reference](/reference/#/python-api) for provider classes, symbol mappings, URL endpoints, and rate-limit configuration.
+See [Python API Reference](reference/python-api.md) for provider classes, symbol mappings, URL endpoints, and rate-limit configuration.

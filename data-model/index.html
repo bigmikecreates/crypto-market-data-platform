@@ -1309,13 +1309,13 @@ stored as <code>str</code>, not <code>Decimal</code> or <code>float</code>.</p>
 <p>All numeric columns are written as <code>decimal128(38,10)</code> at the storage
 boundary. This provides exact decimal arithmetic, native DuckDB sort/filter,
 and a fixed schema independent of ticker price ranges.</p>
-<p>→ See <a href="/reference/#/parquet-schema">Parquet Schema Reference</a> for the full
+<p>→ See <a href="../reference/parquet-schema/">Parquet Schema Reference</a> for the full
 column-type mapping, dictionary encoding details, and partition layout.</p>
 <h2 id="timestamp-handling">Timestamp handling<a class="headerlink" href="#timestamp-handling" title="Permanent link">&para;</a></h2>
 <p>Timestamps are stored as strings in the model (<code>"2026-05-27T12:00:00"</code>) and
 converted to <code>timestamp[s]</code> or <code>timestamp[us]</code> at write time according to
 <code>TimestampConfig</code>.</p>
-<p>→ See <code>TimestampConfig</code> in the <a href="/reference/#/python-api">Python API Reference</a>
+<p>→ See <code>TimestampConfig</code> in the <a href="../reference/python-api/">Python API Reference</a>
 for the full dataclass definition.</p>
 <h2 id="query-side-normalisation">Query-side normalisation<a class="headerlink" href="#query-side-normalisation" title="Permanent link">&para;</a></h2>
 <p>When reading back, returned data is normalised so the round-trip
