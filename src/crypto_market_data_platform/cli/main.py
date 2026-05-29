@@ -42,9 +42,7 @@ def fetch(
         "--mdt",
         help="Market data type: ohlcv or funding-rate",
     ),
-    symbol: str = typer.Option(
-        ..., "--symbol", help="Trading pair symbol"
-    ),
+    symbol: str = typer.Option(..., "--symbol", help="Trading pair symbol"),
     timeframe: str = typer.Option(
         ..., "--timeframe", help="Candle timeframe (ohlcv only)"
     ),

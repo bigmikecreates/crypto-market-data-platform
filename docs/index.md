@@ -91,4 +91,4 @@ python scripts/benchmark_pipeline.py profile --provider bitfinex
 | `query sql` | Run raw SQL via DuckDB `read_parquet` |
 | `serve` | Start the FastAPI REST server |
 
-→ See [CLI Reference](/reference/#/cli) for full command options.
+→ See [CLI Reference](reference/cli.md) for full command options.

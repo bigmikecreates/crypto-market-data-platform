@@ -59,7 +59,7 @@ with all-string fields.
 All numeric fields are strings at this point. This keeps the provider boundary
 simple — no type casting, no Decimal imports, no schema decisions.
 
-→ See `OHLCVProvider` in the [Python API Reference](/reference/#/python-api)
+→ See `OHLCVProvider` in the [Python API Reference](reference/python-api.md)
 for the exact method signature.
 
 ---
@@ -70,7 +70,7 @@ for the exact method signature.
 Validation is **advisory** — issues are printed to stderr but writes proceed.
 The persisted data can be inspected later to diagnose provider issues.
 
-→ See [Validation Rules Reference](/reference/#/validation-rules) for the
+→ See [Validation Rules Reference](reference/validation-rules.md) for the
 exact rule codes and descriptions.
 
 ---
@@ -85,7 +85,7 @@ data/{exchange}/{symbol}/{timeframe}/{date}.parquet
 
 Candles are grouped by target path so each partition is processed independently.
 
-→ See [Parquet Schema Reference](/reference/#/parquet-schema) for the
+→ See [Parquet Schema Reference](reference/parquet-schema.md) for the
 exact partition layout and path helpers.
 
 ---
@@ -113,8 +113,8 @@ to every read query, break sort order, and lose predicate pushdown.
    decision. Changing column types requires changing one function, not six
    providers.
 
-→ See `candle_to_table()` in the [Python API Reference](/reference/#/python-api)
-for the exact function signature, and [Parquet Schema Reference](/reference/#/parquet-schema)
+→ See `candle_to_table()` in the [Python API Reference](reference/python-api.md)
+for the exact function signature, and [Parquet Schema Reference](reference/parquet-schema.md)
 for the full column-type mapping.
 
 ---
@@ -163,7 +163,7 @@ Two implementations, selected automatically or by user override:
 - **Append-safe**: new rows are added without affecting existing rows.
 
 → See merge function signatures and strategy details in the
-[Python API Reference](/reference/#/python-api).
+[Python API Reference](reference/python-api.md).
 
 ---
 
@@ -172,5 +172,5 @@ Two implementations, selected automatically or by user override:
 Funding rates follow the same stages with a different column set and path.
 The merge key omits `timeframe` (funding rates have no timeframe field).
 
-→ See [Parquet Schema Reference](/reference/#/parquet-schema) for the
+→ See [Parquet Schema Reference](reference/parquet-schema.md) for the
 exact column set and partition layout for funding rates.

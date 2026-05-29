@@ -119,14 +119,14 @@ This is currently mostly handled by the `Candle` dataclass constructor, but beca
 
 Question: *Can values be parsed into the types required by storage and analysis?*
 
-→ See [Validation Rules Reference](/reference/#/validation-rules) for the
+→ See [Validation Rules Reference](reference/validation-rules.md) for the
 exact rule codes (`INVALID_DECIMAL`, `INVALID_TIMESTAMP`, etc.).
 
 ### 3. Market-Data Domain Invariant Validation
 
 Question: *Does the candle make sense as OHLCV market data?*
 
-→ See [Validation Rules Reference](/reference/#/validation-rules) for the
+→ See [Validation Rules Reference](reference/validation-rules.md) for the
 exact OHLC invariant checks (`high >= open`, `low <= close`, etc.).
 
 ### 4. Time-Series Validation
@@ -173,7 +173,7 @@ possible to avoid requiring live network access.
 
 Question: *Did the validated records land correctly in storage?*
 
-→ See [Validation Rules Reference](/reference/#/validation-rules) for the
+→ See [Validation Rules Reference](reference/validation-rules.md) for the
 exact storage validation rules (partition correctness, schema correctness,
 row-count checking, duplicate detection).
 
