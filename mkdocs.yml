@@ -55,8 +55,10 @@ nav:
   - Benchmark Design: benchmark-design.md
   - Performance Notes: performance-notes.md
   - Roadmap: roadmap.md
+  - API Reference: api-reference.md
   - References:
     - Validation Strategy: validation-strategy.md
+    - Storage E2E: storage-e2e.md
     - Provider Selection: benchmarks/provider-selection.md
     - Bitfinex Integration: lessons-from-bitfinex-integration.md
     - KuCoin Integration: lessons-from-kucoin-integration.md
