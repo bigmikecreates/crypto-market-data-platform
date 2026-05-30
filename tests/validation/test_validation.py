@@ -1,8 +1,8 @@
 import pytest
 
-from crypto_market_data_platform.models.candle import Candle
-from crypto_market_data_platform.validation.candles import validate_candle_batch
-from crypto_market_data_platform.validation.patterns import (
+from cmpd.models.candle import Candle
+from cmpd.validation.candles import validate_candle_batch
+from cmpd.validation.patterns import (
     _decimal_gte,
     _digit_count,
 )

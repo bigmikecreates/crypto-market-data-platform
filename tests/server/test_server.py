@@ -1,11 +1,11 @@
 from fastapi.testclient import TestClient
 from pytest import fixture
 
-from crypto_market_data_platform.models.candle import Candle
-from crypto_market_data_platform.models.funding_rate import FundingRate
-from crypto_market_data_platform.server import create_app
-from crypto_market_data_platform.server.config import ServerConfig
-from crypto_market_data_platform.storage.parquet_writer import (
+from cmpd.models.candle import Candle
+from cmpd.models.funding_rate import FundingRate
+from cmpd.server import create_app
+from cmpd.server.config import ServerConfig
+from cmpd.storage.parquet_writer import (
     write_candles,
     write_funding_rates,
 )
@@ -142,6 +142,45 @@ class TestRawQuery:
         rows = resp.json()
         assert rows[0]["cnt"] == 2
 
+    def test_raw_query_with_cte(self, client, tmp_path):
+        _write_candle_fixtures(str(tmp_path))
+        resp = client.post(
+            "/query",
+            json={
+                "sql": "WITH q AS (SELECT 1 AS x) SELECT x FROM q",
+                "path": str(tmp_path),
+            },
+        )
+        assert resp.status_code == 200
+
+    def test_raw_query_blocks_copy(self, client):
+        resp = client.post(
+            "/query",
+            json={"sql": "COPY (SELECT 1) TO '/tmp/out.csv'", "path": "data"},
+        )
+        assert resp.status_code == 400
+
+    def test_raw_query_blocks_install(self, client):
+        resp = client.post(
+            "/query",
+            json={"sql": "INSTALL httpfs", "path": "data"},
+        )
+        assert resp.status_code == 400
+
+    def test_raw_query_blocks_create(self, client):
+        resp = client.post(
+            "/query",
+            json={"sql": "CREATE TABLE t AS SELECT 1", "path": "data"},
+        )
+        assert resp.status_code == 400
+
+    def test_raw_query_blocks_drop(self, client):
+        resp = client.post(
+            "/query",
+            json={"sql": "DROP TABLE t", "path": "data"},
+        )
+        assert resp.status_code == 400
+
     def test_raw_query_invalid_body(self, client):
         resp = client.post("/query", json={})
         assert resp.status_code == 422
@@ -185,7 +224,7 @@ class TestErrorHandling:
             def raw_sql(self, sql, base_path="data"):
                 raise RuntimeError("boom")
 
-        from crypto_market_data_platform.server.config import ServerConfig
+        from cmpd.server.config import ServerConfig
 
         cfg = ServerConfig(
             base_path="/nonexistent", query_service=FailingQueryService()

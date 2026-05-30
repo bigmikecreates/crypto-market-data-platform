@@ -21,19 +21,19 @@ from typing import Any
 
 import typer
 
-from crypto_market_data_platform.benchmark import RUNNERS, BenchmarkResult
-from crypto_market_data_platform.benchmark.rules import (
+from cmpd.benchmark import RUNNERS, BenchmarkResult
+from cmpd.benchmark.rules import (
     DEFAULT_RULES,
     VERBOSE_RULES,
     evaluate_rules,
 )
-from crypto_market_data_platform.benchmark.runners import ProviderCandlePipelineRunner
-from crypto_market_data_platform.config import TimestampConfig
-from crypto_market_data_platform.models.candle import Candle
-from crypto_market_data_platform.providers.bitfinex import BitfinexProvider
-from crypto_market_data_platform.providers.fake import FakeProvider
-from crypto_market_data_platform.providers.kucoin import KuCoinProvider
-from crypto_market_data_platform.storage.parquet_writer import (
+from cmpd.benchmark.runners import ProviderCandlePipelineRunner
+from cmpd.config import TimestampConfig
+from cmpd.models.candle import Candle
+from cmpd.providers.bitfinex import BitfinexProvider
+from cmpd.providers.fake import FakeProvider
+from cmpd.providers.kucoin import KuCoinProvider
+from cmpd.storage.parquet_writer import (
     _to_decimal128,
     _to_timestamp,
 )

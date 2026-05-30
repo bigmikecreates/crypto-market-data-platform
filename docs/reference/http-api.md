@@ -1,6 +1,6 @@
 # HTTP API Reference
 
-The REST server is started via `cmpd serve` or programmatically via [`create_app`](python-api.md#crypto_market_data_platformserver).
+The REST server is started via `cmpd serve` or programmatically via [`create_app`](python-api.md#cmpdserver).
 
 OpenAPI/Swagger UI is available at `http://localhost:8000/docs` when the server is running.
 

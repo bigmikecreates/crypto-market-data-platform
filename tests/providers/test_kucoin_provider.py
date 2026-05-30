@@ -5,8 +5,8 @@ from typing import Any
 
 import pytest
 
-from crypto_market_data_platform.models.candle import Candle
-from crypto_market_data_platform.providers.kucoin import (
+from cmpd.models.candle import Candle
+from cmpd.providers.kucoin import (
     KuCoinProvider,
     _parse_row,
     _to_kc_symbol,
@@ -29,7 +29,7 @@ class TestKuCoinProvider:
         self.end = datetime(2024, 1, 2, tzinfo=timezone.utc)
 
     def test_provider_is_ohlcv_provider(self) -> None:
-        from crypto_market_data_platform.providers.base import OHLCVProvider
+        from cmpd.providers.base import OHLCVProvider
 
         assert isinstance(self.provider, OHLCVProvider)
 

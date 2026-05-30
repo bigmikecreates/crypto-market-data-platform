@@ -2,11 +2,11 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from crypto_market_data_platform.cli.main import app
-from crypto_market_data_platform.models.candle import Candle
-from crypto_market_data_platform.models.funding_rate import FundingRate
-from crypto_market_data_platform.query import DuckDBQueryService
-from crypto_market_data_platform.storage.parquet_writer import (
+from cmpd.cli.main import app
+from cmpd.models.candle import Candle
+from cmpd.models.funding_rate import FundingRate
+from cmpd.query import DuckDBQueryService
+from cmpd.storage.parquet_writer import (
     write_candles,
     write_funding_rates,
 )

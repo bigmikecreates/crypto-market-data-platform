@@ -6,9 +6,9 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 
-from crypto_market_data_platform.config import TimestampConfig
-from crypto_market_data_platform.models.funding_rate import FundingRate
-from crypto_market_data_platform.storage.parquet_writer import (
+from cmpd.config import TimestampConfig
+from cmpd.models.funding_rate import FundingRate
+from cmpd.storage.parquet_writer import (
     funding_rate_to_table,
     _path_for_funding_rate,
     write_funding_rates,

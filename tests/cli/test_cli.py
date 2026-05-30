@@ -3,7 +3,7 @@ from pathlib import Path
 import pyarrow.parquet as pq
 from typer.testing import CliRunner
 
-from crypto_market_data_platform.cli.main import app
+from cmpd.cli.main import app
 
 runner = CliRunner()
 

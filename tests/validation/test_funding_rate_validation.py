@@ -1,7 +1,7 @@
 import pytest
 
-from crypto_market_data_platform.models.funding_rate import FundingRate
-from crypto_market_data_platform.validation.funding_rates import (
+from cmpd.models.funding_rate import FundingRate
+from cmpd.validation.funding_rates import (
     validate_funding_rate_batch,
 )
 
