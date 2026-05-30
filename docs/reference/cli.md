@@ -1,74 +1,124 @@
 # CLI Reference
 
-Entry point: `cmpd` (`cmpd.cli.main:app`)
+Entry point: `cmpd` — installed by `pip install -e .` and wired to `cmpd.cli.main:app`.
+
+---
 
 ## `cmpd fetch`
 
-Fetch market data and write to partitioned Parquet.
+Fetch market data from a provider and write to partitioned Parquet. Validates all records before writing; fails without writing if validation does not pass.
 
 ### Usage
 
 ```bash
-cmpd fetch --mdt {ohlcv,funding-rate} --symbol SYMBOL --timeframe TIMEFRAME \
-    --start START --end END --provider PROVIDER \
-    [--output DIR] [--merge-strategy {auto,memory,duckdb}]
+cmpd fetch \
+  --mdt {ohlcv,funding-rate} \
+  --symbol SYMBOL [--symbol SYMBOL ...] \
+  --timeframe TIMEFRAME \
+  --start START \
+  --end END \
+  --provider PROVIDER \
+  [--output DIR] \
+  [--merge-strategy {auto,memory,duckdb}] \
+  [--workers N]
 ```
 
 ### Options
 
-| Option | Type | Default | Applies to | Description |
-|--------|------|---------|------------|-------------|
-| `--mdt` | `str` | required | `both` | Market data type: `ohlcv` or `funding-rate` |
-| `--symbol` | `str` | required | `both` | Trading pair symbol. Always quote to prevent shell splitting. |
-| `--timeframe` | `str` | required | `ohlcv` only | Candle timeframe (e.g. `1h`, `1d`) |
-| `--start` | ISO-8601 | required | `both` | Start time. Formats: `2026-01-01` or `2026-01-01T00:00:00` |
-| `--end` | ISO-8601 | required | `both` | End time |
-| `--provider` | `str` | required | `ohlcv` only | Data provider: `fake`, `bitfinex`, `bitstamp`, `kucoin`, `bybit`, `mexc`. When `--mdt funding-rate`, this value is accepted but ignored — the provider is always `FakeProvider`. |
-| `--output` | `str` | `"data"` | `both` | Base output directory |
-| `--merge-strategy` | `str` | `"auto"` | `both` | Row merge strategy: `auto`, `memory`, or `duckdb` |
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `--mdt` | `str` | required | Market data type: `ohlcv` or `funding-rate` |
+| `--symbol` | `str` (repeatable) | required | Trading pair symbol. Repeat the flag for multiple symbols: `--symbol BTC-USDT --symbol ETH-USDT`. Always quote symbols containing `/`. |
+| `--timeframe` | `str` | required | Candle timeframe: `1m`, `5m`, `15m`, `1h`, `4h`, `1d`. Provider support varies. |
+| `--start` | ISO-8601 | required | Start of the requested range. Formats: `2026-01-01` or `2026-01-01T00:00:00`. |
+| `--end` | ISO-8601 | required | End of the requested range (exclusive at the provider level; exact semantics vary by exchange). |
+| `--provider` | `str` | required | Provider name: `fake`, `bitfinex`, `bitstamp`, `kucoin`, `bybit`, `mexc`. Ignored when `--mdt funding-rate` (always `FakeProvider`). |
+| `--output` | `str` | `"data"` | Base output directory. Parquet files are written under `{output}/{exchange}/{symbol}/{timeframe}/{date}.parquet`. |
+| `--merge-strategy` | `str` | `"auto"` | Row merge strategy for existing partitions. See [Merge strategy](#merge-strategy) below. |
+| `--workers` | `int` | `4` | Number of concurrent symbol fetches. Applies when multiple `--symbol` values are given. Range: 1–32. |
 
 ### Merge strategy
 
-When the same partition is fetched twice, a naive append would produce duplicate rows. Each row is identified by a merge key:
+When a partition file for the requested date already exists, the writer performs a row-level upsert rather than overwriting or appending blindly. Each row is identified by its merge key:
 
 - **Candles:** `(exchange, symbol, timeframe, source, timestamp)`
 - **Funding rates:** `(exchange, symbol, source, timestamp)`
 
-On write, existing rows in the target Parquet file are compared against incoming rows using the merge key. Three strategies control how this comparison runs:
+Incoming rows are merged against existing rows: identical rows are skipped, rows whose key matches but values differ replace the existing row, and rows with no matching key are appended.
 
-| Strategy | Mechanism | Best for |
-|----------|-----------|----------|
-| `memory` | Python `set`-based dedup: builds a key index in memory, does a linear scan. | Partitions with fewer than 50,000 rows. |
-| `duckdb` | SQL anti-join via DuckDB: `SELECT e.* FROM existing e LEFT JOIN incoming i ON ... WHERE i.key IS NULL UNION ALL SELECT * FROM incoming` | Partitions with 50,000+ rows. Avoids loading the full existing partition into Python memory. |
-| `auto` | Dispatches to `memory` if the existing partition row count is below 50,000, otherwise to `duckdb`. | General use. Chosen as the default. |
+| Strategy | Mechanism | Use when |
+|---|---|---|
+| `memory` | Python `dict`-based key index over the existing table | Partitions with fewer than 50,000 existing rows |
+| `duckdb` | SQL `NOT EXISTS` anti-join via DuckDB: existing rows not present in incoming are kept; all incoming rows are appended | Partitions with 50,000 or more existing rows |
+| `auto` | Dispatches to `memory` below 50,000 rows, `duckdb` at or above | General use (default) |
 
-**Why this approach?** The merge-key upsert makes ingestion idempotent — fetching the same range twice produces identical files. It is also self-healing: if a provider returns a corrected candle for an existing timestamp, the old value is replaced on the next fetch.
+This merge makes ingestion **idempotent** — fetching the same range twice produces identical files — and **self-healing** — a corrected candle from the provider replaces the stale stored value on the next fetch.
 
-The `duckdb` variant was added (rather than always using `memory`) because the set-based approach loads the entire existing partition into a Python dict. For daily runs with years of data, the SQL anti-join keeps the working set inside DuckDB's engine instead.
+### Concurrent symbol fetching
+
+When multiple `--symbol` values are provided, `cmpd fetch` dispatches each symbol to a separate thread using `ThreadPoolExecutor(max_workers=workers)`. Each thread constructs its own provider instance and writes to a distinct partition path, so there are no write conflicts.
+
+For network-bound providers (KuCoin: ~30x Net/CPU ratio, Bitfinex: ~6x), concurrent fetches reduce wall-clock time proportionally to the number of workers, since each thread spends most of its time waiting on HTTP responses rather than executing Python.
 
 ### Examples
 
-Success:
+Single symbol, fake provider:
 
 ```bash
-$ cmpd fetch --mdt ohlcv --symbol "BTC/USDT" --timeframe 1h \
-    --start 2026-05-27 --end 2026-05-28 --provider fake
-Wrote 1 candle(s) to data/
+cmpd fetch \
+  --mdt ohlcv \
+  --symbol "BTC/USDT" \
+  --timeframe 1h \
+  --start 2026-01-01 \
+  --end 2026-01-02 \
+  --provider fake
+# Wrote 1 candle(s) for BTC/USDT to data/
 ```
 
-Error:
+Multiple symbols, live provider, 3 workers:
 
 ```bash
-$ cmpd fetch --mdt ohlcv --symbol "BTC/USDT" --timeframe 1h \
-    --start 2026-05-27 --end 2026-05-28 --provider nonexistent
-Unknown provider 'nonexistent'. Available: fake, bitfinex, bitstamp, kucoin, bybit, mexc
+cmpd fetch \
+  --mdt ohlcv \
+  --symbol "BTC-USDT" \
+  --symbol "ETH-USDT" \
+  --symbol "SOL-USDT" \
+  --timeframe 1h \
+  --start 2026-05-01 \
+  --end 2026-05-08 \
+  --provider kucoin \
+  --workers 3
+# Wrote 168 candle(s) for BTC-USDT to data/
+# Wrote 168 candle(s) for ETH-USDT to data/
+# Wrote 168 candle(s) for SOL-USDT to data/
+```
+
+Funding rates:
+
+```bash
+cmpd fetch \
+  --mdt funding-rate \
+  --symbol "BTC/USDT" \
+  --timeframe 1h \
+  --start 2026-01-01 \
+  --end 2026-01-02 \
+  --provider fake
+# Wrote 1 funding rate(s) for BTC/USDT to data/
+```
+
+Unknown provider:
+
+```bash
+cmpd fetch --mdt ohlcv --symbol "BTC/USDT" --timeframe 1h \
+    --start 2026-01-01 --end 2026-01-02 --provider nonexistent
+# Unknown provider 'nonexistent'. Available: fake, bitfinex, bitstamp, kucoin, bybit, mexc
 ```
 
 ---
 
 ## `cmpd datasets`
 
-List available datasets grouped by type.
+List all Parquet datasets under the data directory, grouped by type.
 
 ### Usage
 
@@ -79,93 +129,175 @@ cmpd datasets [--path DIR]
 ### Options
 
 | Option | Type | Default | Description |
-|--------|------|---------|-------------|
+|---|---|---|---|
 | `--path` | `str` | `"data"` | Base data directory |
 
 ### Examples
 
-Success:
-
 ```bash
-$ cmpd datasets
-  candle          bitfinex   BTC         USD   files=4  rows=144
-  candle          fake       BTC         USDT  files=1  rows=1
-  candle          fake       BTC-USD     1h    files=1  rows=32
+cmpd datasets
+  candle          kucoin     BTC-USDT    1h    files=7  rows=168
+  candle          kucoin     ETH-USDT    1h    files=7  rows=168
+  candle          fake       BTC/USDT    1h    files=1  rows=1
 ```
 
-Error:
-
 ```bash
-$ cmpd datasets --path /nonexistent
-No parquet files found under /nonexistent/
+cmpd datasets --path /nonexistent
+# No parquet files found under /nonexistent/
 ```
 
 ---
 
 ## `cmpd inspect`
 
-Inspect a Parquet file or dataset directory.
+Read one or more Parquet files and print schema, row count, and a data sample. Accepts either a single `.parquet` file or a directory (scanned recursively).
 
 ### Usage
 
 ```bash
-cmpd inspect --path PATH [--limit N] [--start TS] [--end TS]
-    [--stats] [--verbose]
+cmpd inspect --path PATH [--limit N] [--start TS] [--end TS] [--stats] [--verbose]
 ```
 
 ### Options
 
 | Option | Type | Default | Description |
-|--------|------|---------|-------------|
+|---|---|---|---|
 | `--path` | `str` | required | Path to a `.parquet` file or dataset directory |
-| `--limit`, `-n` | `int` | `10` | Max rows in sample |
-| `--start` | ISO-8601 | — | Start of timestamp range, inclusive |
-| `--end` | ISO-8601 | — | End of timestamp range, exclusive |
-| `--stats` | `bool` | `False` | Show column statistics |
-| `--verbose` | `bool` | `False` | Show full Parquet metadata |
+| `--limit`, `-n` | `int` | `10` | Maximum rows in the sample |
+| `--start` | ISO-8601 | — | Filter sample to rows at or after this timestamp |
+| `--end` | ISO-8601 | — | Filter sample to rows before this timestamp |
+| `--stats` | flag | off | Show column-level statistics (min, max, null count) |
+| `--verbose` | flag | off | Show full Parquet file metadata (row groups, compression, encoding) |
 
 ### Examples
 
-Success:
-
 ```bash
-$ cmpd inspect --path data --limit 3
-Directory: data
-Files: 6
-Rows: 177
-
-Schema:
-  exchange   string
-  symbol     string
-  timeframe  string
-  timestamp  timestamp[ms]
-  open       decimal128(38, 10)
-  high       decimal128(38, 10)
-  low        decimal128(38, 10)
-  close      decimal128(38, 10)
-  volume     decimal128(38, 10)
-  source     string
-
-Sample (first 3):
-  exchange │ symbol  │ timeframe │ timestamp           │ open  │ high  │ low   │ close │ volume     │ source
-  ──────── │ ─────── │ ───────── │ ─────────────────── │ ───── │ ───── │ ───── │ ───── │ ────────── │ ────────
-  bitfinex │ BTC/USD │ 1h        │ 2024-01-01T00:00:00 │ 42331 │ 42591 │ 42331 │ 42522 │ 9.03426154 │ bitfinex
-  bitfinex │ BTC/USD │ 1h        │ 2024-01-01T01:00:00 │ 42509 │ 42811 │ 42482 │ 42678 │ 21.5892983 │ bitfinex
-  bitfinex │ BTC/USD │ 1h        │ 2024-01-01T02:00:00 │ 42661 │ 42684 │ 42561 │ 42626 │ 5.41750572 │ bitfinex
+cmpd inspect --path data --limit 3
+# Directory: data
+# Files: 1  Rows: 1
+# Schema:
+#   exchange   string
+#   symbol     string
+#   ...
 ```
 
-Error:
+```bash
+cmpd inspect --path data/kucoin/BTC-USDT/1h/2026-05-01.parquet --stats
+```
+
+---
+
+## `cmpd query ohlcv`
+
+Query stored candle data using DuckDB. All filters are applied as SQL predicates over the partitioned Parquet files.
+
+### Usage
 
 ```bash
-$ cmpd inspect --path /nonexistent
-Error: Path does not exist: /nonexistent
+cmpd query ohlcv [--path DIR] [--exchange EXCH] [--symbol SYM]
+    [--timeframe TF] [--start TS] [--end TS] [--limit N]
+```
+
+### Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `--path` | `str` | `"data"` | Base data directory |
+| `--exchange` | `str` | — | Filter by exchange name |
+| `--symbol` | `str` | — | Filter by symbol |
+| `--timeframe` | `str` | — | Filter by timeframe |
+| `--start` | ISO-8601 | — | Return rows at or after this timestamp (inclusive) |
+| `--end` | ISO-8601 | — | Return rows before this timestamp (exclusive) |
+| `--limit`, `-n` | `int` | `10` | Maximum rows returned |
+
+### Examples
+
+```bash
+cmpd query ohlcv --symbol "BTC-USDT" --timeframe 1h --limit 3
+  exchange | symbol   | timeframe | timestamp           | open   | ...
+  -------- | -------- | --------- | ------------------- | ------ | ...
+  kucoin   | BTC-USDT | 1h        | 2026-05-01T00:00:00 | 94800  | ...
+  (3 row(s))
+```
+
+No match returns `(no results)` and exits 0.
+
+---
+
+## `cmpd query funding-rate`
+
+Query stored funding rate data.
+
+### Usage
+
+```bash
+cmpd query funding-rate [--path DIR] [--exchange EXCH] [--symbol SYM]
+    [--start TS] [--end TS] [--limit N]
+```
+
+### Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `--path` | `str` | `"data"` | Base data directory |
+| `--exchange` | `str` | — | Filter by exchange name |
+| `--symbol` | `str` | — | Filter by symbol |
+| `--start` | ISO-8601 | — | Return rows at or after this timestamp (inclusive) |
+| `--end` | ISO-8601 | — | Return rows before this timestamp (exclusive) |
+| `--limit`, `-n` | `int` | `10` | Maximum rows returned |
+
+### Examples
+
+```bash
+cmpd query funding-rate --symbol "BTC/USDT" --limit 3
+  exchange | symbol   | timestamp           | rate         | predicted_rate | ...
+  -------- | -------- | ------------------- | ------------ | -------------- | ...
+  fake     | BTC/USDT | 2026-01-01T00:00:00 | 0.0001000000 | 0.0002000000   | ...
+  (1 row(s))
+```
+
+---
+
+## `cmpd query sql`
+
+Execute a raw SQL query over stored Parquet files using DuckDB. Only `SELECT` and `WITH ... SELECT` statements are permitted; `COPY`, `CREATE`, `DROP`, `INSTALL`, and other write or extension commands are blocked at the server level and in the CLI wrapper.
+
+### Usage
+
+```bash
+cmpd query sql "SELECT ..." [--path DIR] [--limit N]
+```
+
+### Options
+
+| Parameter | Type | Position | Default | Description |
+|---|---|---|---|---|
+| `sql` | `str` | positional | required | SQL query string |
+| `--path` | `str` | named | `"data"` | Base data directory |
+| `--limit`, `-n` | `int` | named | `100` | Maximum rows returned |
+
+Use `read_parquet('data/**/*.parquet')` to query all stored data across all exchanges and symbols.
+
+### Examples
+
+```bash
+cmpd query sql "SELECT symbol, count(*) AS rows FROM read_parquet('data/**/*.parquet') GROUP BY symbol"
+  symbol   | rows
+  -------- | ----
+  BTC-USDT | 168
+  ETH-USDT | 168
+```
+
+```bash
+cmpd query sql "DROP TABLE t"
+# Error: Only SELECT (or WITH ... SELECT) statements are permitted.
 ```
 
 ---
 
 ## `cmpd serve`
 
-Start the FastAPI REST server.
+Start the FastAPI REST server. The server exposes the same query surface as the CLI over HTTP and accepts a `path` query parameter on each request to override the base data directory.
 
 ### Usage
 
@@ -176,159 +308,22 @@ cmpd serve [--host ADDR] [--port N] [--path DIR]
 ### Options
 
 | Option | Type | Default | Description |
-|--------|------|---------|-------------|
+|---|---|---|---|
 | `--host` | `str` | `"127.0.0.1"` | Bind address |
 | `--port`, `-p` | `int` | `8000` | Bind port |
-| `--path` | `str` | `"data"` | Base data directory |
+| `--path` | `str` | `"data"` | Default base data directory |
 
 ### Examples
 
-Success:
-
 ```bash
-$ cmpd serve --host 127.0.0.1 --port 8000
-INFO:     Started server process [12345]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+cmpd serve --host 127.0.0.1 --port 8000
+# INFO:     Started server process [12345]
+# INFO:     Application startup complete.
+# INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 ```
 
-Error:
-
-```bash
-$ cmpd serve --port 1
-Error: [Errno 13] Permission denied
-```
+→ See [HTTP API Reference](http-api.md) for endpoint documentation.
 
 ---
 
-## `cmpd query`
-
-Query stored datasets.
-
-#### `cmpd query ohlcv`
-
-Query candle data.
-
-##### Usage
-
-```bash
-cmpd query ohlcv [--path DIR] [--exchange EXCH] [--symbol SYM]
-    [--timeframe TF] [--start TS] [--end TS] [--limit N]
-```
-
-##### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `--path` | `str` | `"data"` | Base data directory |
-| `--exchange` | `str` | — | Filter by exchange |
-| `--symbol` | `str` | — | Filter by symbol |
-| `--timeframe` | `str` | — | Filter by timeframe |
-| `--start` | ISO-8601 | — | Start timestamp (inclusive) |
-| `--end` | ISO-8601 | — | End timestamp (exclusive) |
-| `--limit`, `-n` | `int` | `10` | Max rows |
-
-##### Examples
-
-Success:
-
-```bash
-$ cmpd query ohlcv --exchange fake --symbol "BTC/USDT" --limit 3
-  exchange | symbol | timeframe | timestamp | open | high | low | close | volume | source
-  ---------------------------------------------------------------------------------------
-  fake | BTC/USDT | 1h | 2026-05-27T00:00:00 | 100.0000000000 | 110.0000000000 | 90.0000000000 | 105.0000000000 | 10.0000000000 | fake
-  (1 row(s))
-```
-
-Error:
-
-```bash
-$ cmpd query ohlcv --exchange nonexistent --symbol "NONEXISTENT"
-(no results)
-```
-
-#### `cmpd query funding-rate`
-
-Query funding rate data.
-
-##### Usage
-
-```bash
-cmpd query funding-rate [--path DIR] [--exchange EXCH] [--symbol SYM]
-    [--start TS] [--end TS] [--limit N]
-```
-
-##### Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `--path` | `str` | `"data"` | Base data directory |
-| `--exchange` | `str` | — | Filter by exchange |
-| `--symbol` | `str` | — | Filter by symbol |
-| `--start` | ISO-8601 | — | Start timestamp (inclusive) |
-| `--end` | ISO-8601 | — | End timestamp (exclusive) |
-| `--limit`, `-n` | `int` | `10` | Max rows |
-
-##### Examples
-
-Success:
-
-```bash
-$ cmpd query funding-rate --exchange fake --symbol "BTC/USDT" --limit 3
-  exchange | symbol | timestamp | rate | predicted_rate | next_funding_time | source
-  ----------------------------------------------------------------------------------
-  fake | BTC/USDT | 2026-05-27T00:00:00 | 0.0001000000 | 0.0002000000 | 2026-01-01T16:00:00 | fake
-  (1 row(s))
-```
-
-Error:
-
-```bash
-$ cmpd query funding-rate --exchange nonexistent --symbol "NONEXISTENT"
-(no results)
-```
-
-#### `cmpd query sql`
-
-Run raw SQL via DuckDB.
-
-##### Usage
-
-```bash
-cmpd query sql "SELECT ..." [--path DIR] [--limit N]
-```
-
-##### Options
-
-| Parameter | Type | Position | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `sql` | `str` | positional | required | SQL query |
-| `--path` | `str` | named | `"data"` | Base data directory |
-| `--limit`, `-n` | `int` | named | `100` | Max rows |
-
-Use `read_parquet('data/**/*.parquet')` to query all stored data.
-
-##### Examples
-
-Success:
-
-```bash
-$ cmpd query sql "SELECT * FROM read_parquet('data/**/*.parquet') LIMIT 2"
-  exchange | symbol | timeframe | timestamp | open | high | low | close | volume | source
-  ---------------------------------------------------------------------------------------
-  bitfinex | BTC/USD | 1h | 2024-01-01T00:00:00 | 42331.0000000000 | 42591.0000000000 | 42331.0000000000 | 42522.0000000000 | 9.0342615400 | bitfinex
-  bitfinex | BTC/USD | 1h | 2024-01-01T01:00:00 | 42509.0000000000 | 42811.0000000000 | 42482.0000000000 | 42678.0000000000 | 21.5892983000 | bitfinex
-  (2 row(s))
-```
-
-Error:
-
-```bash
-$ cmpd query sql "SELECT * FROM nonexistent"
-CatalogException: Catalog Error: Table with name nonexistent does not exist!
-```
-
----
-
-See [Python API Reference](python-api.md) for provider classes, symbol mappings, URL endpoints, and rate-limit configuration.
+See [Python API Reference](python-api.md) for provider classes, symbol conventions, URL endpoints, and rate-limit configuration.

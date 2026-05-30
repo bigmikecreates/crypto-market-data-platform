@@ -1,231 +1,80 @@
 # Validation Strategy
 
-## Purpose
+The validation layer runs after provider ingestion and before any write to storage. It operates on batches of `Candle` or `FundingRate` records using string values — no `Decimal` objects are created during validation.
 
-This document defines the validation approach for the crypto market data platform.
+## Validation boundaries
 
-The goal is to introduce a validation layer without overdesigning provider-specific rules before real API providers expose their actual behaviour.
+The pipeline enforces validation at four explicit boundaries, each with a defined responsibility:
 
-The project should use a general methodology that is relevant to:
+| Boundary | Input → Output | Responsibility |
+|---|---|---|
+| **Provider** | Raw API response → `list[Candle]` | Field mapping, pagination, string assignment |
+| **Service** | `list[Candle]` → `ValidationResult` | Batch-level rule evaluation; blocks write on failure |
+| **Storage** | Validated batch → Parquet file | Schema casting, partition routing, row-level upsert |
+| **Query** | Parquet files → result rows | `read_parquet` execution, schema normalisation |
 
-- market data
-- timestamped/time-series data
-- provider integration
-- storage correctness
+Validation logic resides exclusively at the Service boundary. The provider boundary produces well-shaped records; the storage boundary trusts that the service has already validated them.
 
-The validation strategy should be refined iteratively as each real provider is added.
+## Current rule set
 
-## Core Principle
+Five provider-independent rules are applied to every `Candle` batch by `validate_candle_batch()`:
 
-Use layered validation with provider-informed refinement.
+| Rule code | Field(s) | What it checks |
+|---|---|---|
+| `EMPTY_FIELD` | All required fields | No field is `None` or an empty string |
+| `INVALID_DECIMAL` | `open`, `high`, `low`, `close`, `volume` | Matches the unsigned decimal pattern — no negatives, no non-numeric characters |
+| `INVALID_TIMESTAMP` | `timestamp` | Matches ISO-8601 format (`YYYY-MM-DDTHH:MM:SS` or microsecond precision) |
+| `OHLC_INVARIANT` | `open`, `high`, `low`, `close` | `high >= open`, `high >= close`, `low <= open`, `low <= close` |
+| `DUPLICATE_TIMESTAMP` | merge key | No two records in the batch share `(exchange, symbol, timeframe, source, timestamp)` |
 
-The stable methodology is:
+For funding rate batches, `validate_funding_rate_batch()` applies equivalent rules over the `FundingRate` field set.
 
-```text
-Validate at explicit system boundaries.
+## ValidationResult
+
+`validate_candle_batch()` returns a `ValidationResult`:
+
+```python
+@dataclass
+class ValidationResult:
+    passed: bool
+    issues: list[ValidationIssue]
 ```
 
-Validation should not be scattered randomly through providers, storage writers, CLI handlers, or benchmark code. The project should use clear validation gates.
+Each `ValidationIssue` records the candle index, rule code, affected field, and a human-readable message. The full batch is evaluated before returning — no early exit — so all issues in a batch are visible in a single call.
 
-## Validation Boundaries
+## Blocking behaviour
 
-### 1. Provider Boundary
+If `ValidationResult.passed` is `False`, the service raises `ValueError` and the writer is not called. No partial writes occur: the Parquet file is either untouched (existing partition) or not created (new partition).
 
-```text
-raw provider response -> Candle objects
-```
+Advisory validation — logging issues and writing anyway — would silently populate storage with records that violate domain invariants. Downstream queries would then operate on data the pipeline itself flagged as invalid, making the source of errors difficult to trace.
 
-This boundary checks whether provider-specific responses can be transformed into the canonical internal candle shape.
+## Decimal string comparison
 
-Examples:
+OHLC invariant checks compare decimal strings without constructing `Decimal` objects. `_decimal_gte(a, b)` operates directly on two unsigned decimal strings:
 
-- Kraken OHLC response -> `Candle`
-- FakeProvider hardcoded candle -> `Candle`
-- future Coinbase/OKX response -> `Candle`
+1. Compare integer-part lengths (a longer sequence of digits is always numerically larger for non-negative values with no leading zeros)
+2. If equal length, compare integer parts lexicographically
+3. Zero-pad fractional parts to equal length, then compare lexicographically
 
-### 2. Service Boundary
+This is consistent with the strings-first data model: values remain strings from provider ingestion through validation with no intermediate Python object allocation.
 
-```text
-Candle batch -> validated ingestion batch
-```
+## Design decisions
 
-This is where batch-level validation should happen.
+**Why provider-independent rules only?**
+Completeness rules (expected candle count), gap detection, and timestamp alignment depend on provider-specific pagination behaviour. Adding them before a real provider exposes that behaviour produces rules tuned to synthetic data that break on real API responses. The five current rules hold for any valid OHLC record, regardless of provider.
 
-Examples:
+**Why four OHLC invariant checks, not seven?**
+The seven standard OHLC invariants include `high >= low` and all fields `>= 0`. The rule set implements four: `high >= open`, `high >= close`, `low <= open`, `low <= close`. `high >= low` is entailed by these four via transitivity and is therefore never an independent failure. Non-negativity is enforced by `INVALID_DECIMAL`, which rejects the `-` prefix. Implementing entailed checks would never catch a case the primary four missed.
 
-- decimal parse validation
-- timestamp parse validation
-- OHLC invariant validation
-- duplicate timestamp validation
-- requested range validation
+**Why full-batch evaluation?**
+A paginated batch may contain multiple independent issues across different candles and fields. Failing on the first and requiring a retry reveals one issue per attempt. Full-batch evaluation returns all issues simultaneously, so a single call can identify, for example, that all 50 `INVALID_DECIMAL` failures are on `volume` because the provider is returning `"1,234"` instead of `"1234"`.
 
-### 3. Storage Boundary
+## Provider-informed refinement
 
-```text
-validated batch -> Parquet table/file
-```
+The current rule set is the starting point. Rules are added after observing real provider behaviour. Candidates identified from provider integrations completed so far:
 
-This boundary checks that validated candles are written correctly.
+- Timestamp alignment to timeframe boundaries (some providers return candle-open time, others candle-close time)
+- Completeness validation against the expected candle count for a time range and timeframe
+- Zero-volume candle handling (some providers omit them; others include them with `volume = "0"`)
 
-Examples:
-
-- partition correctness
-- row-count correctness
-- schema correctness
-- decimal128 conversion
-- timestamp resolution correctness
-
-### 4. Query Boundary
-
-```text
-stored dataset -> user/API/query result
-```
-
-This boundary checks that stored data can be queried and returned safely.
-
-Examples:
-
-- DuckDB query validation
-- date-range filtering
-- result schema validation
-- empty result handling
-
-## Validation Layers
-
-### 1. Shape Validation
-
-Question:
-
-```text
-Does each record have the required Candle fields?
-```
-
-Required fields:
-
-- exchange
-- symbol
-- timeframe
-- timestamp
-- open
-- high
-- low
-- close
-- volume
-- source
-
-This is currently mostly handled by the `Candle` dataclass constructor, but because all fields are strings, this only confirms shape, not semantic validity.
-
-### 2. Type / Parse Validation
-
-Question: *Can values be parsed into the types required by storage and analysis?*
-
-→ See [Validation Rules Reference](reference/validation-rules.md) for the
-exact rule codes (`INVALID_DECIMAL`, `INVALID_TIMESTAMP`, etc.).
-
-### 3. Market-Data Domain Invariant Validation
-
-Question: *Does the candle make sense as OHLCV market data?*
-
-→ See [Validation Rules Reference](reference/validation-rules.md) for the
-exact OHLC invariant checks (`high >= open`, `low <= close`, etc.).
-
-### 4. Time-Series Validation
-
-Question: *Does the candle batch make sense as timestamped data?*
-
-Initial rules: timestamps should be sortable, not duplicate within a batch,
-and fall within the requested range where applicable.
-
-Provider-informed rules to add later: timestamp alignment to timeframe
-boundaries, open-time vs close-time semantics, and partial candle behaviour.
-
-### 5. Completeness Validation
-
-Question:
-
-```text
-Did we receive all expected candles?
-```
-
-This should not be fully implemented before real providers.
-
-Completeness validation depends on provider behaviour, including:
-
-- pagination behaviour
-- sparse market behaviour
-- provider result caps
-- whether zero-volume candles are omitted
-- whether current/incomplete candles are included
-- whether timestamps represent candle-open or candle-close time
-
-Completeness validation should be added after Kraken or another real provider clarifies these behaviours.
-
-### 6. Provider Contract Validation
-
-Question: *Does each provider adapter obey the project's provider contract?*
-
-Each provider should prove that it returns `list[Candle]`, uses the canonical
-schema, documents timestamp semantics, and handles unsupported symbols/timeframes
-without silently returning malformed data. Tests should use fixtures where
-possible to avoid requiring live network access.
-
-### 7. Storage Validation
-
-Question: *Did the validated records land correctly in storage?*
-
-→ See [Validation Rules Reference](reference/validation-rules.md) for the
-exact storage validation rules (partition correctness, schema correctness,
-row-count checking, duplicate detection).
-
-## Sequencing
-
-### Before Kraken
-
-Implement the validation framework and only obvious provider-independent rules:
-
-- decimal parse validation
-- timestamp parse validation
-- OHLC invariant validation
-- duplicate timestamp validation within a batch
-- storage row-count/partition validation
-
-Do not overbuild completeness validation, provider scoring, gap classification, or provider-specific warnings yet.
-
-### During Kraken Integration
-
-Use real Kraken behaviour to refine validation.
-
-Document:
-
-- Kraken timestamp semantics
-- Kraken symbol mappings
-- Kraken timeframe mappings
-- empty response behaviour
-- unsupported symbol/timeframe behaviour
-- partial latest candle behaviour, if observed
-- pagination/result limit behaviour
-
-### After Kraken
-
-Add stronger provider-informed validation:
-
-- expected candle count validation
-- missing interval detection
-- pagination-aware validation
-- checkpoint/retry consistency checks
-- provider-specific warnings where justified
-
-## Important Principle
-
-The project should have a general validation methodology early, but not a rigid validation regime based only on fake data.
-
-The goal is:
-
-```text
-layered validation + provider-informed refinement
-```
-
-This avoids both failure modes:
-
-1. no validation strategy until providers expose bugs
-2. overengineering a speculative validation system before real provider behaviour is observed
+See [Validation Rules Reference](reference/validation-rules.md) for rule codes, severity levels, and descriptions.
