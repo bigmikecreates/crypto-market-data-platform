@@ -51,18 +51,19 @@ plugins:
 
 nav:
   - Home: index.md
+  - Getting Started: getting-started.md
   - Architecture: architecture.md
-  - Philosophy: philosophy.md
   - Data Model: data-model.md
   - Providers: providers.md
   - Validation Strategy: validation-strategy.md
-  - Storage E2E: storage-e2e.md
+  - Storage — Write Path: storage-e2e.md
+  - Philosophy: philosophy.md
   - Benchmark Design: benchmark-design.md
   - Performance Notes: performance-notes.md
   - Roadmap: roadmap.md
   - Lessons Learned:
     - Bitfinex Integration: lessons-from-bitfinex-integration.md
     - KuCoin Integration: lessons-from-kucoin-integration.md
-  - References:
+  - Deep Dives:
     - Provider Selection: benchmarks/provider-selection.md
-    - Design Rationale (full): benchmarks/design-rationale.md
+    - Design Rationale: benchmarks/design-rationale.md
