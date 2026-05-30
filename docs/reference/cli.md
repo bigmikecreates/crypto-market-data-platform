@@ -1,6 +1,6 @@
 # CLI Reference
 
-Entry point: `cmpd` (`crypto_market_data_platform.cli.main:app`)
+Entry point: `cmpd` (`cmpd.cli.main:app`)
 
 ## `cmpd fetch`
 

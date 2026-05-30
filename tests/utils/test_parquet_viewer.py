@@ -4,7 +4,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 
-from crypto_market_data_platform.utils.parquet_viewer import (
+from cmpd.utils.parquet_viewer import (
     discover_files,
     format_table,
     get_column_stats,

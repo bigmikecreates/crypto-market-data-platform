@@ -26,7 +26,7 @@ Benchmark (scripts/benchmark_pipeline.py) ───→ synthetic + live provider
 ## CLI Reference
 
 The binary is `cmpd` (installed as a console script via `pip install -e .`, or
-run via `python -m crypto_market_data_platform.cli.main`):
+run via `python -m cmpd.cli.main`):
 
 | Command | Description |
 |---------|-------------|

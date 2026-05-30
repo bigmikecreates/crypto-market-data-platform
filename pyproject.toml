@@ -1,36 +1,50 @@
 [project]
-name = "crypto_market_data_platform"
+name = "cmpd"
 version = "0.1.0"
 requires-python = ">=3.12"
 description = "Local-first crypto market data ingestion, validation, storage, and query platform."
 dependencies = [
-    "pandas",
-    "polars",
     "pyarrow",
     "duckdb",
-    "pydantic",
     "typer",
     "fastapi",
     "uvicorn[standard]",
+    "urllib3",
 ]
 
 [project.optional-dependencies]
 test = [
     "pytest",
+    "pytest-cov",
     "httpx",
+    "hypothesis",
 ]
 lint = [
     "ruff",
     "mypy",
-    "pandas-stubs",
     "pyarrow-stubs",
 ]
 docs = [
-    "mkdocs-material"
+    "mkdocs-material",
 ]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --tb=short -x"
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = ["*/benchmark/*"]
+
+[tool.coverage.report]
+show_missing = true
+
 [project.scripts]
-cmpd = "crypto_market_data_platform.cli.main:app"
+cmpd = "cmpd.cli.main:app"
 
 [build-system]
 requires = ["setuptools", "wheel"]

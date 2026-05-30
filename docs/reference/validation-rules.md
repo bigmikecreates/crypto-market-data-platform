@@ -23,8 +23,8 @@ Validated via [`validate_candle_batch`](python-api.md#validate_candle_batch).
 Success:
 
 ```python
->>> from crypto_market_data_platform.validation import validate_candle_batch
->>> from crypto_market_data_platform.models.candle import Candle
+>>> from cmpd.validation import validate_candle_batch
+>>> from cmpd.models.candle import Candle
 >>> candles = [
 ...     Candle("fake", "BTC/USDT", "1h", "2026-05-27T00:00:00",
 ...         "100", "110", "90", "105", "10", "fake"),
@@ -71,8 +71,8 @@ Validated via [`validate_funding_rate_batch`](python-api.md#validate_funding_rat
 Success:
 
 ```python
->>> from crypto_market_data_platform.validation import validate_funding_rate_batch
->>> from crypto_market_data_platform.models.funding_rate import FundingRate
+>>> from cmpd.validation import validate_funding_rate_batch
+>>> from cmpd.models.funding_rate import FundingRate
 >>> rates = [
 ...     FundingRate("fake", "BTC/USDT", "2026-05-27T00:00:00",
 ...         "0.0001", "0.0002", "2026-01-01T16:00:00", "fake"),

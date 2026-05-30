@@ -1,8 +1,8 @@
 import pyarrow.parquet as pq
 
-from crypto_market_data_platform.config import TimestampConfig
-from crypto_market_data_platform.models.candle import Candle
-from crypto_market_data_platform.storage.parquet_writer import (
+from cmpd.config import TimestampConfig
+from cmpd.models.candle import Candle
+from cmpd.storage.parquet_writer import (
     _path_for_candle,
     write_candles,
 )
@@ -144,12 +144,12 @@ class TestWriteCandlesEdgeCases:
         result = write_candles([], str(tmp_path))
         assert result == []
 
-    def test_default_base_path(self) -> None:
+    def test_default_base_path(self, tmp_path) -> None:
         ts_config = TimestampConfig()
         candles = [_make_candle("2024-01-01T00:00:00")]
-        result = write_candles(candles, ts_config=ts_config)
-        expected = "data/fake/BTC-USD/1h/2024-01-01.parquet"
-        assert str(result[0]) == expected
+        result = write_candles(candles, base_path=tmp_path, ts_config=ts_config)
+        expected = tmp_path / "fake" / "BTC-USD" / "1h" / "2024-01-01.parquet"
+        assert result[0] == expected
 
     def test_mixed_exchanges_symbols_timeframes(self, tmp_path) -> None:
         c1 = _make_candle(

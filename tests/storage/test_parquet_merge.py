@@ -1,9 +1,9 @@
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from crypto_market_data_platform.config import TimestampConfig
-from crypto_market_data_platform.models.candle import Candle
-from crypto_market_data_platform.storage.parquet_writer import (
+from cmpd.config import TimestampConfig
+from cmpd.models.candle import Candle
+from cmpd.storage.parquet_writer import (
     _CANDLE_KEY_COLS,
     _merge_tables,
     _merge_via_set,
@@ -45,7 +45,7 @@ class TestMergeViaSet:
         c2 = _make_candle("2024-01-01T01:00:00")
         ts = TimestampConfig()
 
-        from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+        from cmpd.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c1], ts)  # same c1, no changes
@@ -61,7 +61,7 @@ class TestMergeViaSet:
         c3 = _make_candle("2024-01-01T02:00:00")
         ts = TimestampConfig()
 
-        from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+        from cmpd.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1], ts)
         incoming = candle_to_table([c2, c3], ts)
@@ -75,7 +75,7 @@ class TestMergeViaSet:
         c2 = _make_candle("2024-01-01T01:00:00")
         ts = TimestampConfig()
 
-        from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+        from cmpd.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c1_updated], ts)
@@ -93,7 +93,7 @@ class TestMergeViaSet:
         c3 = _make_candle("2024-01-01T02:00:00", open_str="102.00")
         ts = TimestampConfig()
 
-        from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+        from cmpd.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c2_updated, c3], ts)
@@ -107,7 +107,7 @@ class TestMergeViaSet:
         c1 = _make_candle("2024-01-01T00:00:00")
         ts = TimestampConfig()
 
-        from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+        from cmpd.storage.parquet_writer import candle_to_table
 
         existing = pa.Table.from_pydict({})
         incoming = candle_to_table([c1], ts)
@@ -119,7 +119,7 @@ class TestMergeViaSet:
         c1 = _make_candle("2024-01-01T00:00:00")
         ts = TimestampConfig()
 
-        from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+        from cmpd.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1], ts)
         incoming = pa.Table.from_pydict({})
@@ -136,7 +136,7 @@ class TestMergeViaDuckDB:
         c2 = _make_candle("2024-01-01T01:00:00")
         ts = TimestampConfig()
 
-        from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+        from cmpd.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c1], ts)
@@ -149,7 +149,7 @@ class TestMergeViaDuckDB:
         c2 = _make_candle("2024-01-01T01:00:00")
         ts = TimestampConfig()
 
-        from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+        from cmpd.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1], ts)
         incoming = candle_to_table([c2], ts)
@@ -162,7 +162,7 @@ class TestMergeViaDuckDB:
         c1_updated = _make_candle("2024-01-01T00:00:00", open_str="200.00")
         ts = TimestampConfig()
 
-        from crypto_market_data_platform.storage.parquet_writer import candle_to_table
+        from cmpd.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1], ts)
         incoming = candle_to_table([c1_updated], ts)
@@ -171,6 +171,22 @@ class TestMergeViaDuckDB:
         assert result.num_rows == 1
         opens = [str(v) for v in result.column("open").to_pylist()]
         assert opens == ["200.0000000000"]
+
+    def test_duckdb_updated_row_among_multiple_existing(self) -> None:
+        c1 = _make_candle("2024-01-01T00:00:00", open_str="100.00")
+        c1_updated = _make_candle("2024-01-01T00:00:00", open_str="200.00")
+        c2 = _make_candle("2024-01-01T01:00:00", open_str="101.00")
+        ts = TimestampConfig()
+
+        from cmpd.storage.parquet_writer import candle_to_table
+
+        existing = candle_to_table([c1, c2], ts)
+        incoming = candle_to_table([c1_updated], ts)
+
+        result = _merge_via_duckdb(existing, incoming, _CANDLE_KEY_COLS)
+        assert result.num_rows == 2
+        opens = sorted(str(v) for v in result.column("open").to_pylist())
+        assert opens == ["101.0000000000", "200.0000000000"]
 
 
 class TestMergeDispatcher:

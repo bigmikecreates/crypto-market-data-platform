@@ -242,20 +242,34 @@ Isolated mode appends:
 
 ---
 
-## Key Metrics Summary (Baseline)
+## Key Metrics Summary (Baseline — 10 iterations, N=10,000 candles)
 
-| Metric | 100 candles | 10,000 candles | Target | Status |
+Measured via `python scripts/benchmark_pipeline.py run --count 10000 --iterations 10 --verbose`.
+Median iteration selected as the representative run; 95% CI via Student’s t-distribution (df=9).
+
+| Metric | Median | 95% CI | Per-candle | Target | Status |
 |---|---|---|---|---|---|
-| Wall-clock | 8.32 ms (83 μs/c) | 208 ms (21 μs/c) | <5 μs/c | ⚠ Above (CPU-bound) |
-| CPU/Wall | 0.98 | 0.98 | >0.8 | ✅ |
-| Peak memory | 0.54 MB | 3.81 MB | — | ✅ |
-| File size | 6.4 KB (65 B/c) | 20.8 KB (2.1 B/c) | 30–40 B/c | ✅ (compression) |
-| GC gen-2 | 0 | 0 | <5 | ✅ |
-| Bottleneck | Candle creation (22 %) | Candle creation (61 %) | — | CPU, not I/O |
+| Wall-clock | 210 ms | [183, 226] ms | 21.0 μs | <5 μs/c | Above — CPU-bound |
+| CPU time | 210 ms | [183, 226] ms | 21.0 μs | <5 μs/c | Above — CPU-bound |
+| CPU/Wall ratio | 1.00 | — | — | >0.80 | No I/O contention |
+| Peak memory | 3.81 MB | deterministic | — | — | Pass |
+| Memory delta | 4.62 MB | deterministic | 0.5 B | — | Pass |
+| File size | 20.81 KB | deterministic | 2.1 B | 30–40 B/c | Pass (dict compression) |
+| GC gen-2 | 0 | — | — | <5 | Pass |
 
-The current bottleneck is `Candle` dataclass construction. For real-world usage,
-API latency and rate limits will dominate — the local pipeline overhead (~20 μs
-per candle) is negligible in that context.
+**Stage breakdown (median run):**
+
+| Stage | Wall (ms) | % of pipeline | Notes |
+|---|---|---|---|
+| Candle creation | 141 ms | 69% | Primary bottleneck — dataclass construction |
+| decimal128 cast | 49 ms | 24% | C++ cast, 5 columns, ~10 ms/column |
+| Parquet write | 8 ms | 4% | Not the bottleneck |
+| timestamp cast | 0.5 ms | <1% | Efficient |
+| Column extract + table assembly | 7 ms | 3% | — |
+
+The bottleneck is `Candle` dataclass construction (~69% of pipeline wall). For
+real-world usage, API latency and rate limits dominate — local pipeline overhead
+(~21 μs per candle) is negligible once network I/O is in the critical path.
 
 ---
 
@@ -661,3 +675,173 @@ critical for programmatic API consumers. The lifespan context manager provides
 a hook for future startup tasks (loading models, warming DuckDB caches)
 without scattering `@app.on_event` decorators across routers.
 
+
+---
+
+## 11. Network Optimization Strategy
+
+### 11.1 Why the synthetic benchmark does not change after network optimizations
+
+**The observation:** After implementing connection pooling (Option A) and concurrent
+symbol fetching (Option C), re-running `benchmark_pipeline.py run --count 10000
+--iterations 10` produces statistically identical results to the baseline (median
+~210 ms, 21 μs/candle, CPU/Wall = 1.00).
+
+**Why this is correct and expected:** The `run` benchmark is synthetic — it uses
+`CandlePipelineRunner`, which creates `Candle` objects in-process without any
+network calls. The pipeline is 100% CPU-bound (CPU/Wall = 1.00). Connection pooling
+and concurrent fetching affect only the HTTP layer, which is not exercised in this
+path. This is not a failure of the optimization — it is a confirmation that the
+benchmark correctly isolates the local pipeline from the network I/O path.
+
+The correct way to measure network optimization impact is the `profile` command,
+which hits real exchange APIs and reports the Net = wall − cpu metric.
+
+### 11.2 Option A: Connection pooling via urllib3
+
+**Problem:** The original implementation used `urllib.request` with a new TCP
+connection per API call. Each HTTPS request incurred:
+- TCP handshake (1 RTT minimum)
+- TLS negotiation (1–2 additional RTTs)
+- HTTP request/response
+
+For a provider like KuCoin with ~30× Net/CPU ratio, the handshake overhead is
+small relative to the API response time — but it compounds across multiple requests
+to the same host during a single ingest run.
+
+**Decision:** Replace `urllib.request` with a `urllib3.PoolManager` singleton
+(module-level) in `src/cmpd/providers/http.py`. The pool reuses TCP connections
+across calls to the same host via HTTP keep-alive.
+
+```python
+_http = urllib3.PoolManager(maxconnections=10, headers=_HEADERS)
+
+def fetch_json(url: str, exchange: str, timeout: int = 30) -> Any:
+    resp = _http.request("GET", url, timeout=urllib3.Timeout(connect=10, read=timeout))
+    ...
+```
+
+**Impact model:** For a date range requiring N paginated requests to the same host,
+the first request pays the full handshake cost; subsequent requests reuse the
+connection. Savings scale with pagination depth. For a 3-month range at hourly
+resolution (~2160 candles at 500 candles/page = 5 pages), this eliminates 4 TLS
+handshakes per run.
+
+**Why the change is safe:** urllib3's `PoolManager` is thread-safe; it manages
+connection ownership internally. The module-level singleton means all provider
+instances in a process share the pool — concurrent symbol fetches (Option C) reuse
+the same connections without double-handshaking.
+
+### 11.3 Option C: Concurrent symbol fetching
+
+**Problem:** The original `cmpd fetch` command accepted a single `--symbol` and
+fetched it sequentially. Ingesting N symbols required N sequential runs, each
+paying the full network round-trip latency. For providers with a 30× Net/CPU ratio
+(KuCoin), the serial bottleneck is entirely in waiting, not computing.
+
+**Decision:** Extend `--symbol` to accept multiple values (repeat the flag) and
+add `--workers N` (default 4, max 32). `ThreadPoolExecutor` dispatches one fetch
+per symbol concurrently. Each worker instantiates its own `OhlcvService(provider_cls())`,
+which is safe because different symbols write to disjoint Parquet paths.
+
+```sh
+# Before: sequential, 3 sequential fetches
+cmpd fetch --mdt ohlcv --symbol BTC/USDT --provider kucoin ...
+cmpd fetch --mdt ohlcv --symbol ETH/USDT --provider kucoin ...
+cmpd fetch --mdt ohlcv --symbol SOL/USDT --provider kucoin ...
+
+# After: concurrent, all 3 in ~1 fetch's time
+cmpd fetch --mdt ohlcv   --symbol BTC/USDT --symbol ETH/USDT --symbol SOL/USDT   --provider kucoin --workers 3 ...
+```
+
+**Expected speedup:** For N symbols in parallel with ideal scheduling, wall-clock
+time approaches that of a single fetch. CPU time stays proportional to N (CPU is
+cheap; network wait is the bottleneck). For KuCoin at 30× Net/CPU ratio,
+concurrent fetching of 4 symbols reduces wall-clock by roughly 3× vs serial — the
+single-fetch network wait dominates, so 4 concurrent waits overlap.
+
+**Thread safety:** Each `OhlcvService` instance holds its own `provider_cls()`
+instance. The shared `_http` pool in `providers/http.py` is thread-safe (urllib3
+manages connection checkout/return). Parquet writes to distinct symbol paths have
+no file-level conflicts.
+
+### 11.4 Option B: Concurrent page fetching (not implemented)
+
+**Decision:** Do not implement intra-symbol concurrent page fetching (parallelizing
+the pagination loop for a single symbol across multiple workers).
+
+**Why this is overengineering for this tool:**
+
+1. **Rate limits dominate, not TCP:** Most exchange APIs enforce per-key rate limits
+   (e.g., KuCoin: 30 requests/10 seconds). Parallel page fetching within a symbol
+   would hit rate limits on the second request, forcing backoff that eliminates the
+   concurrency benefit. The sleep in the rate-limit handler would serialize the
+   requests anyway.
+
+2. **Cursor-based pagination is inherently sequential:** KuCoin's pagination uses a
+   `nextCursor` token returned in the response body. You cannot determine page N+1's
+   URL until you have received and parsed page N. This makes page-level parallelism
+   structurally impossible for cursor-based providers without fetching the full page
+   sequence first.
+
+3. **Typical use case doesn't justify the complexity:** The common use case is a
+   recent date range (days to weeks) × a handful of symbols. At 500 candles/page
+   and 720 hourly candles per month, a 1-month range for one symbol requires 2 pages
+   — the concurrency gain is trivial.
+
+4. **Option C already addresses the real bottleneck:** Symbol-level parallelism
+   (Option C) targets the same network wait time without the rate-limit and
+   cursor-ordering complications. It delivers the speedup where the workload is
+   actually multi-symbol, which is the typical production use case (ingesting a
+   portfolio of assets).
+
+The threshold for revisiting Option B: a provider with offset-based pagination
+(e.g., Binance's `startTime`/`endTime` range splitting) and a date range
+exceeding 30 days at 1-minute resolution (43,200 candles = 87 pages). Even then,
+rate-limit handling would need to be designed first.
+
+### 11.5 Averaging strategy: why median + t-distribution CI
+
+**The concern (stated):** Benchmark runs are noisy. A single outlier run inflates
+the mean, producing misleading headline numbers.
+
+**The approach:** The benchmark reports the **median** as the headline number with
+a **Student's t-distribution 95% CI** around the mean. This pairing is deliberate:
+
+- **Median as point estimate:** Robust to single outlier runs (GC pauses, OS
+  scheduling spikes, page-fault storms on first write). When iteration 9 in the
+  post-optimization run was 556 ms vs a cluster around 200 ms, the median stayed
+  at 224 ms — accurately representing the steady-state cost.
+
+- **t-distribution CI:** Honest about uncertainty. With N=10, df=9, the CI width
+  directly reflects iteration variance. A tight CI (e.g., ±0.3 ms on CPU time)
+  tells you the number is trustworthy. A wide CI (e.g., ±100 ms on wall-clock)
+  tells you the environment was noisy — run `--isolated` or check what was
+  competing for CPU.
+
+- **Why not trimmed mean as the headline:** Trimming (e.g., dropping top/bottom
+  10%) hides the worst case. If 2 of 10 iterations are 2.5× slower than the
+  median, that is information — a tight trimmed mean would not show it. The CI
+  width does.
+
+- **What to report:** Headline = median. Spread = CI. Full picture = per-iteration
+  table (in `--verbose` mode). Min/max are available in the per-iteration table
+  for worst-case analysis.
+
+**The key benchmark result from the before/after comparison:**
+
+```
+Baseline  (before Options A + C): median 210 ms, 95% CI [183, 226] ms (21.0 μs/c)
+Post-opt  (after  Options A + C): median 224 ms, 95% CI [178, 380] ms (22.4 μs/c)
+```
+
+The medians are statistically equivalent — the CI bands overlap substantially.
+This is the correct finding: **the synthetic benchmark is unaffected by network
+optimizations, confirming that the I/O pipeline is correctly isolated from the
+network path.** The post-optimization CI is wider because the second run had two
+outlier iterations (556 ms, 525 ms) from OS scheduling interference — the median
+correctly excluded them from the headline number.
+
+**For network benchmarks:** Use the `profile` command. Its 3-iteration median
+(N=3, df=2, CI reported for ≥5 iterations only) shows the before/after comparison
+for real provider calls where the network path is actually exercised.

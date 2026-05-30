@@ -1,7 +1,12 @@
 from datetime import datetime
 
-from crypto_market_data_platform.models.candle import Candle
-from crypto_market_data_platform.providers.fake import FakeProvider
+from cmpd.models.candle import Candle
+from cmpd.models.funding_rate import FundingRate
+from cmpd.providers.base import (
+    FundingRateProvider,
+    OHLCVProvider,
+)
+from cmpd.providers.fake import FakeProvider
 
 
 class TestFakeProvider:
@@ -68,3 +73,19 @@ class TestFakeProvider:
         )
         c = result[0]
         assert c.source == c.exchange
+
+    def test_implements_ohlcv_provider_abc(self) -> None:
+        assert isinstance(self.provider, OHLCVProvider)
+
+    def test_implements_funding_rate_provider_abc(self) -> None:
+        assert isinstance(self.provider, FundingRateProvider)
+
+    def test_fetch_funding_rates_returns_list(self) -> None:
+        result = self.provider.fetch_funding_rates(
+            symbol="BTC/USDT",
+            start=self.start,
+            end=self.end,
+        )
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert isinstance(result[0], FundingRate)

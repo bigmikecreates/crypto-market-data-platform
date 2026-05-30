@@ -2,14 +2,14 @@
 
 ---
 
-## `crypto_market_data_platform.providers`
+## `cmpd.providers`
 
 All providers implement the abstract base class `OHLCVProvider`.
 
 ### Import
 
 ```python
-from crypto_market_data_platform.providers import (
+from cmpd.providers import (
     BitfinexProvider, BitstampProvider, BybitProvider,
     FakeProvider, KuCoinProvider, MexcProvider,
 )
@@ -53,7 +53,7 @@ rates = provider.fetch_funding_rates("BTC/USDT", start, end)
 #### Examples
 
 ```python
->>> from crypto_market_data_platform.providers import FakeProvider
+>>> from cmpd.providers import FakeProvider
 >>> from datetime import datetime, timezone
 >>> p = FakeProvider()
 >>> candles = p.fetch_ohlcv("BTC/USDT", "1h",
@@ -142,15 +142,15 @@ class MexcProvider(OHLCVProvider):
 
 ---
 
-## `crypto_market_data_platform.models`
+## `cmpd.models`
 
 Data model classes.
 
 ### Import
 
 ```python
-from crypto_market_data_platform.models.candle import Candle
-from crypto_market_data_platform.models.funding_rate import FundingRate
+from cmpd.models.candle import Candle
+from cmpd.models.funding_rate import FundingRate
 ```
 
 ### Models
@@ -164,14 +164,14 @@ All fields are `str`. Numeric values are parsed and cast at write time.
 
 ---
 
-## `crypto_market_data_platform.validation`
+## `cmpd.validation`
 
 Batch validation functions.
 
 ### Import
 
 ```python
-from crypto_market_data_platform.validation import (
+from cmpd.validation import (
     validate_candle_batch,
     validate_funding_rate_batch,
     ValidationIssue,
@@ -198,8 +198,8 @@ result = validate_candle_batch(candles)
 #### Examples
 
 ```python
->>> from crypto_market_data_platform.validation import validate_candle_batch
->>> from crypto_market_data_platform.models.candle import Candle
+>>> from cmpd.validation import validate_candle_batch
+>>> from cmpd.models.candle import Candle
 >>> candles = [Candle("fake", "BTC/USDT", "1h", "2026-05-27T00:00:00",
 ...     "100", "110", "90", "105", "10", "fake")]
 >>> result = validate_candle_batch(candles)
@@ -253,14 +253,14 @@ See [Validation Rules](validation-rules.md) for the full rule catalogue.
 
 ---
 
-## `crypto_market_data_platform.storage`
+## `cmpd.storage`
 
 Low-level write functions. Prefer `OhlcvService` / `FundingRateService` for normal use.
 
 ### Import
 
 ```python
-from crypto_market_data_platform.storage.parquet_writer import (
+from cmpd.storage.parquet_writer import (
     candle_to_table,
     funding_rate_to_table,
     write_candles,
@@ -411,14 +411,14 @@ See [Parquet Schema](parquet-schema.md) for the full column type mapping.
 
 ---
 
-## `crypto_market_data_platform.ingestion`
+## `cmpd.ingestion`
 
 High-level ingestion services that combine fetching, validation, and storage.
 
 ### Import
 
 ```python
-from crypto_market_data_platform.ingestion import OhlcvService, FundingRateService
+from cmpd.ingestion import OhlcvService, FundingRateService
 ```
 
 ### `OhlcvService`
@@ -451,8 +451,8 @@ count = service.ingest(symbol, timeframe, start, end, base_path="data", merge_st
 #### Examples
 
 ```python
->>> from crypto_market_data_platform.ingestion import OhlcvService
->>> from crypto_market_data_platform.providers import FakeProvider
+>>> from cmpd.ingestion import OhlcvService
+>>> from cmpd.providers import FakeProvider
 >>> from datetime import datetime, timezone
 >>> service = OhlcvService(FakeProvider())
 >>> count = service.ingest("BTC/USDT", "1h",
@@ -487,14 +487,14 @@ count = service.ingest(rates, base_path="data", merge_strategy="auto")
 
 ---
 
-## `crypto_market_data_platform.query`
+## `cmpd.query`
 
 Query interface for stored datasets.
 
 ### Import
 
 ```python
-from crypto_market_data_platform.query import QueryService, DuckDBQueryService
+from cmpd.query import QueryService, DuckDBQueryService
 ```
 
 ### `QueryService`
@@ -533,7 +533,7 @@ candles = qs.get_candles(exchange="bitfinex", limit=5)
 #### Examples
 
 ```python
->>> from crypto_market_data_platform.query import DuckDBQueryService
+>>> from cmpd.query import DuckDBQueryService
 >>> qs = DuckDBQueryService()
 >>> qs.list_datasets()
 {'candle': ['bitfinex/BTC/USD/1h']}
@@ -570,14 +570,14 @@ def DuckDBQueryService._build_query(
 
 ---
 
-## `crypto_market_data_platform.config`
+## `cmpd.config`
 
 Configuration types.
 
 ### Import
 
 ```python
-from crypto_market_data_platform.config import TimestampConfig
+from cmpd.config import TimestampConfig
 ```
 
 ### `TimestampConfig`
@@ -603,15 +603,15 @@ Computed properties:
 
 ---
 
-## `crypto_market_data_platform.server`
+## `cmpd.server`
 
 REST server factory and configuration.
 
 ### Import
 
 ```python
-from crypto_market_data_platform.server import create_app
-from crypto_market_data_platform.server.config import ServerConfig
+from cmpd.server import create_app
+from cmpd.server.config import ServerConfig
 ```
 
 ### `create_app`
@@ -656,14 +656,14 @@ config = ServerConfig(host="127.0.0.1", port=8000, base_path="data")
 
 ---
 
-## `crypto_market_data_platform.benchmark`
+## `cmpd.benchmark`
 
 Performance benchmark tooling.
 
 ### Import
 
 ```python
-from crypto_market_data_platform.benchmark import (
+from cmpd.benchmark import (
     BenchmarkContext, BenchmarkResult, CandlePipelineRunner,
     CrossValidationRule, PipelineRunner, ProviderCandlePipelineRunner,
     RUNNERS, StageMetrics, evaluate_rules,
@@ -746,14 +746,14 @@ def evaluate_rules(
 
 ---
 
-## `crypto_market_data_platform.utils`
+## `cmpd.utils`
 
 Utility functions.
 
 ### Import
 
 ```python
-from crypto_market_data_platform.utils.parquet_viewer import run_inspect
+from cmpd.utils.parquet_viewer import run_inspect
 ```
 
 ### `run_inspect`
