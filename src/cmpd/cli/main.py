@@ -101,7 +101,9 @@ def fetch(
         fr_svc = FundingRateService()
         for sym in symbol:
             rates = p.fetch_funding_rates(symbol=sym, start=start, end=end)
-            count = fr_svc.ingest(rates, base_path=output, merge_strategy=merge_strategy)
+            count = fr_svc.ingest(
+                rates, base_path=output, merge_strategy=merge_strategy
+            )
             typer.echo(f"Wrote {count} funding rate(s) for {sym} to {output}/")
         return
 
