@@ -12,7 +12,7 @@
       
       
       
-        <link rel="next" href="architecture/">
+        <link rel="next" href="getting-started/">
       
       
         
@@ -236,13 +236,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="architecture/" class="md-tabs__link">
+      <a href="getting-started/" class="md-tabs__link">
         
   
   
     
   
-  Architecture
+  Getting Started
 
       </a>
     </li>
@@ -255,13 +255,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="philosophy/" class="md-tabs__link">
+      <a href="architecture/" class="md-tabs__link">
         
   
   
     
   
-  Philosophy
+  Architecture
 
       </a>
     </li>
@@ -337,7 +337,26 @@
   
     
   
-  Storage E2E
+  Storage — Write Path
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="philosophy/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Philosophy
 
       </a>
     </li>
@@ -433,7 +452,7 @@
           
   
   
-  References
+  Deep Dives
 
         </a>
       </li>
@@ -559,10 +578,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-problem-does-it-solve" class="md-nav__link">
+  <a href="#system-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What problem does it solve?
+        System overview
       
     </span>
   </a>
@@ -570,10 +589,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#who-is-it-for" class="md-nav__link">
+  <a href="#getting-started" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Who is it for?
+        Getting started
       
     </span>
   </a>
@@ -581,10 +600,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#maturity" class="md-nav__link">
+  <a href="#design-boundaries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Maturity
+        Design boundaries
       
     </span>
   </a>
@@ -592,10 +611,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture" class="md-nav__link">
+  <a href="#current-status" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture
+        Current status
       
     </span>
   </a>
@@ -603,21 +622,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quickstart" class="md-nav__link">
+  <a href="#navigation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quickstart
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cli-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CLI Reference
+        Navigation
       
     </span>
   </a>
@@ -639,14 +647,14 @@
   
   
     <li class="md-nav__item">
-      <a href="architecture/" class="md-nav__link">
+      <a href="getting-started/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Getting Started
   
 
     
@@ -666,14 +674,14 @@
   
   
     <li class="md-nav__item">
-      <a href="philosophy/" class="md-nav__link">
+      <a href="architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Philosophy
+    Architecture
   
 
     
@@ -781,7 +789,34 @@
   <span class="md-ellipsis">
     
   
-    Storage E2E
+    Storage — Write Path
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="philosophy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Philosophy
   
 
     
@@ -895,10 +930,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
         
           
-          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
             
   
   
@@ -916,8 +951,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_11">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1010,17 +1045,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    References
+    Deep Dives
   
 
     
@@ -1031,12 +1066,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
-    References
+    Deep Dives
   
 
           </label>
@@ -1084,7 +1119,7 @@
   <span class="md-ellipsis">
     
   
-    Design Rationale (full)
+    Design Rationale
   
 
     
@@ -1132,10 +1167,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-problem-does-it-solve" class="md-nav__link">
+  <a href="#system-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What problem does it solve?
+        System overview
       
     </span>
   </a>
@@ -1143,10 +1178,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#who-is-it-for" class="md-nav__link">
+  <a href="#getting-started" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Who is it for?
+        Getting started
       
     </span>
   </a>
@@ -1154,10 +1189,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#maturity" class="md-nav__link">
+  <a href="#design-boundaries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Maturity
+        Design boundaries
       
     </span>
   </a>
@@ -1165,10 +1200,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture" class="md-nav__link">
+  <a href="#current-status" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture
+        Current status
       
     </span>
   </a>
@@ -1176,21 +1211,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quickstart" class="md-nav__link">
+  <a href="#navigation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quickstart
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cli-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CLI Reference
+        Navigation
       
     </span>
   </a>
@@ -1218,114 +1242,119 @@
 
 
 <h1 id="crypto-market-data-platform">Crypto Market Data Platform<a class="headerlink" href="#crypto-market-data-platform" title="Permanent link">&para;</a></h1>
-<p>Local-first cryptocurrency market data ingestion, validation, storage, and
-query. Candles and funding rates are modelled as string fields for memory
-efficiency, converted to <code>decimal128</code> Parquet at write time via C++ <code>.cast()</code>.
-Pluggable providers, layered validation, Typer CLI, DuckDB query engine,
-FastAPI server, and a staged benchmark pipeline.</p>
-<h2 id="what-problem-does-it-solve">What problem does it solve?<a class="headerlink" href="#what-problem-does-it-solve" title="Permanent link">&para;</a></h2>
-<p>Market data ingestion looks simple — call an API, get a JSON array, write it
-to a file. But production-grade ingestion requires:</p>
-<ul>
-<li><strong>Provider abstraction</strong> — every exchange has a different API shape, field
-  ordering, rate limit, and data quality profile</li>
-<li><strong>Validation at boundaries</strong> — malformed candles should be caught before
-  they reach storage, not during analysis</li>
-<li><strong>Measured performance</strong> — knowing whether you are CPU-bound or
-  network-bound determines what to optimise</li>
-<li><strong>No vendor lock-in</strong> — data in portable Parquet format, queryable via
-  DuckDB without a server, inspectable by any Parquet-compatible tool</li>
-</ul>
-<p>This platform solves those problems while remaining deliberately scoped:
-it ingests, validates, stores, and serves — it is not a trading bot,
-dashboard, or strategy engine.</p>
-<h2 id="who-is-it-for">Who is it for?<a class="headerlink" href="#who-is-it-for" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Data engineers evaluating a local-first market data pipeline</li>
-<li>Quant researchers who need reproducible, validated market data</li>
-<li>Developers integrating cryptocurrency exchange APIs who want a
-  proven abstraction pattern</li>
-</ul>
-<h2 id="maturity">Maturity<a class="headerlink" href="#maturity" title="Permanent link">&para;</a></h2>
-<p>Pre-production. Core data types and ingestion paths are stable. Live providers
-for Bitfinex and KuCoin are implemented and tested. The benchmark framework
-is feature-complete. Remaining work focuses on provider coverage, CI
-automation, and documentation.</p>
-<h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Provider → Candle[]/FundingRate[] → validation → ParquetWriter → data/{exchange}/…
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                                                        ↓
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>CLI (cmpd) ──────→ OhlcvService ────────→ Parquet files
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>     │                                            │
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>     │                                    DuckDBQueryService
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>     │                                            │
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>     ├── datasets, candles get, funding get       │
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>     ├── query --sql                              │
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>     └── serve (uvicorn) ───→ FastAPI ───→ REST endpoints
+<p>A local-first pipeline for ingesting, validating, storing, and querying cryptocurrency market data. Exchange API responses are mapped to <code>Candle</code> and <code>FundingRate</code> records, validated at explicit system boundaries, persisted as partitioned Parquet files, and exposed through a Typer CLI and a FastAPI REST server.</p>
+<h2 id="system-overview">System overview<a class="headerlink" href="#system-overview" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>graph TD
+    subgraph Providers
+        A[Exchange API] --&gt; B[OHLCVProvider / FundingRateProvider]
+    end
+    subgraph Write Path
+        B --&gt; C["Candle / FundingRate\n(all-string fields)"]
+        C --&gt; D[Validation boundary]
+        D --&gt; E[ParquetWriter]
+        E --&gt; F["data/{exchange}/{symbol}/{tf}/{date}.parquet"]
+    end
+    subgraph Read Path
+        F --&gt; G[DuckDBQueryService]
+        G --&gt; H[CLI — cmpd query]
+        G --&gt; I[FastAPI — /candles, /funding-rates]
+    end</code></pre>
+<h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<p>Install the package and run your first ingestion against the built-in <code>FakeProvider</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>--mdt<span class="w"> </span>ohlcv<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC/USDT&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span>--timeframe<span class="w"> </span>1h<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span>--start<span class="w"> </span><span class="m">2026</span>-01-01<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span>--end<span class="w"> </span><span class="m">2026</span>-01-02<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span>--provider<span class="w"> </span>fake
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>Benchmark (scripts/benchmark_pipeline.py) ───→ synthetic + live provider profiles
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># Wrote 1 candle(s) for BTC/USDT to data/</span>
 </code></pre></div>
-<h2 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Install</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Fetch fake data</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span>--start<span class="w"> </span><span class="m">2026</span>-01-01<span class="w"> </span>--end<span class="w"> </span><span class="m">2026</span>-01-02
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># Query it back</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>cmpd<span class="w"> </span>query<span class="w"> </span>ohlcv<span class="w"> </span>--limit<span class="w"> </span><span class="m">5</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># Inspect a parquet file</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>cmpd<span class="w"> </span>inspect<span class="w"> </span>--path<span class="w"> </span>data<span class="w"> </span>--limit<span class="w"> </span><span class="m">5</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1"># Start the API server</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>cmpd<span class="w"> </span>serve<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1"># Benchmark the pipeline</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>python<span class="w"> </span>scripts/benchmark_pipeline.py<span class="w"> </span>--count<span class="w"> </span><span class="m">10000</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="c1"># Profile a live provider</span>
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>python<span class="w"> </span>scripts/benchmark_pipeline.py<span class="w"> </span>profile<span class="w"> </span>--provider<span class="w"> </span>bitfinex
+<p>Then inspect what was written and query it back:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>cmpd<span class="w"> </span>inspect<span class="w"> </span>--path<span class="w"> </span>data<span class="w"> </span>--limit<span class="w"> </span><span class="m">3</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>cmpd<span class="w"> </span>query<span class="w"> </span>ohlcv<span class="w"> </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC/USDT&quot;</span><span class="w"> </span>--limit<span class="w"> </span><span class="m">5</span>
 </code></pre></div>
-<h2 id="cli-reference">CLI Reference<a class="headerlink" href="#cli-reference" title="Permanent link">&para;</a></h2>
+<p>For a complete walkthrough — multiple providers, concurrent symbol ingestion, the REST API — see <a href="getting-started/">Getting Started</a>.</p>
+<h2 id="design-boundaries">Design boundaries<a class="headerlink" href="#design-boundaries" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Command</th>
-<th>Description</th>
+<th>Boundary</th>
+<th>What it enforces</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>fetch</code></td>
-<td>Ingest market data (OHLCV or funding-rate)</td>
+<td>Provider</td>
+<td>Raw API response → typed <code>Candle</code> / <code>FundingRate</code> with all-string fields</td>
 </tr>
 <tr>
-<td><code>datasets</code></td>
-<td>List available Parquet datasets</td>
+<td>Service</td>
+<td>Batch validation (format, OHLC invariants, duplicates) — blocks write on failure</td>
 </tr>
 <tr>
-<td><code>inspect</code></td>
-<td>Inspect a Parquet file or dataset directory</td>
+<td>Storage</td>
+<td>String → <code>decimal128(38,10)</code> cast, row-level upsert merge, Parquet write</td>
 </tr>
 <tr>
-<td><code>query ohlcv</code></td>
-<td>Query candle data with filters</td>
-</tr>
-<tr>
-<td><code>query funding-rate</code></td>
-<td>Query funding rate data with filters</td>
-</tr>
-<tr>
-<td><code>query sql</code></td>
-<td>Run raw SQL via DuckDB <code>read_parquet</code></td>
-</tr>
-<tr>
-<td><code>serve</code></td>
-<td>Start the FastAPI REST server</td>
+<td>Query</td>
+<td><code>read_parquet</code> via DuckDB, schema normalisation, result pagination</td>
 </tr>
 </tbody>
 </table>
-<p>→ See <a href="reference/cli/">CLI Reference</a> for full command options.</p>
+<h2 id="current-status">Current status<a class="headerlink" href="#current-status" title="Permanent link">&para;</a></h2>
+<p>Core ingestion and query paths are stable. Providers: Bitfinex, KuCoin, Bybit, MEXC, Bitstamp, FakeProvider. The benchmark framework is feature-complete. See <a href="roadmap/">Roadmap</a> for planned work.</p>
+<h2 id="navigation">Navigation<a class="headerlink" href="#navigation" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="getting-started/">Getting Started</a></td>
+<td>End-to-end walkthrough for new users</td>
+</tr>
+<tr>
+<td><a href="architecture/">Architecture</a></td>
+<td>Layer responsibilities and key design decisions</td>
+</tr>
+<tr>
+<td><a href="data-model/">Data Model</a></td>
+<td><code>Candle</code> and <code>FundingRate</code> schema; why strings</td>
+</tr>
+<tr>
+<td><a href="providers/">Providers</a></td>
+<td>Supported exchanges, symbol mappings, adding new providers</td>
+</tr>
+<tr>
+<td><a href="validation-strategy/">Validation Strategy</a></td>
+<td>Validation boundaries and rule set</td>
+</tr>
+<tr>
+<td><a href="storage-e2e/">Storage: Write Path</a></td>
+<td>Stage-by-stage write pipeline</td>
+</tr>
+<tr>
+<td><a href="benchmark-design/">Benchmark Design</a></td>
+<td>How the benchmark is structured and what it measures</td>
+</tr>
+<tr>
+<td><a href="performance-notes/">Performance Notes</a></td>
+<td>Measured baseline metrics and provider profiles</td>
+</tr>
+<tr>
+<td><a href="roadmap/">Roadmap</a></td>
+<td>Completed work and planned improvements</td>
+</tr>
+</tbody>
+</table>
 
 
 

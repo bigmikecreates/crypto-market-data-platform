@@ -14,7 +14,7 @@
         <link rel="prev" href="../validation-strategy/">
       
       
-        <link rel="next" href="../benchmark-design/">
+        <link rel="next" href="../philosophy/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Storage E2E - Crypto Market Data Platform</title>
+        <title>Storage — Write Path - Crypto Market Data Platform</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#storage-end-to-end-write-path" class="md-skip">
+        <a href="#storage-write-path" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Storage E2E
+              Storage — Write Path
             
           </span>
         </div>
@@ -236,13 +236,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="../architecture/" class="md-tabs__link">
+      <a href="../getting-started/" class="md-tabs__link">
         
   
   
     
   
-  Architecture
+  Getting Started
 
       </a>
     </li>
@@ -255,13 +255,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="../philosophy/" class="md-tabs__link">
+      <a href="../architecture/" class="md-tabs__link">
         
   
   
     
   
-  Philosophy
+  Architecture
 
       </a>
     </li>
@@ -339,7 +339,26 @@
   
     
   
-  Storage E2E
+  Storage — Write Path
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../philosophy/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Philosophy
 
       </a>
     </li>
@@ -435,7 +454,7 @@
           
   
   
-  References
+  Deep Dives
 
         </a>
       </li>
@@ -528,14 +547,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
+      <a href="../getting-started/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Getting Started
   
 
     
@@ -555,14 +574,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../philosophy/" class="md-nav__link">
+      <a href="../architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Philosophy
+    Architecture
   
 
     
@@ -679,7 +698,7 @@
   <span class="md-ellipsis">
     
   
-    Storage E2E
+    Storage — Write Path
   
 
     
@@ -697,7 +716,7 @@
   <span class="md-ellipsis">
     
   
-    Storage E2E
+    Storage — Write Path
   
 
     
@@ -723,10 +742,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pipeline-overview" class="md-nav__link">
+  <a href="#pipeline" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pipeline Overview
+        Pipeline
       
     </span>
   </a>
@@ -759,7 +778,7 @@
   <a href="#stage-3-partition-routing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stage 3 — Partition Routing
+        Stage 3 — Partition routing
       
     </span>
   </a>
@@ -770,38 +789,10 @@
   <a href="#stage-4-type-casting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stage 4 — Type Casting
+        Stage 4 — Type casting
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Stage 4 — Type Casting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#why-decimal12838-10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why decimal128(38, 10)?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-strings-until-storage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why strings until storage?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -809,12 +800,12 @@
   <a href="#stage-5-row-level-upsert-merge" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stage 5 — Row-Level Upsert Merge
+        Stage 5 — Row-level upsert merge
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Stage 5 — Row-Level Upsert Merge">
+    <nav class="md-nav" aria-label="Stage 5 — Row-level upsert merge">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -829,10 +820,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#algorithm" class="md-nav__link">
+  <a href="#merge-behaviour" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Algorithm
+        Merge behaviour
       
     </span>
   </a>
@@ -870,7 +861,7 @@
   <a href="#funding-rate-variant" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Funding Rate Variant
+        Funding rate variant
       
     </span>
   </a>
@@ -881,6 +872,33 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../philosophy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -986,10 +1004,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
         
           
-          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
             
   
   
@@ -1007,8 +1025,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_11">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1101,17 +1119,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    References
+    Deep Dives
   
 
     
@@ -1122,12 +1140,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
-    References
+    Deep Dives
   
 
           </label>
@@ -1175,7 +1193,7 @@
   <span class="md-ellipsis">
     
   
-    Design Rationale (full)
+    Design Rationale
   
 
     
@@ -1223,10 +1241,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pipeline-overview" class="md-nav__link">
+  <a href="#pipeline" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pipeline Overview
+        Pipeline
       
     </span>
   </a>
@@ -1259,7 +1277,7 @@
   <a href="#stage-3-partition-routing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stage 3 — Partition Routing
+        Stage 3 — Partition routing
       
     </span>
   </a>
@@ -1270,38 +1288,10 @@
   <a href="#stage-4-type-casting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stage 4 — Type Casting
+        Stage 4 — Type casting
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Stage 4 — Type Casting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#why-decimal12838-10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why decimal128(38, 10)?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-strings-until-storage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why strings until storage?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1309,12 +1299,12 @@
   <a href="#stage-5-row-level-upsert-merge" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stage 5 — Row-Level Upsert Merge
+        Stage 5 — Row-level upsert merge
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Stage 5 — Row-Level Upsert Merge">
+    <nav class="md-nav" aria-label="Stage 5 — Row-level upsert merge">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1329,10 +1319,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#algorithm" class="md-nav__link">
+  <a href="#merge-behaviour" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Algorithm
+        Merge behaviour
       
     </span>
   </a>
@@ -1370,7 +1360,7 @@
   <a href="#funding-rate-variant" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Funding Rate Variant
+        Funding rate variant
       
     </span>
   </a>
@@ -1397,104 +1387,102 @@
   
 
 
-<h1 id="storage-end-to-end-write-path">Storage: End-to-End Write Path<a class="headerlink" href="#storage-end-to-end-write-path" title="Permanent link">&para;</a></h1>
-<h2 id="pipeline-overview">Pipeline Overview<a class="headerlink" href="#pipeline-overview" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cmpd fetch --provider bitfinex --symbol BTC/USD --timeframe 1h --start 2024-01-01 --end 2024-01-03
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    │
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    ▼
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>┌─────────────────────────────────────────────────────┐
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│ Stage 1 — Provider                                  │
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│ Raw API response → list[Candle] with all-string     │
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│ fields                                              │
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>└─────────────────────────────────────────────────────┘
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    │
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    ▼
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>┌─────────────────────────────────────────────────────┐
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│ Stage 2 — Validation (advisory)                     │
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│ Per-candle checks on string values; issues printed  │
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│ to stderr, writes proceed regardless                │
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>└─────────────────────────────────────────────────────┘
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    │
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    ▼
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>┌─────────────────────────────────────────────────────┐
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│ Stage 3 — Partition routing                         │
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│ Group candles by date → {exchange}/{symbol}/        │
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│ {timeframe}/{YYYY-MM-DD}.parquet                    │
-<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>└─────────────────────────────────────────────────────┘
-<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    │
-<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>    ▼
-<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>┌─────────────────────────────────────────────────────┐
-<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│ Stage 4 — Type casting                              │
-<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│ String columns → decimal128(38,10) for OHLCV/volume │
-<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>│ String timestamps → timestamp[s]                    │
-<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>└─────────────────────────────────────────────────────┘
-<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>    │
-<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>    ▼
-<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>┌─────────────────────────────────────────────────────┐
-<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>│ Stage 5 — Row-level upsert merge                    │
-<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>│ For existing partitions: merge by key; skip         │
-<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>│ identical rows, replace changed rows, append new    │
-<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>│ rows.                                               │
-<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>└─────────────────────────────────────────────────────┘
-<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>    │
-<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>    ▼
-<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>    {date}.parquet (SNAPPY, partitioned by date)
+<h1 id="storage-write-path">Storage: Write Path<a class="headerlink" href="#storage-write-path" title="Permanent link">&para;</a></h1>
+<p>The write path converts a list of <code>Candle</code> or <code>FundingRate</code> records into partitioned Parquet files on disk. It executes five sequential stages for each ingestion call.</p>
+<h2 id="pipeline">Pipeline<a class="headerlink" href="#pipeline" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cmpd fetch --provider kucoin --symbol BTC-USDT --timeframe 1h \
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>           --start 2026-05-01 --end 2026-05-08
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    |
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    v
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>+----------------------------------------------------------+
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>| Stage 1 - Provider                                       |
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>| Exchange API -&gt; list[Candle] with all-string fields      |
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>+----------------------------------------------------------+
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    |
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    v
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>+----------------------------------------------------------+
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>| Stage 2 - Validation                                     |
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>| validate_candle_batch() runs 5 rules over the batch.     |
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>| If any rule fails, raises ValueError -- write is blocked.|
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>+----------------------------------------------------------+
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    |
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    v
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>+----------------------------------------------------------+
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>| Stage 3 - Partition routing                              |
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>| Group candles by date -&gt; {exchange}/{symbol}/            |
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>| {timeframe}/{YYYY-MM-DD}.parquet                         |
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>+----------------------------------------------------------+
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    |
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>    v
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>+----------------------------------------------------------+
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>| Stage 4 - Type casting                                   |
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>| str -&gt; decimal128(38,10) for OHLCV columns               |
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>| str -&gt; timestamp[s] for timestamp column                 |
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>+----------------------------------------------------------+
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>    |
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>    v
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>+----------------------------------------------------------+
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>| Stage 5 - Row-level upsert merge                         |
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>| Existing partition: merge by key; skip identical rows,   |
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>| replace changed rows, append new rows.                   |
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>| New partition: write directly.                           |
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>+----------------------------------------------------------+
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>    |
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>    v
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>    {date}.parquet  (SNAPPY-compressed, partitioned by date)
 </code></pre></div>
 <hr />
 <h2 id="stage-1-provider">Stage 1 — Provider<a class="headerlink" href="#stage-1-provider" title="Permanent link">&para;</a></h2>
-<p>Each provider adapter (<code>providers/bitfinex.py</code>, <code>providers/kucoin.py</code>, etc.)
-implements the <code>OHLCVProvider</code> interface. The provider converts the canonical
-symbol/timeframe to the exchange's native naming, constructs the API URL,
-loops paginated responses, and maps each raw JSON row to a <code>Candle</code> dataclass
-with all-string fields.</p>
-<p>All numeric fields are strings at this point. This keeps the provider boundary
-simple — no type casting, no Decimal imports, no schema decisions.</p>
-<p>→ See <code>OHLCVProvider</code> in the <a href="../reference/python-api/">Python API Reference</a>
-for the exact method signature.</p>
+<p>Each provider adapter implements the <code>OHLCVProvider</code> or <code>FundingRateProvider</code> interface and absorbs exchange-specific differences: URL construction, field ordering, pagination, rate limits, and symbol naming conventions. The adapter maps each raw JSON row to a <code>Candle</code> or <code>FundingRate</code> dataclass with all fields assigned as strings.</p>
+<p>No type coercion occurs at the provider boundary. This keeps provider adapters stateless and free of schema decisions — the storage boundary owns the Parquet type mapping.</p>
+<p>→ See <code>OHLCVProvider</code> in the <a href="../reference/python-api/">Python API Reference</a> for the method signature.</p>
 <hr />
 <h2 id="stage-2-validation">Stage 2 — Validation<a class="headerlink" href="#stage-2-validation" title="Permanent link">&para;</a></h2>
-<p><code>validate_candle_batch()</code> runs per-candle checks on the string values.
-Validation is <strong>advisory</strong> — issues are printed to stderr but writes proceed.
-The persisted data can be inspected later to diagnose provider issues.</p>
-<p>→ See <a href="../reference/validation-rules/">Validation Rules Reference</a> for the
-exact rule codes and descriptions.</p>
+<p><code>validate_candle_batch()</code> evaluates five provider-independent rules across the full batch and returns a <code>ValidationResult</code>. If <code>passed</code> is <code>False</code>, the service layer raises <code>ValueError</code> and the writer is not called.</p>
+<p>The write is blocked entirely on validation failure. No partial writes occur — the Parquet file is either untouched (if the partition already existed) or not created.</p>
+<p>→ See <a href="../validation-strategy/">Validation Strategy</a> for the full rule set, blocking behaviour, and design rationale.</p>
 <hr />
-<h2 id="stage-3-partition-routing">Stage 3 — Partition Routing<a class="headerlink" href="#stage-3-partition-routing" title="Permanent link">&para;</a></h2>
-<p>Each candle is routed to a file based on its date.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>data/{exchange}/{symbol}/{timeframe}/{date}.parquet
+<h2 id="stage-3-partition-routing">Stage 3 — Partition routing<a class="headerlink" href="#stage-3-partition-routing" title="Permanent link">&para;</a></h2>
+<p>Each candle is routed to a file based on its timestamp date:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>data/{exchange}/{symbol}/{timeframe}/{YYYY-MM-DD}.parquet
 </code></pre></div>
-<p>Candles are grouped by target path so each partition is processed independently.</p>
-<p>→ See <a href="../reference/parquet-schema/">Parquet Schema Reference</a> for the
-exact partition layout and path helpers.</p>
+<p>Symbols containing <code>/</code> (e.g. <code>BTC/USDT</code>) are preserved in the path, creating a two-level symbol directory. The file discovery algorithm uses the penultimate directory component as the dataset-type anchor: if it matches a known timeframe (e.g. <code>1h</code>, <code>1d</code>), the dataset is candles; if it is <code>funding_rate</code>, it is funding rates.</p>
+<p>Candles from the same batch are grouped by target path. Each partition is processed independently.</p>
+<p>→ See <a href="../reference/parquet-schema/">Parquet Schema Reference</a> for the exact partition layout.</p>
 <hr />
-<h2 id="stage-4-type-casting">Stage 4 — Type Casting<a class="headerlink" href="#stage-4-type-casting" title="Permanent link">&para;</a></h2>
-<p><code>candle_to_table()</code> converts a group of same-partition candles into a single
-PyArrow table by casting string fields to their Parquet types. String columns
-(<code>exchange</code>, <code>symbol</code>, <code>timeframe</code>, <code>source</code>) remain as strings. Numeric
-columns are cast via PyArrow's C++ <code>.cast()</code> to <code>decimal128(38,10)</code>. Timestamp
-columns are cast to <code>timestamp[s]</code> (or <code>timestamp[us]</code> depending on config).</p>
-<h3 id="why-decimal12838-10">Why <code>decimal128(38, 10)</code>?<a class="headerlink" href="#why-decimal12838-10" title="Permanent link">&para;</a></h3>
-<p><code>decimal128(38,10)</code> is the only type that provides exact decimal arithmetic,
-native DuckDB sort/filter, and a fixed schema independent of ticker price
-ranges. UTF8 would save the write-time <code>.cast()</code> kernel but push that cost
-to every read query, break sort order, and lose predicate pushdown.</p>
-<h3 id="why-strings-until-storage">Why strings until storage?<a class="headerlink" href="#why-strings-until-storage" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Provider boundary stays simple</strong> — most APIs return prices as JSON strings;
-   providers just pass them through without import or type-conversion overhead</li>
-<li><strong>Single schema authority</strong> — the storage boundary owns the Parquet type
-   decision. Changing column types requires changing one function, not six
-   providers.</li>
-</ol>
-<p>→ See <code>candle_to_table()</code> in the <a href="../reference/python-api/">Python API Reference</a>
-for the exact function signature, and <a href="../reference/parquet-schema/">Parquet Schema Reference</a>
-for the full column-type mapping.</p>
+<h2 id="stage-4-type-casting">Stage 4 — Type casting<a class="headerlink" href="#stage-4-type-casting" title="Permanent link">&para;</a></h2>
+<p><code>candle_to_table()</code> converts a group of same-partition candles into a PyArrow table. String fields (<code>exchange</code>, <code>symbol</code>, <code>timeframe</code>, <code>source</code>) remain as dictionary-encoded strings. Numeric fields are cast via PyArrow's C++ <code>.cast()</code> kernel:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Parquet type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>open</code>, <code>high</code>, <code>low</code>, <code>close</code>, <code>volume</code></td>
+<td><code>decimal128(38, 10)</code></td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td><code>timestamp[s]</code> (or <code>timestamp[us]</code> per <code>TimestampConfig</code>)</td>
+</tr>
+<tr>
+<td><code>exchange</code>, <code>symbol</code>, <code>timeframe</code>, <code>source</code></td>
+<td><code>string</code> (dictionary-encoded)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why <code>decimal128(38, 10)</code>?</strong>
+<code>decimal128</code> is always 16 bytes regardless of precision or scale. A fixed schema across all tickers guarantees that DuckDB <code>UNION</code> queries never encounter type mismatches. The 38-digit precision with 10 fractional digits covers all realistic cryptocurrency prices.</p>
+<p><strong>Why cast at the storage boundary, not in the provider?</strong>
+The storage boundary is the single authority on Parquet type decisions. Changing a column type requires modifying one function (<code>candle_to_table</code>) rather than each provider adapter.</p>
+<p>→ See <code>candle_to_table()</code> in the <a href="../reference/python-api/">Python API Reference</a> for the exact function signature.</p>
 <hr />
-<h2 id="stage-5-row-level-upsert-merge">Stage 5 — Row-Level Upsert Merge<a class="headerlink" href="#stage-5-row-level-upsert-merge" title="Permanent link">&para;</a></h2>
-<p>This is the most important recent addition. When a partition file already exists,
-the old behaviour was blind <code>concat_tables</code> — which could produce duplicate rows
-if the same time range was fetched twice.</p>
+<h2 id="stage-5-row-level-upsert-merge">Stage 5 — Row-level upsert merge<a class="headerlink" href="#stage-5-row-level-upsert-merge" title="Permanent link">&para;</a></h2>
+<p>When a target partition file already exists, the writer merges incoming records against the existing rows.</p>
 <h3 id="merge-key">Merge key<a class="headerlink" href="#merge-key" title="Permanent link">&para;</a></h3>
 <p>The row identity key for candles:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>(exchange, symbol, timeframe, source, timestamp)
@@ -1502,33 +1490,57 @@ if the same time range was fetched twice.</p>
 <p>For funding rates:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>(exchange, symbol, source, timestamp)
 </code></pre></div>
-<p>This matches the duplicate-detection key used in validation.</p>
-<h3 id="algorithm">Algorithm<a class="headerlink" href="#algorithm" title="Permanent link">&para;</a></h3>
-<p>For each partition file that exists: read existing rows, merge incoming rows
-by key (skip identical, replace changed, append new), write back.</p>
+<h3 id="merge-behaviour">Merge behaviour<a class="headerlink" href="#merge-behaviour" title="Permanent link">&para;</a></h3>
+<p>For each partition that already has a file on disk:</p>
+<ol>
+<li>Read the existing Parquet file into an Arrow table</li>
+<li>For matching keys: replace the existing row with the incoming row (handles corrected values from the provider)</li>
+<li>For unmatched incoming keys: append as new rows</li>
+<li>Discard incoming rows whose key and all values are identical to the existing row</li>
+</ol>
+<p>The result is written back to the same path, replacing the previous file.</p>
 <h3 id="merge-strategies">Merge strategies<a class="headerlink" href="#merge-strategies" title="Permanent link">&para;</a></h3>
-<p>Two implementations, selected automatically or by user override:</p>
-<ul>
-<li><strong><code>memory</code> (set-based)</strong> — Python <code>set</code> of row keys, linear scan. Used for
-  partitions with fewer than 50,000 rows.</li>
-<li><strong><code>duckdb</code> (SQL anti-join)</strong> — <code>LEFT JOIN ... WHERE NULL</code> + <code>UNION ALL</code> via
-  DuckDB. Used for partitions with 50,000+ rows.</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Mechanism</th>
+<th>Threshold</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>memory</code></td>
+<td>Python <code>dict</code>-based key index; linear scan over existing rows</td>
+<td>&lt; 50,000 existing rows</td>
+</tr>
+<tr>
+<td><code>duckdb</code></td>
+<td>SQL <code>NOT EXISTS</code> anti-join via DuckDB: <code>SELECT e.* FROM existing e WHERE NOT EXISTS (SELECT 1 FROM incoming i WHERE &lt;key match&gt;) UNION ALL SELECT * FROM incoming</code></td>
+<td>&gt;= 50,000 existing rows</td>
+</tr>
+<tr>
+<td><code>auto</code></td>
+<td>Dispatches to <code>memory</code> below threshold, <code>duckdb</code> above</td>
+<td>Default</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>duckdb</code> strategy avoids loading the full existing partition into a Python dict. For partitions with years of historical data, the <code>NOT EXISTS</code> anti-join keeps the working set inside DuckDB's engine.</p>
 <h3 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Idempotent</strong>: fetching the same range twice produces identical files.</li>
-<li><strong>Self-healing</strong>: a corrected candle from the provider replaces the stale
-  version on the next fetch.</li>
-<li><strong>Append-safe</strong>: new rows are added without affecting existing rows.</li>
+<li><strong>Idempotent:</strong> fetching the same date range twice produces identical Parquet files.</li>
+<li><strong>Self-healing:</strong> a corrected value from the provider replaces the stored row on the next fetch.</li>
+<li><strong>Append-safe:</strong> new rows are added without affecting rows not present in the incoming batch.</li>
 </ul>
-<p>→ See merge function signatures and strategy details in the
-<a href="../reference/python-api/">Python API Reference</a>.</p>
+<p>→ See <code>write_candles()</code> and merge function signatures in the <a href="../reference/python-api/">Python API Reference</a>.</p>
 <hr />
-<h2 id="funding-rate-variant">Funding Rate Variant<a class="headerlink" href="#funding-rate-variant" title="Permanent link">&para;</a></h2>
-<p>Funding rates follow the same stages with a different column set and path.
-The merge key omits <code>timeframe</code> (funding rates have no timeframe field).</p>
-<p>→ See <a href="../reference/parquet-schema/">Parquet Schema Reference</a> for the
-exact column set and partition layout for funding rates.</p>
+<h2 id="funding-rate-variant">Funding rate variant<a class="headerlink" href="#funding-rate-variant" title="Permanent link">&para;</a></h2>
+<p>Funding rates follow the same five stages. The partition path omits the timeframe component:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>data/{exchange}/{symbol}/funding_rate/{YYYY-MM-DD}.parquet
+</code></pre></div>
+<p>The merge key uses <code>(exchange, symbol, source, timestamp)</code>.</p>
+<p>→ See <a href="../reference/parquet-schema/">Parquet Schema Reference</a> for the full column set and partition layout.</p>
 
 
 

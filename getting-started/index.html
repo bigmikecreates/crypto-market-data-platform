@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../getting-started/">
+        <link rel="prev" href="..">
       
       
-        <link rel="next" href="../data-model/">
+        <link rel="next" href="../architecture/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Architecture - Crypto Market Data Platform</title>
+        <title>Getting Started - Crypto Market Data Platform</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#architecture" class="md-skip">
+        <a href="#getting-started" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architecture
+              Getting Started
             
           </span>
         </div>
@@ -234,9 +234,11 @@
   
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../getting-started/" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
         
   
   
@@ -253,11 +255,9 @@
   
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="./" class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
         
   
   
@@ -544,33 +544,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../getting-started/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Getting Started
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -590,7 +563,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
+    Getting Started
   
 
     
@@ -608,7 +581,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
+    Getting Started
   
 
     
@@ -634,10 +607,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#layer-diagram" class="md-nav__link">
+  <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Layer diagram
+        Prerequisites
       
     </span>
   </a>
@@ -645,174 +618,112 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#write-path" class="md-nav__link">
+  <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Write path
+        Installation
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Write path">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-provider-providers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Provider (providers/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-models-models" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Models (models/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-validation-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Validation (validation/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-storage-storage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Storage (storage/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#read-path" class="md-nav__link">
+  <a href="#step-1-fetch-your-first-candles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Read path
+        Step 1 — Fetch your first candles
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Read path">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#5-query-service-query" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Query service (query/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-cli-cli" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. CLI (cli/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#7-server-server" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Server (server/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#key-design-decisions" class="md-nav__link">
+  <a href="#step-2-inspect-the-stored-data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key design decisions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Key design decisions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#fixed-decimal12838-10-across-all-tickers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Fixed decimal128(38, 10) across all tickers
+        Step 2 — Inspect the stored data
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#path-based-file-discovery-with-variable-depth-symbol-paths" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#step-3-query-the-data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Path-based file discovery with variable-depth symbol paths
+        Step 3 — Query the data
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#connection-per-query-duckdb" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#step-4-fetch-from-a-live-provider" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Connection-per-query DuckDB
+        Step 4 — Fetch from a live provider
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#dependency-inversion-at-every-boundary" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#step-5-fetch-multiple-symbols-concurrently" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dependency inversion at every boundary
+        Step 5 — Fetch multiple symbols concurrently
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-list-available-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — List available datasets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-start-the-rest-api-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Start the REST API server
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-8-fetch-funding-rates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Fetch funding rates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next steps
+      
+    </span>
+  </a>
   
 </li>
       
@@ -820,6 +731,33 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1297,10 +1235,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#layer-diagram" class="md-nav__link">
+  <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Layer diagram
+        Prerequisites
       
     </span>
   </a>
@@ -1308,174 +1246,112 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#write-path" class="md-nav__link">
+  <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Write path
+        Installation
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Write path">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-provider-providers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Provider (providers/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-models-models" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Models (models/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-validation-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Validation (validation/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-storage-storage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Storage (storage/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#read-path" class="md-nav__link">
+  <a href="#step-1-fetch-your-first-candles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Read path
+        Step 1 — Fetch your first candles
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Read path">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#5-query-service-query" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Query service (query/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-cli-cli" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. CLI (cli/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#7-server-server" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Server (server/)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#key-design-decisions" class="md-nav__link">
+  <a href="#step-2-inspect-the-stored-data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key design decisions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Key design decisions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#fixed-decimal12838-10-across-all-tickers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Fixed decimal128(38, 10) across all tickers
+        Step 2 — Inspect the stored data
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#path-based-file-discovery-with-variable-depth-symbol-paths" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#step-3-query-the-data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Path-based file discovery with variable-depth symbol paths
+        Step 3 — Query the data
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#connection-per-query-duckdb" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#step-4-fetch-from-a-live-provider" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Connection-per-query DuckDB
+        Step 4 — Fetch from a live provider
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#dependency-inversion-at-every-boundary" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#step-5-fetch-multiple-symbols-concurrently" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dependency inversion at every boundary
+        Step 5 — Fetch multiple symbols concurrently
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-list-available-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — List available datasets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-start-the-rest-api-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Start the REST API server
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-8-fetch-funding-rates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Fetch funding rates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next steps
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1499,83 +1375,191 @@
   
 
 
-<h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
-<p>The platform is organised as a write path (provider → validation → storage) and a read path (storage → query → CLI/API). Both paths share the same Parquet files as the data layer. There is no separate database — DuckDB reads the files in place via <code>read_parquet</code>.</p>
-<h2 id="layer-diagram">Layer diagram<a class="headerlink" href="#layer-diagram" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TD
-    subgraph "Write Path"
-        P["Exchange API"] --&gt; A["OHLCVProvider / FundingRateProvider"]
-        A --&gt; B["Candle / FundingRate\n(all-string fields)"]
-        B --&gt; C["validate_candle_batch()\nValidationResult"]
-        C -- "passed = True" --&gt; D["candle_to_table()\nPyArrow table"]
-        C -- "passed = False" --&gt; E["ValueError — no write"]
-        D --&gt; F["write_candles()\nRow-level upsert merge"]
-        F --&gt; G["data/{exchange}/{symbol}/{tf}/{date}.parquet"]
-    end
-
-    subgraph "Read Path"
-        G --&gt; H["DuckDBQueryService\nread_parquet()"]
-        H --&gt; I["cmpd query / cmpd datasets"]
-        H --&gt; J["FastAPI — /candles, /funding-rates, /query"]
-    end</code></pre>
-<h2 id="write-path">Write path<a class="headerlink" href="#write-path" title="Permanent link">&para;</a></h2>
-<h3 id="1-provider-providers">1. Provider (<code>providers/</code>)<a class="headerlink" href="#1-provider-providers" title="Permanent link">&para;</a></h3>
-<p>Provider adapters implement <code>OHLCVProvider</code> (for candle data) or <code>FundingRateProvider</code> (for funding rates). Each adapter is responsible for exchange-specific concerns: URL construction, authentication headers, pagination, rate-limit handling, field ordering, and timestamp semantics. The adapter maps each raw JSON row to a <code>Candle</code> or <code>FundingRate</code> dataclass with all fields assigned as Python strings.</p>
-<p>No type coercion occurs at the provider boundary. This isolates schema decisions to the storage boundary and allows providers to be written without importing PyArrow or defining Parquet types.</p>
-<h3 id="2-models-models">2. Models (<code>models/</code>)<a class="headerlink" href="#2-models-models" title="Permanent link">&para;</a></h3>
-<p><code>Candle</code> and <code>FundingRate</code> are <code>@dataclass(slots=True)</code> with all fields typed as <code>str</code>. Slots eliminate the per-instance <code>__dict__</code> overhead — relevant when holding thousands of candles in memory during a paginated ingestion run.</p>
-<p>All numeric fields (<code>open</code>, <code>high</code>, <code>low</code>, <code>close</code>, <code>volume</code>, <code>rate</code>, etc.) remain strings until the storage boundary. This allows regex-based validation to operate on the string directly without allocating intermediate <code>Decimal</code> objects.</p>
-<h3 id="3-validation-validation">3. Validation (<code>validation/</code>)<a class="headerlink" href="#3-validation-validation" title="Permanent link">&para;</a></h3>
-<p><code>validate_candle_batch()</code> runs five provider-independent rules over the full list of candles and returns a <code>ValidationResult</code>. If <code>passed</code> is <code>False</code>, the ingestion service raises <code>ValueError</code> and the writer is not called. The Parquet file is either untouched or not created.</p>
-<p>Rules: <code>EMPTY_FIELD</code>, <code>INVALID_DECIMAL</code>, <code>INVALID_TIMESTAMP</code>, <code>OHLC_INVARIANT</code>, <code>DUPLICATE_TIMESTAMP</code>.</p>
-<p>→ See <a href="../validation-strategy/">Validation Strategy</a>.</p>
-<h3 id="4-storage-storage">4. Storage (<code>storage/</code>)<a class="headerlink" href="#4-storage-storage" title="Permanent link">&para;</a></h3>
-<p><code>write_candles()</code> groups candles by target partition path, converts each group to a PyArrow table via <code>candle_to_table()</code>, and writes SNAPPY-compressed Parquet files. The conversion casts string fields to <code>decimal128(38,10)</code> for OHLCV columns and <code>timestamp[s]</code> for the timestamp column using PyArrow's C++ <code>.cast()</code> kernel.</p>
-<p>When a target partition already exists, the writer performs a row-level upsert merge using either a Python <code>dict</code>-based strategy (&lt; 50,000 rows) or a DuckDB <code>NOT EXISTS</code> SQL strategy (&gt;= 50,000 rows).</p>
-<p>→ See <a href="../storage-e2e/">Storage: Write Path</a>.</p>
-<h2 id="read-path">Read path<a class="headerlink" href="#read-path" title="Permanent link">&para;</a></h2>
-<h3 id="5-query-service-query">5. Query service (<code>query/</code>)<a class="headerlink" href="#5-query-service-query" title="Permanent link">&para;</a></h3>
-<p><code>DuckDBQueryService</code> implements the <code>QueryService</code> ABC. All query methods open a DuckDB in-process connection, execute a <code>read_parquet(glob)</code> query with appropriate filters and casts, and close the connection. Connection-per-query eliminates connection pool state and means schema changes in Parquet files are picked up automatically.</p>
-<p>The <code>QueryService</code> ABC has five methods: <code>list_datasets</code>, <code>get_candles</code>, <code>get_funding_rates</code>, <code>get_summary</code>, and <code>raw_sql</code>. The CLI and FastAPI server both depend on the ABC, not the DuckDB implementation — swapping the query engine requires only a new concrete class and a wiring change.</p>
-<h3 id="6-cli-cli">6. CLI (<code>cli/</code>)<a class="headerlink" href="#6-cli-cli" title="Permanent link">&para;</a></h3>
-<p><code>cmpd</code> is a Typer application with commands: <code>fetch</code>, <code>datasets</code>, <code>inspect</code>, <code>query ohlcv</code>, <code>query funding-rate</code>, <code>query sql</code>, and <code>serve</code>. The <code>fetch</code> command accepts multiple <code>--symbol</code> values and dispatches concurrent fetches via <code>ThreadPoolExecutor</code>.</p>
-<h3 id="7-server-server">7. Server (<code>server/</code>)<a class="headerlink" href="#7-server-server" title="Permanent link">&para;</a></h3>
-<p><code>create_app()</code> returns a FastAPI application configured with <code>CORSMiddleware</code> and a global exception handler that returns JSON error responses. The application holds a <code>ServerConfig</code> with an injected <code>QueryService</code> instance (default: <code>DuckDBQueryService</code>). All query logic runs through the injected service — the API layer contains no query implementation.</p>
-<h2 id="key-design-decisions">Key design decisions<a class="headerlink" href="#key-design-decisions" title="Permanent link">&para;</a></h2>
-<h3 id="fixed-decimal12838-10-across-all-tickers">Fixed <code>decimal128(38, 10)</code> across all tickers<a class="headerlink" href="#fixed-decimal12838-10-across-all-tickers" title="Permanent link">&para;</a></h3>
-<p><code>decimal128</code> is always 16 bytes in Parquet regardless of precision or scale. A fixed schema means DuckDB <code>UNION</code> queries across tickers never encounter type mismatches, and the storage boundary has a single type decision to enforce.</p>
-<h3 id="path-based-file-discovery-with-variable-depth-symbol-paths">Path-based file discovery with variable-depth symbol paths<a class="headerlink" href="#path-based-file-discovery-with-variable-depth-symbol-paths" title="Permanent link">&para;</a></h3>
-<p>Symbols containing <code>/</code> (e.g. <code>BTC/USDT</code>) create multi-level directory paths. The discovery algorithm uses the penultimate directory component as the dataset-type anchor: a timeframe string (e.g. <code>1h</code>) identifies a candle dataset; <code>funding_rate</code> identifies a funding rate dataset. This avoids special-casing symbol depth.</p>
-<h3 id="connection-per-query-duckdb">Connection-per-query DuckDB<a class="headerlink" href="#connection-per-query-duckdb" title="Permanent link">&para;</a></h3>
-<p>DuckDB in-process connections are cheap to open and close. Connection-per-query eliminates connection pool state, avoids stale prepared statement issues, and allows Parquet schema changes to be reflected immediately.</p>
-<h3 id="dependency-inversion-at-every-boundary">Dependency inversion at every boundary<a class="headerlink" href="#dependency-inversion-at-every-boundary" title="Permanent link">&para;</a></h3>
+<h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
+<p>This page walks through a complete ingestion workflow: installing the package, fetching candles from a live exchange, querying the stored data, and serving it over HTTP. All commands are shown as they would appear in a terminal.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Python 3.12 or later</li>
+<li>A virtual environment (recommended)</li>
+</ul>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/bigmikecreates/crypto-market-data-platform.git
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>crypto-market-data-platform
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</code></pre></div>
+<p>Verify the installation:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>cmpd<span class="w"> </span>--help
+</code></pre></div>
+<h2 id="step-1-fetch-your-first-candles">Step 1 — Fetch your first candles<a class="headerlink" href="#step-1-fetch-your-first-candles" title="Permanent link">&para;</a></h2>
+<p>The <code>FakeProvider</code> generates a single synthetic candle without any network access. It is the correct starting point for verifying that the pipeline is functional.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>--mdt<span class="w"> </span>ohlcv<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC/USDT&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>--timeframe<span class="w"> </span>1h<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span>--start<span class="w"> </span><span class="m">2026</span>-01-01<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span>--end<span class="w"> </span><span class="m">2026</span>-01-02<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span>--provider<span class="w"> </span>fake
+</code></pre></div>
+<p>Expected output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Wrote 1 candle(s) for BTC/USDT to data/
+</code></pre></div>
+<p>The candle is written to <code>data/fake/BTC/USDT/1h/2026-01-01.parquet</code>.</p>
+<h2 id="step-2-inspect-the-stored-data">Step 2 — Inspect the stored data<a class="headerlink" href="#step-2-inspect-the-stored-data" title="Permanent link">&para;</a></h2>
+<p><code>cmpd inspect</code> reads one or more Parquet files and prints schema, row count, and a sample:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>cmpd<span class="w"> </span>inspect<span class="w"> </span>--path<span class="w"> </span>data<span class="w"> </span>--limit<span class="w"> </span><span class="m">3</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Directory: data
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>Files: 1
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>Rows: 1
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>Schema:
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>  exchange   string
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>  symbol     string
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>  timeframe  string
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>  timestamp  timestamp[ms]
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>  open       decimal128(38, 10)
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>  high       decimal128(38, 10)
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>  low        decimal128(38, 10)
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>  close      decimal128(38, 10)
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>  volume     decimal128(38, 10)
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>  source     string
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>Sample (first 1):
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>  exchange │ symbol   │ timeframe │ timestamp           │ open │ high │ low │ close │ volume │ source
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>  ──────── │ ──────── │ ───────── │ ─────────────────── │ ──── │ ──── │ ─── │ ───── │ ────── │ ──────
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>  fake     │ BTC/USDT │ 1h        │ 2026-01-01T00:00:00 │ 100  │ 110  │ 90  │ 105   │ 10     │ fake
+</code></pre></div>
+<p>Note the schema: numeric columns are stored as <code>decimal128(38,10)</code>, not <code>float</code>. String columns use Parquet dictionary encoding.</p>
+<h2 id="step-3-query-the-data">Step 3 — Query the data<a class="headerlink" href="#step-3-query-the-data" title="Permanent link">&para;</a></h2>
+<p><code>cmpd query ohlcv</code> runs a DuckDB query over all Parquet files under the data directory:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>cmpd<span class="w"> </span>query<span class="w"> </span>ohlcv<span class="w"> </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC/USDT&quot;</span><span class="w"> </span>--limit<span class="w"> </span><span class="m">5</span>
+</code></pre></div>
+<p>Filter by exchange, symbol, timeframe, or time range:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>cmpd<span class="w"> </span>query<span class="w"> </span>ohlcv<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span>--exchange<span class="w"> </span>fake<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC/USDT&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span>--timeframe<span class="w"> </span>1h<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span>--start<span class="w"> </span><span class="m">2026</span>-01-01<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span>--end<span class="w"> </span><span class="m">2026</span>-01-02<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">  </span>--limit<span class="w"> </span><span class="m">5</span>
+</code></pre></div>
+<p>Run raw SQL directly via DuckDB:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>cmpd<span class="w"> </span>query<span class="w"> </span>sql<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="s2">&quot;SELECT symbol, count(*) AS rows FROM read_parquet(&#39;data/**/*.parquet&#39;) GROUP BY symbol&quot;</span>
+</code></pre></div>
+<h2 id="step-4-fetch-from-a-live-provider">Step 4 — Fetch from a live provider<a class="headerlink" href="#step-4-fetch-from-a-live-provider" title="Permanent link">&para;</a></h2>
+<p>Replace <code>fake</code> with a live provider name. The symbol format is exchange-specific (see <a href="../providers/">Providers</a> for the mapping per exchange).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Bitfinex — uses tBTCUSD notation</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span>--mdt<span class="w"> </span>ohlcv<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">  </span>--symbol<span class="w"> </span><span class="s2">&quot;tBTCUSD&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">  </span>--timeframe<span class="w"> </span>1h<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">  </span>--start<span class="w"> </span><span class="m">2026</span>-05-01<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">  </span>--end<span class="w"> </span><span class="m">2026</span>-05-02<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">  </span>--provider<span class="w"> </span>bitfinex
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># KuCoin — uses BTC-USDT notation</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span>--mdt<span class="w"> </span>ohlcv<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC-USDT&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span>--timeframe<span class="w"> </span>1h<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">  </span>--start<span class="w"> </span><span class="m">2026</span>-05-01<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">  </span>--end<span class="w"> </span><span class="m">2026</span>-05-02<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">  </span>--provider<span class="w"> </span>kucoin
+</code></pre></div>
+<p>Re-fetching the same range is safe. The writer performs a row-level upsert using <code>(exchange, symbol, timeframe, source, timestamp)</code> as the merge key — identical rows are skipped, corrected rows replace the stored version, and new rows are appended.</p>
+<h2 id="step-5-fetch-multiple-symbols-concurrently">Step 5 — Fetch multiple symbols concurrently<a class="headerlink" href="#step-5-fetch-multiple-symbols-concurrently" title="Permanent link">&para;</a></h2>
+<p>Pass <code>--symbol</code> multiple times to ingest several symbols in a single command. Use <code>--workers</code> to control the number of concurrent fetches (default: 4):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span>--mdt<span class="w"> </span>ohlcv<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC-USDT&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span>--symbol<span class="w"> </span><span class="s2">&quot;ETH-USDT&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">  </span>--symbol<span class="w"> </span><span class="s2">&quot;SOL-USDT&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">  </span>--timeframe<span class="w"> </span>1h<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">  </span>--start<span class="w"> </span><span class="m">2026</span>-05-01<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">  </span>--end<span class="w"> </span><span class="m">2026</span>-05-08<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">  </span>--provider<span class="w"> </span>kucoin<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">  </span>--workers<span class="w"> </span><span class="m">3</span>
+</code></pre></div>
+<p>Each symbol is dispatched to a separate thread. Because KuCoin's pipeline is network-bound (~30× Net/CPU ratio), three concurrent fetches complete in roughly the same wall-clock time as one sequential fetch.</p>
+<h2 id="step-6-list-available-datasets">Step 6 — List available datasets<a class="headerlink" href="#step-6-list-available-datasets" title="Permanent link">&para;</a></h2>
+<p><code>cmpd datasets</code> prints a summary of all Parquet datasets under the data directory:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>cmpd<span class="w"> </span>datasets
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>  candle          kucoin     BTC-USDT    1h    files=7  rows=168
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>  candle          kucoin     ETH-USDT    1h    files=7  rows=168
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>  candle          kucoin     SOL-USDT    1h    files=7  rows=168
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>  candle          fake       BTC/USDT    1h    files=1  rows=1
+</code></pre></div>
+<h2 id="step-7-start-the-rest-api-server">Step 7 — Start the REST API server<a class="headerlink" href="#step-7-start-the-rest-api-server" title="Permanent link">&para;</a></h2>
+<p><code>cmpd serve</code> starts a FastAPI server that exposes all stored data over HTTP:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>cmpd<span class="w"> </span>serve<span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span><span class="w"> </span>--path<span class="w"> </span>data
+</code></pre></div>
+<p>The server exposes these endpoints:</p>
 <table>
 <thead>
 <tr>
-<th>Boundary</th>
-<th>ABC</th>
-<th>Concrete implementations</th>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Provider</td>
-<td><code>OHLCVProvider</code>, <code>FundingRateProvider</code></td>
-<td><code>FakeProvider</code>, <code>BitfinexProvider</code>, <code>KuCoinProvider</code>, …</td>
+<td>GET</td>
+<td><code>/health</code></td>
+<td>Liveness check</td>
 </tr>
 <tr>
-<td>Query</td>
-<td><code>QueryService</code></td>
-<td><code>DuckDBQueryService</code></td>
+<td>GET</td>
+<td><code>/datasets</code></td>
+<td>List available datasets</td>
 </tr>
 <tr>
-<td>Server</td>
-<td><code>QueryService</code> (injected via <code>ServerConfig</code>)</td>
-<td>FastAPI wraps the ABC</td>
+<td>GET</td>
+<td><code>/candles</code></td>
+<td>Query candle data with filters</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/funding-rates</code></td>
+<td>Query funding rate data with filters</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/summary</code></td>
+<td>Row and file counts per dataset</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/query</code></td>
+<td>Run raw SQL (SELECT/WITH only)</td>
 </tr>
 </tbody>
 </table>
-<p>Adding a provider means implementing the ABC. Adding a query engine means implementing <code>QueryService</code>. No consumer code changes.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>curl<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:8000/candles?symbol=BTC-USDT&amp;limit=3&quot;</span>
+</code></pre></div>
+<p>See the <a href="../reference/http-api/">HTTP API Reference</a> for full endpoint documentation.</p>
+<h2 id="step-8-fetch-funding-rates">Step 8 — Fetch funding rates<a class="headerlink" href="#step-8-fetch-funding-rates" title="Permanent link">&para;</a></h2>
+<p>Funding rate ingestion uses the same <code>fetch</code> command with <code>--mdt funding-rate</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">  </span>--mdt<span class="w"> </span>funding-rate<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">  </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC/USDT&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">  </span>--start<span class="w"> </span><span class="m">2026</span>-01-01<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">  </span>--end<span class="w"> </span><span class="m">2026</span>-01-02<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">  </span>--provider<span class="w"> </span>fake<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="w">  </span>--timeframe<span class="w"> </span>1h
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>cmpd<span class="w"> </span>query<span class="w"> </span>funding-rate<span class="w"> </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC/USDT&quot;</span><span class="w"> </span>--limit<span class="w"> </span><span class="m">5</span>
+</code></pre></div>
+<h2 id="next-steps">Next steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../architecture/">Architecture</a> — how the pipeline layers fit together</li>
+<li><a href="../reference/cli/">CLI Reference</a> — all commands and options</li>
+<li><a href="../benchmark-design/">Benchmark Design</a> — how to measure pipeline performance</li>
+<li><a href="../providers/">Providers</a> — symbol formats and provider-specific notes</li>
+</ul>
 
 
 

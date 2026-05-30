@@ -236,13 +236,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="../architecture/" class="md-tabs__link">
+      <a href="../getting-started/" class="md-tabs__link">
         
   
   
     
   
-  Architecture
+  Getting Started
 
       </a>
     </li>
@@ -255,13 +255,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="../philosophy/" class="md-tabs__link">
+      <a href="../architecture/" class="md-tabs__link">
         
   
   
     
   
-  Philosophy
+  Architecture
 
       </a>
     </li>
@@ -339,7 +339,26 @@
   
     
   
-  Storage E2E
+  Storage — Write Path
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../philosophy/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Philosophy
 
       </a>
     </li>
@@ -435,7 +454,7 @@
           
   
   
-  References
+  Deep Dives
 
         </a>
       </li>
@@ -528,14 +547,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
+      <a href="../getting-started/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Getting Started
   
 
     
@@ -555,14 +574,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../philosophy/" class="md-nav__link">
+      <a href="../architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Philosophy
+    Architecture
   
 
     
@@ -696,237 +715,76 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#purpose" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Purpose
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#core-principle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Principle
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#validation-boundaries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Validation Boundaries
+        Validation boundaries
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Validation Boundaries">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-provider-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Provider Boundary
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-service-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Service Boundary
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-storage-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Storage Boundary
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-query-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Query Boundary
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#validation-layers" class="md-nav__link">
+  <a href="#current-rule-set" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Validation Layers
+        Current rule set
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Validation Layers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-shape-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Shape Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-type-parse-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Type / Parse Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-market-data-domain-invariant-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Market-Data Domain Invariant Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-time-series-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Time-Series Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-completeness-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Completeness Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-provider-contract-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Provider Contract Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#7-storage-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Storage Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#sequencing" class="md-nav__link">
+  <a href="#validationresult" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Sequencing
+        ValidationResult
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Sequencing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#before-kraken" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Before Kraken
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#during-kraken-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        During Kraken Integration
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#after-kraken" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        After Kraken
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#important-principle" class="md-nav__link">
+  <a href="#blocking-behaviour" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Important Principle
+        Blocking behaviour
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decimal-string-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decimal string comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#provider-informed-refinement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provider-informed refinement
       
     </span>
   </a>
@@ -955,7 +813,34 @@
   <span class="md-ellipsis">
     
   
-    Storage E2E
+    Storage — Write Path
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../philosophy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Philosophy
   
 
     
@@ -1069,10 +954,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
         
           
-          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
             
   
   
@@ -1090,8 +975,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_11">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1184,17 +1069,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    References
+    Deep Dives
   
 
     
@@ -1205,12 +1090,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
-    References
+    Deep Dives
   
 
           </label>
@@ -1258,7 +1143,7 @@
   <span class="md-ellipsis">
     
   
-    Design Rationale (full)
+    Design Rationale
   
 
     
@@ -1306,237 +1191,76 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#purpose" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Purpose
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#core-principle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Principle
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#validation-boundaries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Validation Boundaries
+        Validation boundaries
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Validation Boundaries">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-provider-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Provider Boundary
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-service-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Service Boundary
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-storage-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Storage Boundary
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-query-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Query Boundary
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#validation-layers" class="md-nav__link">
+  <a href="#current-rule-set" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Validation Layers
+        Current rule set
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Validation Layers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-shape-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Shape Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-type-parse-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Type / Parse Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-market-data-domain-invariant-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Market-Data Domain Invariant Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-time-series-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Time-Series Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-completeness-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Completeness Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-provider-contract-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Provider Contract Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#7-storage-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Storage Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#sequencing" class="md-nav__link">
+  <a href="#validationresult" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Sequencing
+        ValidationResult
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Sequencing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#before-kraken" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Before Kraken
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#during-kraken-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        During Kraken Integration
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#after-kraken" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        After Kraken
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#important-principle" class="md-nav__link">
+  <a href="#blocking-behaviour" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Important Principle
+        Blocking behaviour
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decimal-string-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decimal string comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#provider-informed-refinement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provider-informed refinement
       
     </span>
   </a>
@@ -1564,170 +1288,114 @@
 
 
 <h1 id="validation-strategy">Validation Strategy<a class="headerlink" href="#validation-strategy" title="Permanent link">&para;</a></h1>
-<h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
-<p>This document defines the validation approach for the crypto market data platform.</p>
-<p>The goal is to introduce a validation layer without overdesigning provider-specific rules before real API providers expose their actual behaviour.</p>
-<p>The project should use a general methodology that is relevant to:</p>
-<ul>
-<li>market data</li>
-<li>timestamped/time-series data</li>
-<li>provider integration</li>
-<li>storage correctness</li>
-</ul>
-<p>The validation strategy should be refined iteratively as each real provider is added.</p>
-<h2 id="core-principle">Core Principle<a class="headerlink" href="#core-principle" title="Permanent link">&para;</a></h2>
-<p>Use layered validation with provider-informed refinement.</p>
-<p>The stable methodology is:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Validate at explicit system boundaries.
+<p>The validation layer runs after provider ingestion and before any write to storage. It operates on batches of <code>Candle</code> or <code>FundingRate</code> records using string values — no <code>Decimal</code> objects are created during validation.</p>
+<h2 id="validation-boundaries">Validation boundaries<a class="headerlink" href="#validation-boundaries" title="Permanent link">&para;</a></h2>
+<p>The pipeline enforces validation at four explicit boundaries, each with a defined responsibility:</p>
+<table>
+<thead>
+<tr>
+<th>Boundary</th>
+<th>Input → Output</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Provider</strong></td>
+<td>Raw API response → <code>list[Candle]</code></td>
+<td>Field mapping, pagination, string assignment</td>
+</tr>
+<tr>
+<td><strong>Service</strong></td>
+<td><code>list[Candle]</code> → <code>ValidationResult</code></td>
+<td>Batch-level rule evaluation; blocks write on failure</td>
+</tr>
+<tr>
+<td><strong>Storage</strong></td>
+<td>Validated batch → Parquet file</td>
+<td>Schema casting, partition routing, row-level upsert</td>
+</tr>
+<tr>
+<td><strong>Query</strong></td>
+<td>Parquet files → result rows</td>
+<td><code>read_parquet</code> execution, schema normalisation</td>
+</tr>
+</tbody>
+</table>
+<p>Validation logic resides exclusively at the Service boundary. The provider boundary produces well-shaped records; the storage boundary trusts that the service has already validated them.</p>
+<h2 id="current-rule-set">Current rule set<a class="headerlink" href="#current-rule-set" title="Permanent link">&para;</a></h2>
+<p>Five provider-independent rules are applied to every <code>Candle</code> batch by <code>validate_candle_batch()</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Rule code</th>
+<th>Field(s)</th>
+<th>What it checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EMPTY_FIELD</code></td>
+<td>All required fields</td>
+<td>No field is <code>None</code> or an empty string</td>
+</tr>
+<tr>
+<td><code>INVALID_DECIMAL</code></td>
+<td><code>open</code>, <code>high</code>, <code>low</code>, <code>close</code>, <code>volume</code></td>
+<td>Matches the unsigned decimal pattern — no negatives, no non-numeric characters</td>
+</tr>
+<tr>
+<td><code>INVALID_TIMESTAMP</code></td>
+<td><code>timestamp</code></td>
+<td>Matches ISO-8601 format (<code>YYYY-MM-DDTHH:MM:SS</code> or microsecond precision)</td>
+</tr>
+<tr>
+<td><code>OHLC_INVARIANT</code></td>
+<td><code>open</code>, <code>high</code>, <code>low</code>, <code>close</code></td>
+<td><code>high &gt;= open</code>, <code>high &gt;= close</code>, <code>low &lt;= open</code>, <code>low &lt;= close</code></td>
+</tr>
+<tr>
+<td><code>DUPLICATE_TIMESTAMP</code></td>
+<td>merge key</td>
+<td>No two records in the batch share <code>(exchange, symbol, timeframe, source, timestamp)</code></td>
+</tr>
+</tbody>
+</table>
+<p>For funding rate batches, <code>validate_funding_rate_batch()</code> applies equivalent rules over the <code>FundingRate</code> field set.</p>
+<h2 id="validationresult">ValidationResult<a class="headerlink" href="#validationresult" title="Permanent link">&para;</a></h2>
+<p><code>validate_candle_batch()</code> returns a <code>ValidationResult</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">ValidationResult</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">passed</span><span class="p">:</span> <span class="nb">bool</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ValidationIssue</span><span class="p">]</span>
 </code></pre></div>
-<p>Validation should not be scattered randomly through providers, storage writers, CLI handlers, or benchmark code. The project should use clear validation gates.</p>
-<h2 id="validation-boundaries">Validation Boundaries<a class="headerlink" href="#validation-boundaries" title="Permanent link">&para;</a></h2>
-<h3 id="1-provider-boundary">1. Provider Boundary<a class="headerlink" href="#1-provider-boundary" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>raw provider response -&gt; Candle objects
-</code></pre></div>
-<p>This boundary checks whether provider-specific responses can be transformed into the canonical internal candle shape.</p>
-<p>Examples:</p>
-<ul>
-<li>Kraken OHLC response -&gt; <code>Candle</code></li>
-<li>FakeProvider hardcoded candle -&gt; <code>Candle</code></li>
-<li>future Coinbase/OKX response -&gt; <code>Candle</code></li>
-</ul>
-<h3 id="2-service-boundary">2. Service Boundary<a class="headerlink" href="#2-service-boundary" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Candle batch -&gt; validated ingestion batch
-</code></pre></div>
-<p>This is where batch-level validation should happen.</p>
-<p>Examples:</p>
-<ul>
-<li>decimal parse validation</li>
-<li>timestamp parse validation</li>
-<li>OHLC invariant validation</li>
-<li>duplicate timestamp validation</li>
-<li>requested range validation</li>
-</ul>
-<h3 id="3-storage-boundary">3. Storage Boundary<a class="headerlink" href="#3-storage-boundary" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>validated batch -&gt; Parquet table/file
-</code></pre></div>
-<p>This boundary checks that validated candles are written correctly.</p>
-<p>Examples:</p>
-<ul>
-<li>partition correctness</li>
-<li>row-count correctness</li>
-<li>schema correctness</li>
-<li>decimal128 conversion</li>
-<li>timestamp resolution correctness</li>
-</ul>
-<h3 id="4-query-boundary">4. Query Boundary<a class="headerlink" href="#4-query-boundary" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>stored dataset -&gt; user/API/query result
-</code></pre></div>
-<p>This boundary checks that stored data can be queried and returned safely.</p>
-<p>Examples:</p>
-<ul>
-<li>DuckDB query validation</li>
-<li>date-range filtering</li>
-<li>result schema validation</li>
-<li>empty result handling</li>
-</ul>
-<h2 id="validation-layers">Validation Layers<a class="headerlink" href="#validation-layers" title="Permanent link">&para;</a></h2>
-<h3 id="1-shape-validation">1. Shape Validation<a class="headerlink" href="#1-shape-validation" title="Permanent link">&para;</a></h3>
-<p>Question:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Does each record have the required Candle fields?
-</code></pre></div>
-<p>Required fields:</p>
-<ul>
-<li>exchange</li>
-<li>symbol</li>
-<li>timeframe</li>
-<li>timestamp</li>
-<li>open</li>
-<li>high</li>
-<li>low</li>
-<li>close</li>
-<li>volume</li>
-<li>source</li>
-</ul>
-<p>This is currently mostly handled by the <code>Candle</code> dataclass constructor, but because all fields are strings, this only confirms shape, not semantic validity.</p>
-<h3 id="2-type-parse-validation">2. Type / Parse Validation<a class="headerlink" href="#2-type-parse-validation" title="Permanent link">&para;</a></h3>
-<p>Question: <em>Can values be parsed into the types required by storage and analysis?</em></p>
-<p>→ See <a href="../reference/validation-rules/">Validation Rules Reference</a> for the
-exact rule codes (<code>INVALID_DECIMAL</code>, <code>INVALID_TIMESTAMP</code>, etc.).</p>
-<h3 id="3-market-data-domain-invariant-validation">3. Market-Data Domain Invariant Validation<a class="headerlink" href="#3-market-data-domain-invariant-validation" title="Permanent link">&para;</a></h3>
-<p>Question: <em>Does the candle make sense as OHLCV market data?</em></p>
-<p>→ See <a href="../reference/validation-rules/">Validation Rules Reference</a> for the
-exact OHLC invariant checks (<code>high &gt;= open</code>, <code>low &lt;= close</code>, etc.).</p>
-<h3 id="4-time-series-validation">4. Time-Series Validation<a class="headerlink" href="#4-time-series-validation" title="Permanent link">&para;</a></h3>
-<p>Question: <em>Does the candle batch make sense as timestamped data?</em></p>
-<p>Initial rules: timestamps should be sortable, not duplicate within a batch,
-and fall within the requested range where applicable.</p>
-<p>Provider-informed rules to add later: timestamp alignment to timeframe
-boundaries, open-time vs close-time semantics, and partial candle behaviour.</p>
-<h3 id="5-completeness-validation">5. Completeness Validation<a class="headerlink" href="#5-completeness-validation" title="Permanent link">&para;</a></h3>
-<p>Question:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Did we receive all expected candles?
-</code></pre></div>
-<p>This should not be fully implemented before real providers.</p>
-<p>Completeness validation depends on provider behaviour, including:</p>
-<ul>
-<li>pagination behaviour</li>
-<li>sparse market behaviour</li>
-<li>provider result caps</li>
-<li>whether zero-volume candles are omitted</li>
-<li>whether current/incomplete candles are included</li>
-<li>whether timestamps represent candle-open or candle-close time</li>
-</ul>
-<p>Completeness validation should be added after Kraken or another real provider clarifies these behaviours.</p>
-<h3 id="6-provider-contract-validation">6. Provider Contract Validation<a class="headerlink" href="#6-provider-contract-validation" title="Permanent link">&para;</a></h3>
-<p>Question: <em>Does each provider adapter obey the project's provider contract?</em></p>
-<p>Each provider should prove that it returns <code>list[Candle]</code>, uses the canonical
-schema, documents timestamp semantics, and handles unsupported symbols/timeframes
-without silently returning malformed data. Tests should use fixtures where
-possible to avoid requiring live network access.</p>
-<h3 id="7-storage-validation">7. Storage Validation<a class="headerlink" href="#7-storage-validation" title="Permanent link">&para;</a></h3>
-<p>Question: <em>Did the validated records land correctly in storage?</em></p>
-<p>→ See <a href="../reference/validation-rules/">Validation Rules Reference</a> for the
-exact storage validation rules (partition correctness, schema correctness,
-row-count checking, duplicate detection).</p>
-<h2 id="sequencing">Sequencing<a class="headerlink" href="#sequencing" title="Permanent link">&para;</a></h2>
-<h3 id="before-kraken">Before Kraken<a class="headerlink" href="#before-kraken" title="Permanent link">&para;</a></h3>
-<p>Implement the validation framework and only obvious provider-independent rules:</p>
-<ul>
-<li>decimal parse validation</li>
-<li>timestamp parse validation</li>
-<li>OHLC invariant validation</li>
-<li>duplicate timestamp validation within a batch</li>
-<li>storage row-count/partition validation</li>
-</ul>
-<p>Do not overbuild completeness validation, provider scoring, gap classification, or provider-specific warnings yet.</p>
-<h3 id="during-kraken-integration">During Kraken Integration<a class="headerlink" href="#during-kraken-integration" title="Permanent link">&para;</a></h3>
-<p>Use real Kraken behaviour to refine validation.</p>
-<p>Document:</p>
-<ul>
-<li>Kraken timestamp semantics</li>
-<li>Kraken symbol mappings</li>
-<li>Kraken timeframe mappings</li>
-<li>empty response behaviour</li>
-<li>unsupported symbol/timeframe behaviour</li>
-<li>partial latest candle behaviour, if observed</li>
-<li>pagination/result limit behaviour</li>
-</ul>
-<h3 id="after-kraken">After Kraken<a class="headerlink" href="#after-kraken" title="Permanent link">&para;</a></h3>
-<p>Add stronger provider-informed validation:</p>
-<ul>
-<li>expected candle count validation</li>
-<li>missing interval detection</li>
-<li>pagination-aware validation</li>
-<li>checkpoint/retry consistency checks</li>
-<li>provider-specific warnings where justified</li>
-</ul>
-<h2 id="important-principle">Important Principle<a class="headerlink" href="#important-principle" title="Permanent link">&para;</a></h2>
-<p>The project should have a general validation methodology early, but not a rigid validation regime based only on fake data.</p>
-<p>The goal is:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>layered validation + provider-informed refinement
-</code></pre></div>
-<p>This avoids both failure modes:</p>
+<p>Each <code>ValidationIssue</code> records the candle index, rule code, affected field, and a human-readable message. The full batch is evaluated before returning — no early exit — so all issues in a batch are visible in a single call.</p>
+<h2 id="blocking-behaviour">Blocking behaviour<a class="headerlink" href="#blocking-behaviour" title="Permanent link">&para;</a></h2>
+<p>If <code>ValidationResult.passed</code> is <code>False</code>, the service raises <code>ValueError</code> and the writer is not called. No partial writes occur: the Parquet file is either untouched (existing partition) or not created (new partition).</p>
+<p>Advisory validation — logging issues and writing anyway — would silently populate storage with records that violate domain invariants. Downstream queries would then operate on data the pipeline itself flagged as invalid, making the source of errors difficult to trace.</p>
+<h2 id="decimal-string-comparison">Decimal string comparison<a class="headerlink" href="#decimal-string-comparison" title="Permanent link">&para;</a></h2>
+<p>OHLC invariant checks compare decimal strings without constructing <code>Decimal</code> objects. <code>_decimal_gte(a, b)</code> operates directly on two unsigned decimal strings:</p>
 <ol>
-<li>no validation strategy until providers expose bugs</li>
-<li>overengineering a speculative validation system before real provider behaviour is observed</li>
+<li>Compare integer-part lengths (a longer sequence of digits is always numerically larger for non-negative values with no leading zeros)</li>
+<li>If equal length, compare integer parts lexicographically</li>
+<li>Zero-pad fractional parts to equal length, then compare lexicographically</li>
 </ol>
+<p>This is consistent with the strings-first data model: values remain strings from provider ingestion through validation with no intermediate Python object allocation.</p>
+<h2 id="design-decisions">Design decisions<a class="headerlink" href="#design-decisions" title="Permanent link">&para;</a></h2>
+<p><strong>Why provider-independent rules only?</strong>
+Completeness rules (expected candle count), gap detection, and timestamp alignment depend on provider-specific pagination behaviour. Adding them before a real provider exposes that behaviour produces rules tuned to synthetic data that break on real API responses. The five current rules hold for any valid OHLC record, regardless of provider.</p>
+<p><strong>Why four OHLC invariant checks, not seven?</strong>
+The seven standard OHLC invariants include <code>high &gt;= low</code> and all fields <code>&gt;= 0</code>. The rule set implements four: <code>high &gt;= open</code>, <code>high &gt;= close</code>, <code>low &lt;= open</code>, <code>low &lt;= close</code>. <code>high &gt;= low</code> is entailed by these four via transitivity and is therefore never an independent failure. Non-negativity is enforced by <code>INVALID_DECIMAL</code>, which rejects the <code>-</code> prefix. Implementing entailed checks would never catch a case the primary four missed.</p>
+<p><strong>Why full-batch evaluation?</strong>
+A paginated batch may contain multiple independent issues across different candles and fields. Failing on the first and requiring a retry reveals one issue per attempt. Full-batch evaluation returns all issues simultaneously, so a single call can identify, for example, that all 50 <code>INVALID_DECIMAL</code> failures are on <code>volume</code> because the provider is returning <code>"1,234"</code> instead of <code>"1234"</code>.</p>
+<h2 id="provider-informed-refinement">Provider-informed refinement<a class="headerlink" href="#provider-informed-refinement" title="Permanent link">&para;</a></h2>
+<p>The current rule set is the starting point. Rules are added after observing real provider behaviour. Candidates identified from provider integrations completed so far:</p>
+<ul>
+<li>Timestamp alignment to timeframe boundaries (some providers return candle-open time, others candle-close time)</li>
+<li>Completeness validation against the expected candle count for a time range and timeframe</li>
+<li>Zero-volume candle handling (some providers omit them; others include them with <code>volume = "0"</code>)</li>
+</ul>
+<p>See <a href="../reference/validation-rules/">Validation Rules Reference</a> for rule codes, severity levels, and descriptions.</p>
 
 
 
