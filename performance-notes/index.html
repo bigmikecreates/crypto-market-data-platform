@@ -777,29 +777,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#current-known-characteristics" class="md-nav__link">
+  <a href="#measured-baseline-local-io-pipeline" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current known characteristics
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Current known characteristics">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#local-pipeline-synthetic-benchmark" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Local pipeline (synthetic benchmark)
+        Measured baseline — local I/O pipeline
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
+  <a href="#beforeafter-comparison-network-optimizations-options-a-and-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before/after comparison — network optimizations (Options A and C)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#live-provider-profiles" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -809,17 +808,12 @@
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
       
         <li class="md-nav__item">
-  <a href="#how-to-interpret-benchmark-tables" class="md-nav__link">
+  <a href="#how-to-interpret-benchmark-output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How to interpret benchmark tables
+        How to interpret benchmark output
       
     </span>
   </a>
@@ -1129,29 +1123,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#current-known-characteristics" class="md-nav__link">
+  <a href="#measured-baseline-local-io-pipeline" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current known characteristics
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Current known characteristics">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#local-pipeline-synthetic-benchmark" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Local pipeline (synthetic benchmark)
+        Measured baseline — local I/O pipeline
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
+  <a href="#beforeafter-comparison-network-optimizations-options-a-and-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before/after comparison — network optimizations (Options A and C)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#live-provider-profiles" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1161,17 +1154,12 @@
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
       
         <li class="md-nav__item">
-  <a href="#how-to-interpret-benchmark-tables" class="md-nav__link">
+  <a href="#how-to-interpret-benchmark-output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How to interpret benchmark tables
+        How to interpret benchmark output
       
     </span>
   </a>
@@ -1210,43 +1198,169 @@
 
 
 <h1 id="performance-notes">Performance Notes<a class="headerlink" href="#performance-notes" title="Permanent link">&para;</a></h1>
-<h2 id="current-known-characteristics">Current known characteristics<a class="headerlink" href="#current-known-characteristics" title="Permanent link">&para;</a></h2>
-<h3 id="local-pipeline-synthetic-benchmark">Local pipeline (synthetic benchmark)<a class="headerlink" href="#local-pipeline-synthetic-benchmark" title="Permanent link">&para;</a></h3>
-<p>The bottleneck is <code>Candle</code> dataclass creation, not decimal128 casting or
-Parquet writing. For real workloads, API latency dominates — the local
-pipeline overhead is negligible.</p>
-<h3 id="live-provider-profiles">Live provider profiles<a class="headerlink" href="#live-provider-profiles" title="Permanent link">&para;</a></h3>
-<p>A 10× improvement in local pipeline throughput would reduce synthetic time by
-90 %, but would reduce Bitfinex ingestion by ~15 % and KuCoin ingestion by ~3 %.
-The optimisation lever changes entirely once network I/O is in play.</p>
-<p>→ See <a href="../benchmark-design/">Benchmark Design</a> for the exact metrics tables,
-baseline measurements, and live provider profiles.</p>
-<h2 id="how-to-interpret-benchmark-tables">How to interpret benchmark tables<a class="headerlink" href="#how-to-interpret-benchmark-tables" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Pipeline CPU time (5 runs): 18.3 ms ± 0.3 ms (median, 95% CI [17.9, 18.7])
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                                     └─────────┬─────────┘
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                                                    Tight CI = stable measurement
+<h2 id="measured-baseline-local-io-pipeline">Measured baseline — local I/O pipeline<a class="headerlink" href="#measured-baseline-local-io-pipeline" title="Permanent link">&para;</a></h2>
+<p>All measurements use <code>python scripts/benchmark_pipeline.py run --count 10000
+--iterations 10 --verbose</code> on a shared core (no <code>--isolated</code>). Median iteration
+selected as the representative run; 95% CI via Student's t-distribution (df=9).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Benchmark: 10,000 candles  |  timestamp resolution = s  |  runner = candle  |  10 iterations
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>CPU time    209.93 ms  ±21.75  (median, 95% CI [182.62, 226.13])  — 21.0 μs/candle
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Wall-clock  210.03 ms  ±21.79  (median, 95% CI [182.64, 226.23])  — 21.0 μs/candle
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Memory      4.62 MB  (deterministic across all iterations)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>Peak        3.81 MB  (deterministic)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>File size   20.81 KB  (deterministic, 2.1 B/candle with dictionary compression)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>GC gen-2    0 collections
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>CPU/Wall    1.00  (pure CPU-bound — no I/O or scheduler contention)
+</code></pre></div>
+<p><strong>Stage breakdown (median run):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Wall (ms)</th>
+<th>% of pipeline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Candle creation</td>
+<td>141 ms</td>
+<td>69%</td>
+</tr>
+<tr>
+<td>decimal128 cast (5 cols)</td>
+<td>49 ms</td>
+<td>24%</td>
+</tr>
+<tr>
+<td>Column extract + table assembly</td>
+<td>7 ms</td>
+<td>3%</td>
+</tr>
+<tr>
+<td>Parquet write</td>
+<td>8 ms</td>
+<td>4%</td>
+</tr>
+<tr>
+<td>timestamp cast</td>
+<td>0.5 ms</td>
+<td>&lt;1%</td>
+</tr>
+</tbody>
+</table>
+<p>The bottleneck is <code>Candle</code> dataclass construction, not Parquet writing.</p>
+<hr />
+<h2 id="beforeafter-comparison-network-optimizations-options-a-and-c">Before/after comparison — network optimizations (Options A and C)<a class="headerlink" href="#beforeafter-comparison-network-optimizations-options-a-and-c" title="Permanent link">&para;</a></h2>
+<p>Options A (connection pooling) and C (concurrent symbol fetching) were applied
+after the baseline run. The post-optimization synthetic benchmark is unchanged:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Baseline  (before A + C): median 210 ms, 95% CI [183, 226] ms
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Post-opt  (after  A + C): median 224 ms, 95% CI [178, 380] ms
+</code></pre></div>
+<p>The medians are statistically equivalent. <strong>This is the correct result.</strong> The
+synthetic benchmark uses <code>CandlePipelineRunner</code>, which generates <code>Candle</code> objects
+in-process without any HTTP calls. A connection pooling change cannot affect it.
+The wider CI in the post-optimization run reflects OS scheduling jitter during
+that run (two iterations at ~550 ms), not a regression. The median correctly
+excludes these from the headline number.</p>
+<p><strong>Impact of Options A and C appears only in <code>profile</code> runs against real providers.</strong></p>
+<p>See <a href="../benchmarks/design-rationale/">Design Rationale §11</a> for the full analysis
+of what each option does, why Option B (concurrent page fetching) is overengineering,
+and the reasoning behind the median + CI averaging strategy.</p>
+<hr />
+<h2 id="live-provider-profiles">Live provider profiles<a class="headerlink" href="#live-provider-profiles" title="Permanent link">&para;</a></h2>
+<p>A 10× improvement in local pipeline throughput reduces synthetic time by 90%,
+but reduces Bitfinex ingestion by ~15% and KuCoin ingestion by ~3%.</p>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Candles</th>
+<th>Wall (ms)</th>
+<th>CPU (ms)</th>
+<th>Net (ms)</th>
+<th>Net/CPU</th>
+<th>Regime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Synthetic (CandlePipelineRunner)</td>
+<td>10,000</td>
+<td>210</td>
+<td>210</td>
+<td>~0</td>
+<td>~0x</td>
+<td>CPU-bound</td>
+</tr>
+<tr>
+<td>FakeProvider</td>
+<td>1</td>
+<td>~2</td>
+<td>~2</td>
+<td>&lt;0.2</td>
+<td>0.1x</td>
+<td>CPU-bound</td>
+</tr>
+<tr>
+<td>BitfinexProvider</td>
+<td>24</td>
+<td>~75</td>
+<td>~11</td>
+<td>~64</td>
+<td>5.7x</td>
+<td>Network-bound</td>
+</tr>
+<tr>
+<td>KuCoinProvider</td>
+<td>24</td>
+<td>~281</td>
+<td>~9</td>
+<td>~272</td>
+<td>30x</td>
+<td>Network-bound</td>
+</tr>
+</tbody>
+</table>
+<p>Net = wall - cpu: time spent outside our process waiting on HTTP, scheduler, or I/O.
+A negative Net for the synthetic run is timer granularity noise — effectively zero.</p>
+<p><strong>What this means for optimization:</strong> For network-bound providers, a 50% improvement
+in local pipeline throughput saves ~5 ms out of ~75 ms (Bitfinex) or ~4 ms out of
+~281 ms (KuCoin). The returns are rapidly diminishing. The correct lever is
+reducing HTTP round-trips (larger page sizes, connection reuse) or parallelizing
+across symbols (Option C).</p>
+<hr />
+<h2 id="how-to-interpret-benchmark-output">How to interpret benchmark output<a class="headerlink" href="#how-to-interpret-benchmark-output" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Pipeline CPU time (10 runs): 209.93 ms ± 21.75 ms (median, 95% CI [182.62, 226.13])
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>                                                          └──────────────┬───────────┘
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>                                              Tight CI = stable environment
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>                                              Wide CI = noisy environment, run --isolated
 </code></pre></div>
 <ul>
-<li><strong>CPU time</strong> is the decision metric — it counts only cycles our thread
-  actually ran, making it deterministic per-operation.</li>
-<li><strong>Wall-clock</strong> is secondary — it reflects real-world wait time including
-  scheduler artifacts.</li>
-<li><strong>CI width</strong> is a self-calibrating trust indicator: tight CI on CPU time
-  at N=5 means you can make optimisation decisions confidently.</li>
-<li><strong>CPU/Wall ratio below 0.8</strong> signals preemption or I/O contention — the
-  measurement environment was busy.</li>
+<li><strong>CPU time</strong> is the decision metric — counts only cycles our thread actually ran.
+  It is deterministic per-operation and low-noise.</li>
+<li><strong>Wall-clock</strong> is secondary — includes real-world scheduler artifacts and I/O wait.</li>
+<li><strong>CPU/Wall ratio</strong>: below 0.8 signals preemption or I/O contention.</li>
+<li><strong>CI width</strong> is a self-calibrating trust indicator. A tight CI on CPU time at
+  N=5 means you can make optimisation decisions confidently. A wide CI on wall-clock
+  means the environment was noisy — use <code>--isolated</code>.</li>
+<li><strong>Median (not mean)</strong> is the headline because single GC-pause or OS-scheduling
+  outliers inflate the mean without representing steady-state cost.</li>
 </ul>
+<hr />
 <h2 id="known-caveats">Known caveats<a class="headerlink" href="#known-caveats" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>tracemalloc</code> tracks only Python-side allocations, not PyArrow's C-level
-  buffer allocations — peak memory numbers under-report total RSS</li>
-<li><code>pq.read_schema</code> may display <code>timestamp[ms]</code> even when written as
-  <code>timestamp[s]</code> (PyArrow converts to ms for Parquet storage)</li>
-<li>Benchmark data has limited cardinality in string columns — Parquet
-  dictionary compression can make file size appear unrealistically small
-  vs varied real data</li>
+  buffer allocations — peak memory numbers under-report total RSS.</li>
+<li><code>pq.read_schema</code> may display <code>timestamp[ms]</code> even when written as <code>timestamp[s]</code>
+  (PyArrow converts to ms for Parquet storage internally).</li>
+<li>Benchmark data has limited cardinality in string columns — Parquet dictionary
+  compression makes file size appear smaller than varied real data would produce.</li>
 <li>First <code>pa.array()</code> call in a process incurs ~300 ms PyArrow init overhead
-  (mitigated by warmup in benchmark runner)</li>
+  (mitigated by the warmup step in the benchmark runner).</li>
+<li>Benchmarks run without <code>--isolated</code> include OS scheduling jitter. Two outlier
+  iterations at ~550 ms in the post-optimization run demonstrate this — the median
+  correctly excluded them.</li>
 </ul>
 
 

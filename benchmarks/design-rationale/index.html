@@ -1156,10 +1156,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#key-metrics-summary-baseline" class="md-nav__link">
+  <a href="#key-metrics-summary-baseline-10-iterations-n10000-candles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Metrics Summary (Baseline)
+        Key Metrics Summary (Baseline — 10 iterations, N=10,000 candles)
       
     </span>
   </a>
@@ -1421,6 +1421,78 @@
     <span class="md-ellipsis">
       
         10.2 Lifespan-managed middleware and error handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-network-optimization-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Network Optimization Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Network Optimization Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#111-why-the-synthetic-benchmark-does-not-change-after-network-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1 Why the synthetic benchmark does not change after network optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-option-a-connection-pooling-via-urllib3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2 Option A: Connection pooling via urllib3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#113-option-c-concurrent-symbol-fetching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.3 Option C: Concurrent symbol fetching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#114-option-b-concurrent-page-fetching-not-implemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.4 Option B: Concurrent page fetching (not implemented)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#115-averaging-strategy-why-median-t-distribution-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.5 Averaging strategy: why median + t-distribution CI
       
     </span>
   </a>
@@ -1602,10 +1674,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#key-metrics-summary-baseline" class="md-nav__link">
+  <a href="#key-metrics-summary-baseline-10-iterations-n10000-candles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Metrics Summary (Baseline)
+        Key Metrics Summary (Baseline — 10 iterations, N=10,000 candles)
       
     </span>
   </a>
@@ -1867,6 +1939,78 @@
     <span class="md-ellipsis">
       
         10.2 Lifespan-managed middleware and error handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-network-optimization-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Network Optimization Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Network Optimization Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#111-why-the-synthetic-benchmark-does-not-change-after-network-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1 Why the synthetic benchmark does not change after network optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-option-a-connection-pooling-via-urllib3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2 Option A: Connection pooling via urllib3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#113-option-c-concurrent-symbol-fetching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.3 Option C: Concurrent symbol fetching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#114-option-b-concurrent-page-fetching-not-implemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.4 Option B: Concurrent page fetching (not implemented)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#115-averaging-strategy-why-median-t-distribution-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.5 Averaging strategy: why median + t-distribution CI
       
     </span>
   </a>
@@ -2117,18 +2261,125 @@ the command they need.</p>
 <p><em>CPU and wall-clock converged — measurement is stable.</em></p>
 </blockquote>
 <hr />
-<h2 id="key-metrics-summary-baseline">Key Metrics Summary (Baseline)<a class="headerlink" href="#key-metrics-summary-baseline" title="Permanent link">&para;</a></h2>
-<p>| Metric | 100 candles | 10,000 candles | Target | Status |
-|---|---|---|---|---|---|
-| Wall-clock | 8.32 ms (83 μs/c) | 208 ms (21 μs/c) | &lt;5 μs/c | ⚠ Above (CPU-bound) |
-| CPU/Wall | 0.98 | 0.98 | &gt;0.8 | ✅ |
-| Peak memory | 0.54 MB | 3.81 MB | — | ✅ |
-| File size | 6.4 KB (65 B/c) | 20.8 KB (2.1 B/c) | 30–40 B/c | ✅ (compression) |
-| GC gen-2 | 0 | 0 | &lt;5 | ✅ |
-| Bottleneck | Candle creation (22 %) | Candle creation (61 %) | — | CPU, not I/O |</p>
-<p>The current bottleneck is <code>Candle</code> dataclass construction. For real-world usage,
-API latency and rate limits will dominate — the local pipeline overhead (~20 μs
-per candle) is negligible in that context.</p>
+<h2 id="key-metrics-summary-baseline-10-iterations-n10000-candles">Key Metrics Summary (Baseline — 10 iterations, N=10,000 candles)<a class="headerlink" href="#key-metrics-summary-baseline-10-iterations-n10000-candles" title="Permanent link">&para;</a></h2>
+<p>Measured via <code>python scripts/benchmark_pipeline.py run --count 10000 --iterations 10 --verbose</code>.
+Median iteration selected as the representative run; 95% CI via Student’s t-distribution (df=9).</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Median</th>
+<th>95% CI</th>
+<th>Per-candle</th>
+<th>Target</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wall-clock</td>
+<td>210 ms</td>
+<td>[183, 226] ms</td>
+<td>21.0 μs</td>
+<td>&lt;5 μs/c</td>
+<td>Above — CPU-bound</td>
+</tr>
+<tr>
+<td>CPU time</td>
+<td>210 ms</td>
+<td>[183, 226] ms</td>
+<td>21.0 μs</td>
+<td>&lt;5 μs/c</td>
+<td>Above — CPU-bound</td>
+</tr>
+<tr>
+<td>CPU/Wall ratio</td>
+<td>1.00</td>
+<td>—</td>
+<td>—</td>
+<td>&gt;0.80</td>
+<td>No I/O contention</td>
+</tr>
+<tr>
+<td>Peak memory</td>
+<td>3.81 MB</td>
+<td>deterministic</td>
+<td>—</td>
+<td>—</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>Memory delta</td>
+<td>4.62 MB</td>
+<td>deterministic</td>
+<td>0.5 B</td>
+<td>—</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>File size</td>
+<td>20.81 KB</td>
+<td>deterministic</td>
+<td>2.1 B</td>
+<td>30–40 B/c</td>
+<td>Pass (dict compression)</td>
+</tr>
+<tr>
+<td>GC gen-2</td>
+<td>0</td>
+<td>—</td>
+<td>—</td>
+<td>&lt;5</td>
+<td>Pass</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Stage breakdown (median run):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Wall (ms)</th>
+<th>% of pipeline</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Candle creation</td>
+<td>141 ms</td>
+<td>69%</td>
+<td>Primary bottleneck — dataclass construction</td>
+</tr>
+<tr>
+<td>decimal128 cast</td>
+<td>49 ms</td>
+<td>24%</td>
+<td>C++ cast, 5 columns, ~10 ms/column</td>
+</tr>
+<tr>
+<td>Parquet write</td>
+<td>8 ms</td>
+<td>4%</td>
+<td>Not the bottleneck</td>
+</tr>
+<tr>
+<td>timestamp cast</td>
+<td>0.5 ms</td>
+<td>&lt;1%</td>
+<td>Efficient</td>
+</tr>
+<tr>
+<td>Column extract + table assembly</td>
+<td>7 ms</td>
+<td>3%</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>The bottleneck is <code>Candle</code> dataclass construction (~69% of pipeline wall). For
+real-world usage, API latency and rate limits dominate — local pipeline overhead
+(~21 μs per candle) is negligible once network I/O is in the critical path.</p>
 <hr />
 <h2 id="7-validation-strategy">7. Validation Strategy<a class="headerlink" href="#7-validation-strategy" title="Permanent link">&para;</a></h2>
 <h3 id="71-layered-validation-at-explicit-system-boundaries">7.1 Layered validation at explicit system boundaries<a class="headerlink" href="#71-layered-validation-at-explicit-system-boundaries" title="Permanent link">&para;</a></h3>
@@ -2580,6 +2831,155 @@ The global error handler guarantees that every response is JSON, not HTML —
 critical for programmatic API consumers. The lifespan context manager provides
 a hook for future startup tasks (loading models, warming DuckDB caches)
 without scattering <code>@app.on_event</code> decorators across routers.</p>
+<hr />
+<h2 id="11-network-optimization-strategy">11. Network Optimization Strategy<a class="headerlink" href="#11-network-optimization-strategy" title="Permanent link">&para;</a></h2>
+<h3 id="111-why-the-synthetic-benchmark-does-not-change-after-network-optimizations">11.1 Why the synthetic benchmark does not change after network optimizations<a class="headerlink" href="#111-why-the-synthetic-benchmark-does-not-change-after-network-optimizations" title="Permanent link">&para;</a></h3>
+<p><strong>The observation:</strong> After implementing connection pooling (Option A) and concurrent
+symbol fetching (Option C), re-running <code>benchmark_pipeline.py run --count 10000
+--iterations 10</code> produces statistically identical results to the baseline (median
+~210 ms, 21 μs/candle, CPU/Wall = 1.00).</p>
+<p><strong>Why this is correct and expected:</strong> The <code>run</code> benchmark is synthetic — it uses
+<code>CandlePipelineRunner</code>, which creates <code>Candle</code> objects in-process without any
+network calls. The pipeline is 100% CPU-bound (CPU/Wall = 1.00). Connection pooling
+and concurrent fetching affect only the HTTP layer, which is not exercised in this
+path. This is not a failure of the optimization — it is a confirmation that the
+benchmark correctly isolates the local pipeline from the network I/O path.</p>
+<p>The correct way to measure network optimization impact is the <code>profile</code> command,
+which hits real exchange APIs and reports the Net = wall − cpu metric.</p>
+<h3 id="112-option-a-connection-pooling-via-urllib3">11.2 Option A: Connection pooling via urllib3<a class="headerlink" href="#112-option-a-connection-pooling-via-urllib3" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> The original implementation used <code>urllib.request</code> with a new TCP
+connection per API call. Each HTTPS request incurred:
+- TCP handshake (1 RTT minimum)
+- TLS negotiation (1–2 additional RTTs)
+- HTTP request/response</p>
+<p>For a provider like KuCoin with ~30× Net/CPU ratio, the handshake overhead is
+small relative to the API response time — but it compounds across multiple requests
+to the same host during a single ingest run.</p>
+<p><strong>Decision:</strong> Replace <code>urllib.request</code> with a <code>urllib3.PoolManager</code> singleton
+(module-level) in <code>src/cmpd/providers/http.py</code>. The pool reuses TCP connections
+across calls to the same host via HTTP keep-alive.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">_http</span> <span class="o">=</span> <span class="n">urllib3</span><span class="o">.</span><span class="n">PoolManager</span><span class="p">(</span><span class="n">maxconnections</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">_HEADERS</span><span class="p">)</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">fetch_json</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exchange</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">resp</span> <span class="o">=</span> <span class="n">_http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">urllib3</span><span class="o">.</span><span class="n">Timeout</span><span class="p">(</span><span class="n">connect</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">read</span><span class="o">=</span><span class="n">timeout</span><span class="p">))</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="o">...</span>
+</code></pre></div>
+<p><strong>Impact model:</strong> For a date range requiring N paginated requests to the same host,
+the first request pays the full handshake cost; subsequent requests reuse the
+connection. Savings scale with pagination depth. For a 3-month range at hourly
+resolution (~2160 candles at 500 candles/page = 5 pages), this eliminates 4 TLS
+handshakes per run.</p>
+<p><strong>Why the change is safe:</strong> urllib3's <code>PoolManager</code> is thread-safe; it manages
+connection ownership internally. The module-level singleton means all provider
+instances in a process share the pool — concurrent symbol fetches (Option C) reuse
+the same connections without double-handshaking.</p>
+<h3 id="113-option-c-concurrent-symbol-fetching">11.3 Option C: Concurrent symbol fetching<a class="headerlink" href="#113-option-c-concurrent-symbol-fetching" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> The original <code>cmpd fetch</code> command accepted a single <code>--symbol</code> and
+fetched it sequentially. Ingesting N symbols required N sequential runs, each
+paying the full network round-trip latency. For providers with a 30× Net/CPU ratio
+(KuCoin), the serial bottleneck is entirely in waiting, not computing.</p>
+<p><strong>Decision:</strong> Extend <code>--symbol</code> to accept multiple values (repeat the flag) and
+add <code>--workers N</code> (default 4, max 32). <code>ThreadPoolExecutor</code> dispatches one fetch
+per symbol concurrently. Each worker instantiates its own <code>OhlcvService(provider_cls())</code>,
+which is safe because different symbols write to disjoint Parquet paths.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Before: sequential, 3 sequential fetches</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span>--mdt<span class="w"> </span>ohlcv<span class="w"> </span>--symbol<span class="w"> </span>BTC/USDT<span class="w"> </span>--provider<span class="w"> </span>kucoin<span class="w"> </span>...
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span>--mdt<span class="w"> </span>ohlcv<span class="w"> </span>--symbol<span class="w"> </span>ETH/USDT<span class="w"> </span>--provider<span class="w"> </span>kucoin<span class="w"> </span>...
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span>--mdt<span class="w"> </span>ohlcv<span class="w"> </span>--symbol<span class="w"> </span>SOL/USDT<span class="w"> </span>--provider<span class="w"> </span>kucoin<span class="w"> </span>...
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="c1"># After: concurrent, all 3 in ~1 fetch&#39;s time</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>cmpd<span class="w"> </span>fetch<span class="w"> </span>--mdt<span class="w"> </span>ohlcv<span class="w">   </span>--symbol<span class="w"> </span>BTC/USDT<span class="w"> </span>--symbol<span class="w"> </span>ETH/USDT<span class="w"> </span>--symbol<span class="w"> </span>SOL/USDT<span class="w">   </span>--provider<span class="w"> </span>kucoin<span class="w"> </span>--workers<span class="w"> </span><span class="m">3</span><span class="w"> </span>...
+</code></pre></div>
+<p><strong>Expected speedup:</strong> For N symbols in parallel with ideal scheduling, wall-clock
+time approaches that of a single fetch. CPU time stays proportional to N (CPU is
+cheap; network wait is the bottleneck). For KuCoin at 30× Net/CPU ratio,
+concurrent fetching of 4 symbols reduces wall-clock by roughly 3× vs serial — the
+single-fetch network wait dominates, so 4 concurrent waits overlap.</p>
+<p><strong>Thread safety:</strong> Each <code>OhlcvService</code> instance holds its own <code>provider_cls()</code>
+instance. The shared <code>_http</code> pool in <code>providers/http.py</code> is thread-safe (urllib3
+manages connection checkout/return). Parquet writes to distinct symbol paths have
+no file-level conflicts.</p>
+<h3 id="114-option-b-concurrent-page-fetching-not-implemented">11.4 Option B: Concurrent page fetching (not implemented)<a class="headerlink" href="#114-option-b-concurrent-page-fetching-not-implemented" title="Permanent link">&para;</a></h3>
+<p><strong>Decision:</strong> Do not implement intra-symbol concurrent page fetching (parallelizing
+the pagination loop for a single symbol across multiple workers).</p>
+<p><strong>Why this is overengineering for this tool:</strong></p>
+<ol>
+<li>
+<p><strong>Rate limits dominate, not TCP:</strong> Most exchange APIs enforce per-key rate limits
+   (e.g., KuCoin: 30 requests/10 seconds). Parallel page fetching within a symbol
+   would hit rate limits on the second request, forcing backoff that eliminates the
+   concurrency benefit. The sleep in the rate-limit handler would serialize the
+   requests anyway.</p>
+</li>
+<li>
+<p><strong>Cursor-based pagination is inherently sequential:</strong> KuCoin's pagination uses a
+   <code>nextCursor</code> token returned in the response body. You cannot determine page N+1's
+   URL until you have received and parsed page N. This makes page-level parallelism
+   structurally impossible for cursor-based providers without fetching the full page
+   sequence first.</p>
+</li>
+<li>
+<p><strong>Typical use case doesn't justify the complexity:</strong> The common use case is a
+   recent date range (days to weeks) × a handful of symbols. At 500 candles/page
+   and 720 hourly candles per month, a 1-month range for one symbol requires 2 pages
+   — the concurrency gain is trivial.</p>
+</li>
+<li>
+<p><strong>Option C already addresses the real bottleneck:</strong> Symbol-level parallelism
+   (Option C) targets the same network wait time without the rate-limit and
+   cursor-ordering complications. It delivers the speedup where the workload is
+   actually multi-symbol, which is the typical production use case (ingesting a
+   portfolio of assets).</p>
+</li>
+</ol>
+<p>The threshold for revisiting Option B: a provider with offset-based pagination
+(e.g., Binance's <code>startTime</code>/<code>endTime</code> range splitting) and a date range
+exceeding 30 days at 1-minute resolution (43,200 candles = 87 pages). Even then,
+rate-limit handling would need to be designed first.</p>
+<h3 id="115-averaging-strategy-why-median-t-distribution-ci">11.5 Averaging strategy: why median + t-distribution CI<a class="headerlink" href="#115-averaging-strategy-why-median-t-distribution-ci" title="Permanent link">&para;</a></h3>
+<p><strong>The concern (stated):</strong> Benchmark runs are noisy. A single outlier run inflates
+the mean, producing misleading headline numbers.</p>
+<p><strong>The approach:</strong> The benchmark reports the <strong>median</strong> as the headline number with
+a <strong>Student's t-distribution 95% CI</strong> around the mean. This pairing is deliberate:</p>
+<ul>
+<li>
+<p><strong>Median as point estimate:</strong> Robust to single outlier runs (GC pauses, OS
+  scheduling spikes, page-fault storms on first write). When iteration 9 in the
+  post-optimization run was 556 ms vs a cluster around 200 ms, the median stayed
+  at 224 ms — accurately representing the steady-state cost.</p>
+</li>
+<li>
+<p><strong>t-distribution CI:</strong> Honest about uncertainty. With N=10, df=9, the CI width
+  directly reflects iteration variance. A tight CI (e.g., ±0.3 ms on CPU time)
+  tells you the number is trustworthy. A wide CI (e.g., ±100 ms on wall-clock)
+  tells you the environment was noisy — run <code>--isolated</code> or check what was
+  competing for CPU.</p>
+</li>
+<li>
+<p><strong>Why not trimmed mean as the headline:</strong> Trimming (e.g., dropping top/bottom
+  10%) hides the worst case. If 2 of 10 iterations are 2.5× slower than the
+  median, that is information — a tight trimmed mean would not show it. The CI
+  width does.</p>
+</li>
+<li>
+<p><strong>What to report:</strong> Headline = median. Spread = CI. Full picture = per-iteration
+  table (in <code>--verbose</code> mode). Min/max are available in the per-iteration table
+  for worst-case analysis.</p>
+</li>
+</ul>
+<p><strong>The key benchmark result from the before/after comparison:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>Baseline  (before Options A + C): median 210 ms, 95% CI [183, 226] ms (21.0 μs/c)
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>Post-opt  (after  Options A + C): median 224 ms, 95% CI [178, 380] ms (22.4 μs/c)
+</code></pre></div>
+<p>The medians are statistically equivalent — the CI bands overlap substantially.
+This is the correct finding: <strong>the synthetic benchmark is unaffected by network
+optimizations, confirming that the I/O pipeline is correctly isolated from the
+network path.</strong> The post-optimization CI is wider because the second run had two
+outlier iterations (556 ms, 525 ms) from OS scheduling interference — the median
+correctly excluded them from the headline number.</p>
+<p><strong>For network benchmarks:</strong> Use the <code>profile</code> command. Its 3-iteration median
+(N=3, df=2, CI reported for ≥5 iterations only) shows the before/after comparison
+for real provider calls where the network path is actually exercised.</p>
 
 
 

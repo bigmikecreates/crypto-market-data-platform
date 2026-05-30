@@ -804,6 +804,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#completed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#short-term" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1101,6 +1112,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#completed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#short-term" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1154,40 +1176,42 @@
 
 
 <h1 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h1>
+<h2 id="completed">Completed<a class="headerlink" href="#completed" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[x] <strong>Bybit provider</strong> — live provider integrated; validates provider abstraction at scale</li>
+<li>[x] <strong>MEXC provider</strong> — fifth live exchange, broadens data-source coverage</li>
+<li>[x] <strong>CI smoke tests</strong> — weekly automated provider smoke tests with automatic GitHub Issue
+      creation and deduplication on failure</li>
+<li>[x] <strong>Documentation site</strong> — MkDocs Material user guide + Docsify API reference</li>
+</ul>
 <h2 id="short-term">Short-term<a class="headerlink" href="#short-term" title="Permanent link">&para;</a></h2>
 <ul>
-<li>[ ] <strong>Bybit provider</strong> — third live provider, validates provider
-      ranking and abstraction pattern at scale</li>
-<li>[ ] <strong>Kraken provider</strong> — edge-case provider with 720-candle limit
-      and sparse market coverage; tests infrastructure at known
-      constraints</li>
-<li>[ ] <strong>CI workflow</strong> — automated provider smoke tests (<code>--live</code> flag,
-      off-by-default) to catch API contract drift</li>
-<li>[ ] <strong>Documentation pass</strong> — complete the MkDocs material site with
-      case studies and API reference</li>
+<li>[ ] <strong>Kraken provider</strong> — edge-case provider with 720-candle limit and sparse market
+      coverage; tests infrastructure at known constraints</li>
+<li>[ ] <strong>Replayable provider fixtures</strong> — capture provider responses as test fixtures and
+      replay through the pipeline to isolate pipeline changes from live API variability</li>
+<li>[ ] <strong>Coverage gate</strong> — enforce a minimum coverage threshold in CI once property-based
+      test coverage stabilises</li>
 </ul>
 <h2 id="medium-term">Medium-term<a class="headerlink" href="#medium-term" title="Permanent link">&para;</a></h2>
 <ul>
-<li>[ ] <strong>Replayable workloads</strong> — capture provider responses as fixtures
-      and replay them through the pipeline to isolate pipeline changes
-      from API variability</li>
-<li>[ ] <strong>Storage backends</strong> — evaluate alternative storage layers
-      (Postgres, InfluxDB, Parquet-over-S3) behind the <code>QueryService</code> ABC</li>
-<li>[ ] <strong>Richer profiling</strong> — per-provider breakdowns in the benchmark,
-      histogram visualisation of latency distributions</li>
-<li>[ ] <strong>Provider comparison</strong> — systematic comparison of data quality,
-      coverage, and API behaviour across all supported providers</li>
+<li>[ ] <strong>Storage backends</strong> — evaluate alternative storage layers (Postgres, InfluxDB,
+      Parquet-over-S3) behind the <code>QueryService</code> ABC</li>
+<li>[ ] <strong>Richer profiling</strong> — per-provider breakdowns in the benchmark, histogram
+      visualisation of latency distributions</li>
+<li>[ ] <strong>Provider comparison</strong> — systematic comparison of data quality, coverage, and API
+      behaviour across all supported providers</li>
+<li>[ ] <strong>Funding rate providers</strong> — implement <code>FundingRateProvider</code> for at least one live
+      exchange (Bybit or MEXC both expose funding rate APIs)</li>
 </ul>
 <h2 id="long-term">Long-term<a class="headerlink" href="#long-term" title="Permanent link">&para;</a></h2>
 <ul>
-<li>[ ] <strong>Data quality scoring</strong> — automated per-provider quality metrics
-      (completeness, gap frequency, timestamp alignment)</li>
-<li>[ ] <strong>Reproducible provider evaluation</strong> — benchmark runs that compare
-      providers head-to-head on identical time ranges</li>
-<li>[ ] <strong>Strategy testing infrastructure</strong> — event replay over stored
-      market data for offline strategy evaluation</li>
-<li>[ ] <strong>Market data observability</strong> — ingestion health metrics, provider
-      latency dashboards, data freshness alerts</li>
+<li>[ ] <strong>Data quality scoring</strong> — automated per-provider quality metrics (completeness,
+      gap frequency, timestamp alignment)</li>
+<li>[ ] <strong>Reproducible provider evaluation</strong> — benchmark runs that compare providers
+      head-to-head on identical time ranges</li>
+<li>[ ] <strong>Market data observability</strong> — ingestion health metrics, provider latency
+      dashboards, data freshness alerts</li>
 </ul>
 <p>Issue tracking is managed on GitHub.</p>
 

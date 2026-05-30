@@ -1,6 +1,6 @@
 # CLI Reference
 
-Entry point: `cmpd` (`crypto_market_data_platform.cli.main:app`)
+Entry point: `cmpd` (`cmpd.cli.main:app`)
 
 ## `cmpd fetch`
 
@@ -331,4 +331,4 @@ CatalogException: Catalog Error: Table with name nonexistent does not exist!
 
 ---
 
-See [Python API Reference](reference/python-api.md) for provider classes, symbol mappings, URL endpoints, and rate-limit configuration.
+See [Python API Reference](python-api.md) for provider classes, symbol mappings, URL endpoints, and rate-limit configuration.
