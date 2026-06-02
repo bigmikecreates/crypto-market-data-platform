@@ -323,12 +323,12 @@ validation call. This contradicts the project's "strings-first" design choice,
 adds GC pressure, and introduces a Python-object allocation cost into what
 should be a lightweight check.
 
-**Decision:** Implement `_decimal_gte(a, b)` that compares decimal strings
+**Decision:** Implement `decimal_gte(a, b)` that compares decimal strings
 directly — integer part comparison with length-aware padding, fractional part
 zero-padded to equal length. No `Decimal` objects created at any point in
 validation.
 
-**Why this solves it:** `_decimal_gte()` runs in pure Python without
+**Why this solves it:** `decimal_gte()` runs in pure Python without
 allocating a single intermediate object. It is consistent with the model-layer
 decision to keep all numeric fields as strings (Section 1), avoids creating
 Python `Decimal` objects even transiently, and eliminates the performance
@@ -427,19 +427,23 @@ single malformed field triggers both `INVALID_DECIMAL` and `OHLC_INVARIANT`
 for the same root cause. The result is a minimal, non-redundant set that still
 guarantees all 7 textbook invariants.
 
-### 7.8 Five initial provider-independent rules
+### 7.8 Initial provider-independent rules (expanded over time)
 
 **Problem:** Which validation rules belong in the initial implementation?
 Adding too many creates maintenance burden before real providers validate
 their usefulness; adding too few leaves obvious data-quality gaps.
 
-**Decision:** Implement exactly 5 provider-independent rules, deferring
+**Decision:** Start with 5 provider-independent rules, deferring
 completeness/gap/scoring rules until real providers expose their behaviour.
+Two rules (`NEGATIVE_VALUE`, `PRECISION_OVERFLOW`) were added later as
+real provider behaviour justified them.
 
 | Rule | Code | What it catches | Why defer beyond this |
 |---|---|---|---|
 | Non-empty required fields | `EMPTY_FIELD` | Null/blank `exchange`, `symbol`, etc. | Trivial guard, no provider-specific knowledge needed |
-| Decimal format | `INVALID_DECIMAL` | `"abc"`, `"1.2.3"`, `"-5"` in numeric fields | Regex-based, same contract as Parquet schema |
+| Decimal format | `INVALID_DECIMAL` | `"abc"`, `"1.2.3"` in numeric fields | Regex-based, same contract as Parquet schema |
+| Non-negative values | `NEGATIVE_VALUE` | Negative prices or volumes | Added after provider integration revealed signed values |
+| Precision overflow | `PRECISION_OVERFLOW` | More than 38 significant digits | Warning severity — added to surface edge cases before Arrow cast failure |
 | Timestamp format | `INVALID_TIMESTAMP` | Non-ISO-8601 strings | Regex-based, covers `s` and `us` formats |
 | OHLC invariants | `OHLC_INVARIANT` | high<open, low>close, etc. | Intrinsic to OHLC data, safe for all providers |
 | Duplicate timestamp | `DUPLICATE_TIMESTAMP` | Same `exchange/symbol/tf/source/ts` within batch | No pagination/gap knowledge needed |
@@ -710,7 +714,7 @@ small relative to the API response time — but it compounds across multiple req
 to the same host during a single ingest run.
 
 **Decision:** Replace `urllib.request` with a `urllib3.PoolManager` singleton
-(module-level) in `src/cmpd/providers/http.py`. The pool reuses TCP connections
+(module-level) in `src/crmd_platform/providers/http.py`. The pool reuses TCP connections
 across calls to the same host via HTTP keep-alive.
 
 ```python
@@ -734,24 +738,24 @@ the same connections without double-handshaking.
 
 ### 11.3 Option C: Concurrent symbol fetching
 
-**Problem:** The original `cmpd fetch` command accepted a single `--symbol` and
+**Problem:** The original `crmd fetch` command accepted a single `--symbol` and
 fetched it sequentially. Ingesting N symbols required N sequential runs, each
 paying the full network round-trip latency. For providers with a 30× Net/CPU ratio
 (KuCoin), the serial bottleneck is entirely in waiting, not computing.
 
 **Decision:** Extend `--symbol` to accept multiple values (repeat the flag) and
 add `--workers N` (default 4, max 32). `ThreadPoolExecutor` dispatches one fetch
-per symbol concurrently. Each worker instantiates its own `OhlcvService(provider_cls())`,
+per symbol concurrently. Each worker instantiates its own `OHLCVService(provider_cls())`,
 which is safe because different symbols write to disjoint Parquet paths.
 
 ```sh
 # Before: sequential, 3 sequential fetches
-cmpd fetch --mdt ohlcv --symbol BTC/USDT --provider kucoin ...
-cmpd fetch --mdt ohlcv --symbol ETH/USDT --provider kucoin ...
-cmpd fetch --mdt ohlcv --symbol SOL/USDT --provider kucoin ...
+crmd fetch --mdt ohlcv --symbol BTC/USDT --provider kucoin ...
+crmd fetch --mdt ohlcv --symbol ETH/USDT --provider kucoin ...
+crmd fetch --mdt ohlcv --symbol SOL/USDT --provider kucoin ...
 
 # After: concurrent, all 3 in ~1 fetch's time
-cmpd fetch --mdt ohlcv   --symbol BTC/USDT --symbol ETH/USDT --symbol SOL/USDT   --provider kucoin --workers 3 ...
+crmd fetch --mdt ohlcv   --symbol BTC/USDT --symbol ETH/USDT --symbol SOL/USDT   --provider kucoin --workers 3 ...
 ```
 
 **Expected speedup:** For N symbols in parallel with ideal scheduling, wall-clock
@@ -760,7 +764,7 @@ cheap; network wait is the bottleneck). For KuCoin at 30× Net/CPU ratio,
 concurrent fetching of 4 symbols reduces wall-clock by roughly 3× vs serial — the
 single-fetch network wait dominates, so 4 concurrent waits overlap.
 
-**Thread safety:** Each `OhlcvService` instance holds its own `provider_cls()`
+**Thread safety:** Each `OHLCVService` instance holds its own `provider_cls()`
 instance. The shared `_http` pool in `providers/http.py` is thread-safe (urllib3
 manages connection checkout/return). Parquet writes to distinct symbol paths have
 no file-level conflicts.

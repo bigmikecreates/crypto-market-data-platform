@@ -1,0 +1,12 @@
+# Terraform local state — may contain sensitive outputs (connection strings, keys).
+# Migrate to an Azure Storage backend before working in a team.
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfplan
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

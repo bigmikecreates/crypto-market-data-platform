@@ -3,17 +3,13 @@
 This project treats market data infrastructure as a systems engineering
 problem. The following principles govern every architectural decision.
 
-## Local-first
+## Local-first, cloud-portable
 
-No external database, no server daemon, no cloud dependency. Data lives in
-Parquet files on local disk. DuckDB queries them in place via `read_parquet`.
-The whole pipeline — fetch, validate, store, query — runs on a single machine
-with no moving parts.
+The default deployment is deliberately minimal: no external database, no server daemon, no cloud dependency. Data lives in Parquet files on local disk. DuckDB queries them in place via `read_parquet`. The whole pipeline — fetch, validate, store, query — runs on a single machine with no moving parts.
 
-This is a deliberate inversion of the typical "write to a database, then read
-from it" pattern. Parquet files are the interchange format: portable,
-version-controllable, and readable by any Parquet-compatible tool without an
-import step.
+This is a deliberate inversion of the typical "write to a database, then read from it" pattern. Parquet files are the interchange format: portable, version-controllable, and readable by any Parquet-compatible tool without an import step.
+
+The same pipeline runs against Azure Blob Storage by changing the `--output` and `--path` flags to an `az://container/prefix` URI. No new infrastructure is required. The `DuckDBQueryService` loads the `azure` DuckDB extension for reads; the writer uses `adlfs` and Azure Blob leases to make concurrent writes safe. Local and cloud deployments share an identical code path — only the storage root differs.
 
 ## Strings-first
 

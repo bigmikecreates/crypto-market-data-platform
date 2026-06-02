@@ -5,7 +5,7 @@ The write path converts a list of `Candle` or `FundingRate` records into partiti
 ## Pipeline
 
 ```
-cmpd fetch --provider kucoin --symbol BTC-USDT --timeframe 1h \
+crmd fetch --provider kucoin --symbol BTC-USDT --timeframe 1h \
            --start 2026-05-01 --end 2026-05-08
 
     |
@@ -56,7 +56,7 @@ Each provider adapter implements the `OHLCVProvider` or `FundingRateProvider` in
 
 No type coercion occurs at the provider boundary. This keeps provider adapters stateless and free of schema decisions — the storage boundary owns the Parquet type mapping.
 
-→ See `OHLCVProvider` in the [Python API Reference](reference/python-api.md) for the method signature.
+→ See `OHLCVProvider` in the [Python API Reference](/crypto-market-data-platform/reference/#/python-api) for the method signature.
 
 ---
 
@@ -82,7 +82,7 @@ Symbols containing `/` (e.g. `BTC/USDT`) are preserved in the path, creating a t
 
 Candles from the same batch are grouped by target path. Each partition is processed independently.
 
-→ See [Parquet Schema Reference](reference/parquet-schema.md) for the exact partition layout.
+→ See [Parquet Schema Reference](/crypto-market-data-platform/reference/#/parquet-schema) for the exact partition layout.
 
 ---
 
@@ -102,7 +102,7 @@ Candles from the same batch are grouped by target path. Each partition is proces
 **Why cast at the storage boundary, not in the provider?**
 The storage boundary is the single authority on Parquet type decisions. Changing a column type requires modifying one function (`candle_to_table`) rather than each provider adapter.
 
-→ See `candle_to_table()` in the [Python API Reference](reference/python-api.md) for the exact function signature.
+→ See `candle_to_table()` in the [Python API Reference](/crypto-market-data-platform/reference/#/python-api) for the exact function signature.
 
 ---
 
@@ -151,7 +151,94 @@ The `duckdb` strategy avoids loading the full existing partition into a Python d
 - **Self-healing:** a corrected value from the provider replaces the stored row on the next fetch.
 - **Append-safe:** new rows are added without affecting rows not present in the incoming batch.
 
-→ See `write_candles()` and merge function signatures in the [Python API Reference](reference/python-api.md).
+→ See `write_candles()` and merge function signatures in the [Python API Reference](/crypto-market-data-platform/reference/#/python-api).
+
+---
+
+## Azure Blob Storage variant
+
+When `base_path` starts with `az://` or `abfs://`, all five stages run identically except Stages 3 and 5, which are replaced by cloud-aware equivalents.
+
+**Stage 3 (cloud) — URI routing**
+
+Partition paths are built as plain strings rather than `pathlib.Path` objects. POSIX path normalisation silently collapses `az://` to `az:/`, so URI construction never goes through `Path`:
+
+```
+az://mycontainer/data/{exchange}/{symbol}/{timeframe}/{YYYY-MM-DD}.parquet
+```
+
+**Stage 5 (cloud) — Lease-protected upsert**
+
+The merge is wrapped in `azure_lease_write()`, which serialises concurrent writers at the blob level using Azure Blob Storage leases.
+
+```
++----------------------------------------------------------+
+| azure_lease_write()                                     |
+|                                                          |
+|  New blob:                                               |
+|    upload_blob(data, overwrite=False)                    |
+|    → 409 if racing writer: back off, retry via lease     |
+|                                                          |
+|  Existing blob:                                          |
+|    acquire_lease(30s)  ← Azure rejects other writers     |
+|    read existing Parquet                                  |
+|    merge in memory (_merge_tables)                       |
+|    upload_blob(merged, lease=lease_id)                   |
+|    release_lease()                                       |
+|                                                          |
+|  On 409: exponential backoff, up to 6 attempts           |
++----------------------------------------------------------+
+```
+
+The 30-second lease duration is enough for the read-merge-write cycle to complete under load, and short enough that a crashed worker unblocks others automatically when the lease expires.
+
+→ See [Concurrency](#concurrency) below for a detailed walkthrough of the race conditions this prevents.
+
+---
+
+## Concurrency
+
+### Local storage
+
+No concurrency control is needed for local deployments. The CLI's `--workers` flag parallelises by symbol — each symbol maps to a distinct set of partition files. Two workers never write to the same file simultaneously.
+
+### Azure Blob Storage
+
+**What happens without locking:**
+
+Two workers targeting the same partition (same exchange, symbol, timeframe, and date) both read the existing blob, compute their merged tables independently, then race to write back. The last writer wins and silently discards the other's rows.
+
+```
+T=0   Worker A  read existing → 96 rows
+T=0   Worker B  read existing → 96 rows   ← same snapshot
+T=50  Worker A  merge → 102 rows
+T=50  Worker B  merge → 100 rows
+T=60  Worker A  upload_blob  → blob = 102 rows  ✓
+T=65  Worker B  upload_blob  → blob = 100 rows  ✗  A's 6 rows gone
+```
+
+**What happens with `azure_lease_write`:**
+
+```
+T=0   Worker A  acquire_lease(30s) → granted
+T=0   Worker B  acquire_lease(30s) → 409 Conflict
+T=10  Worker A  read → merge → upload (lease=id)
+T=12  Worker A  release_lease
+T=13  Worker B  retry: acquire_lease → granted
+T=23  Worker B  read updated blob → merge B's rows → upload
+T=25  Worker B  release_lease
+```
+
+Result: all rows from both workers are present in the final blob.
+
+**Scope of the guarantee:**
+
+Workers writing to *different* partitions are unaffected — each blob is an independent Azure object. The lease only matters when two workers happen to write to the same partition simultaneously, which in practice happens when:
+
+- Backfilling overlapping date ranges for the same symbol across workers
+- Re-running a failed ingestion while another run is still in progress
+
+The `--workers` flag on `crmd fetch` parallelises by symbol, so a single `fetch` invocation does not produce same-partition conflicts. The lease matters most when multiple independent `fetch` processes run against the same Azure container.
 
 ---
 
@@ -165,4 +252,4 @@ data/{exchange}/{symbol}/funding_rate/{YYYY-MM-DD}.parquet
 
 The merge key uses `(exchange, symbol, source, timestamp)`.
 
-→ See [Parquet Schema Reference](reference/parquet-schema.md) for the full column set and partition layout.
+→ See [Parquet Schema Reference](/crypto-market-data-platform/reference/#/parquet-schema) for the full column set and partition layout.

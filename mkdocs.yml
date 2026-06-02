@@ -1,4 +1,4 @@
-site_name: Crypto Market Data Platform
+site_name: CrMD Platform
 site_description: Local-first cryptocurrency market data ingestion, validation, storage, and query platform.
 repo_url: https://github.com/bigmikecreates/crypto-market-data-platform
 edit_uri: edit/docs/mkdocs-material/docs/

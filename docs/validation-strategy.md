@@ -17,13 +17,15 @@ Validation logic resides exclusively at the Service boundary. The provider bound
 
 ## Current rule set
 
-Five provider-independent rules are applied to every `Candle` batch by `validate_candle_batch()`:
+Seven provider-independent rules are applied to every `Candle` batch by `validate_candle_batch()`:
 
 | Rule code | Field(s) | What it checks |
 |---|---|---|
 | `EMPTY_FIELD` | All required fields | No field is `None` or an empty string |
-| `INVALID_DECIMAL` | `open`, `high`, `low`, `close`, `volume` | Matches the unsigned decimal pattern — no negatives, no non-numeric characters |
-| `INVALID_TIMESTAMP` | `timestamp` | Matches ISO-8601 format (`YYYY-MM-DDTHH:MM:SS` or microsecond precision) |
+| `INVALID_DECIMAL` | `open`, `high`, `low`, `close`, `volume` | Matches the signed decimal regex — no non-numeric characters |
+| `NEGATIVE_VALUE` | `open`, `high`, `low`, `close`, `volume` | No negative values (checks `startswith('-')`) |
+| `PRECISION_OVERFLOW` | `open`, `high`, `low`, `close`, `volume` | No more than 38 significant digits (warning severity) |
+| `INVALID_TIMESTAMP` | `timestamp` | Matches subset of ISO-8601 (`YYYY-MM-DDTHH:MM:SS` or microsecond precision) |
 | `OHLC_INVARIANT` | `open`, `high`, `low`, `close` | `high >= open`, `high >= close`, `low <= open`, `low <= close` |
 | `DUPLICATE_TIMESTAMP` | merge key | No two records in the batch share `(exchange, symbol, timeframe, source, timestamp)` |
 
@@ -50,7 +52,7 @@ Advisory validation — logging issues and writing anyway — would silently pop
 
 ## Decimal string comparison
 
-OHLC invariant checks compare decimal strings without constructing `Decimal` objects. `_decimal_gte(a, b)` operates directly on two unsigned decimal strings:
+OHLC invariant checks compare decimal strings without constructing `Decimal` objects. `decimal_gte(a, b)` operates directly on two unsigned decimal strings:
 
 1. Compare integer-part lengths (a longer sequence of digits is always numerically larger for non-negative values with no leading zeros)
 2. If equal length, compare integer parts lexicographically
@@ -61,10 +63,10 @@ This is consistent with the strings-first data model: values remain strings from
 ## Design decisions
 
 **Why provider-independent rules only?**
-Completeness rules (expected candle count), gap detection, and timestamp alignment depend on provider-specific pagination behaviour. Adding them before a real provider exposes that behaviour produces rules tuned to synthetic data that break on real API responses. The five current rules hold for any valid OHLC record, regardless of provider.
+Completeness rules (expected candle count), gap detection, and timestamp alignment depend on provider-specific pagination behaviour. Adding them before a real provider exposes that behaviour produces rules tuned to synthetic data that break on real API responses. The seven current rules hold for any valid OHLC record, regardless of provider.
 
 **Why four OHLC invariant checks, not seven?**
-The seven standard OHLC invariants include `high >= low` and all fields `>= 0`. The rule set implements four: `high >= open`, `high >= close`, `low <= open`, `low <= close`. `high >= low` is entailed by these four via transitivity and is therefore never an independent failure. Non-negativity is enforced by `INVALID_DECIMAL`, which rejects the `-` prefix. Implementing entailed checks would never catch a case the primary four missed.
+The seven standard OHLC invariants include `high >= low` and all fields `>= 0`. The rule set implements four: `high >= open`, `high >= close`, `low <= open`, `low <= close`. `high >= low` is entailed by these four via transitivity and is therefore never an independent failure. Non-negativity is enforced by `NEGATIVE_VALUE`, which checks for values < 0. Implementing entailed checks would never catch a case the primary four missed.
 
 **Why full-batch evaluation?**
 A paginated batch may contain multiple independent issues across different candles and fields. Failing on the first and requiring a retry reveals one issue per attempt. Full-batch evaluation returns all issues simultaneously, so a single call can identify, for example, that all 50 `INVALID_DECIMAL` failures are on `volume` because the provider is returning `"1,234"` instead of `"1234"`.
@@ -77,4 +79,4 @@ The current rule set is the starting point. Rules are added after observing real
 - Completeness validation against the expected candle count for a time range and timeframe
 - Zero-volume candle handling (some providers omit them; others include them with `volume = "0"`)
 
-See [Validation Rules Reference](reference/validation-rules.md) for rule codes, severity levels, and descriptions.
+See [Validation Rules Reference](/crypto-market-data-platform/reference/#/validation-rules) for rule codes, severity levels, and descriptions.

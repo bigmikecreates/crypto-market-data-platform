@@ -6,11 +6,11 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 
-from cmpd.config import TimestampConfig
-from cmpd.models.funding_rate import FundingRate
-from cmpd.storage.parquet_writer import (
+from crmd_platform.config import TimestampConfig
+from crmd_platform.models.funding_rate import FundingRate
+from crmd_platform.storage.parquet_writer import (
     funding_rate_to_table,
-    _path_for_funding_rate,
+    path_for_funding_rate,
     write_funding_rates,
 )
 
@@ -75,19 +75,19 @@ class TestFundingRateToTable:
         ]
 
 
-# -- _path_for_funding_rate ------------------------------------
+# -- path_for_funding_rate ------------------------------------
 
 
 class TestPathForFundingRate:
     def test_path_contains_date_and_symbol(self):
         r = _fr()
-        path = _path_for_funding_rate(r, "/tmp/data")
+        path = path_for_funding_rate(r, "/tmp/data")
         expected = "/tmp/data/test_exchange/PI_XBTUSD/funding_rate/2024-01-01.parquet"
         assert str(path) == expected
 
     def test_timestamp_truncation_to_date(self):
         r = _fr(timestamp="2024-06-15T23:59:59")
-        path = _path_for_funding_rate(r, "/tmp/data")
+        path = path_for_funding_rate(r, "/tmp/data")
         assert path.name == "2024-06-15.parquet"
         assert "funding_rate" in str(path)
 
@@ -125,13 +125,8 @@ class TestWriteFundingRates:
         table2 = pq.read_table(str(written[1]))
         assert table1.num_rows == 1
         assert table2.num_rows == 1
-        assert str(written[0]).endswith("2024-01-01.parquet") or str(
-            written[0]
-        ).endswith("2024-01-02.parquet")
-        assert str(written[1]).endswith("2024-01-01.parquet") or str(
-            written[1]
-        ).endswith("2024-01-02.parquet")
-        assert str(written[0]) != str(written[1])
+        written_names = {str(p).split("/")[-1] for p in written}
+        assert written_names == {"2024-01-01.parquet", "2024-01-02.parquet"}
 
     def test_empty_list_returns_empty(self, _tmpdir):
         written = write_funding_rates([], base_path=_tmpdir)

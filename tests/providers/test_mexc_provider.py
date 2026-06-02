@@ -1,25 +1,15 @@
-import json
 from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any
 
 import pytest
 
-from cmpd.models.candle import Candle
-from cmpd.providers.mexc import (
+from crmd_platform.models.candle import Candle
+from crmd_platform.providers.mexc import (
     MexcProvider,
     _parse_row,
     _to_mexc_symbol,
     _to_mexc_timeframe,
 )
-
-_FIXTURE_DIR = Path(__file__).parent.parent / "fixtures"
-
-
-def _load_fixture(name: str) -> Any:
-    path = _FIXTURE_DIR / name
-    with open(path) as f:
-        return json.load(f)
+from tests.conftest import load_fixture as _load_fixture
 
 
 class TestMexcHelpers:
@@ -68,7 +58,7 @@ class TestMexcProvider:
         self.end = datetime(2024, 1, 2, tzinfo=timezone.utc)
 
     def test_provider_is_ohlcv_provider(self) -> None:
-        from cmpd.providers.base import OHLCVProvider
+        from crmd_platform.providers.base import OHLCVProvider
 
         assert isinstance(self.provider, OHLCVProvider)
 

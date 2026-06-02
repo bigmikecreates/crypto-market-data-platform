@@ -21,19 +21,19 @@ from typing import Any
 
 import typer
 
-from cmpd.benchmark import RUNNERS, BenchmarkResult
-from cmpd.benchmark.rules import (
+from crmd_platform.benchmark import RUNNERS, BenchmarkResult
+from crmd_platform.benchmark.rules import (
     DEFAULT_RULES,
     VERBOSE_RULES,
     evaluate_rules,
 )
-from cmpd.benchmark.runners import ProviderCandlePipelineRunner
-from cmpd.config import TimestampConfig
-from cmpd.models.candle import Candle
-from cmpd.providers.bitfinex import BitfinexProvider
-from cmpd.providers.fake import FakeProvider
-from cmpd.providers.kucoin import KuCoinProvider
-from cmpd.storage.parquet_writer import (
+from crmd_platform.benchmark.runners import ProviderCandlePipelineRunner
+from crmd_platform.config import TimestampConfig
+from crmd_platform.models.candle import Candle
+from crmd_platform.providers.bitfinex import BitfinexProvider
+from crmd_platform.providers.fake import FakeProvider
+from crmd_platform.providers.kucoin import KuCoinProvider
+from crmd_platform.storage.parquet_writer import (
     _to_decimal128,
     _to_timestamp,
 )

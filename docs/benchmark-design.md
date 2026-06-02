@@ -30,7 +30,7 @@ Fetches real data from a live exchange API, then runs the same validation
 and write pipeline. Measures end-to-end ingestion cost including HTTP
 round-trips.
 
-→ See [Python API Reference](reference/python-api.md) for the exact benchmark
+→ See [Python API Reference](/crypto-market-data-platform/reference/#/python-api) for the exact benchmark
 runner signatures and command-line arguments.
 
 ## Network/CPU boundary

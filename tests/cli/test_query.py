@@ -2,11 +2,11 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from cmpd.cli.main import app
-from cmpd.models.candle import Candle
-from cmpd.models.funding_rate import FundingRate
-from cmpd.query import DuckDBQueryService
-from cmpd.storage.parquet_writer import (
+from crmd_platform.cli.main import app
+from crmd_platform.models.candle import Candle
+from crmd_platform.models.funding_rate import FundingRate
+from crmd_platform.query import DuckDBQueryService
+from crmd_platform.storage.parquet_writer import (
     write_candles,
     write_funding_rates,
 )

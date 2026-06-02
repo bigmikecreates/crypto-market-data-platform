@@ -9,10 +9,10 @@ accepts valid data with 0 false positives.
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from cmpd.models.candle import Candle
-from cmpd.models.funding_rate import FundingRate
-from cmpd.validation.candles import validate_candle_batch
-from cmpd.validation.funding_rates import (
+from crmd_platform.models.candle import Candle
+from crmd_platform.models.funding_rate import FundingRate
+from crmd_platform.validation.candles import validate_candle_batch
+from crmd_platform.validation.funding_rates import (
     validate_funding_rate_batch,
 )
 

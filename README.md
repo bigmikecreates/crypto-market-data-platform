@@ -27,7 +27,7 @@ graph LR
     end
     subgraph Read Path
         F --> G[DuckDBQueryService]
-        G --> H[cmpd CLI]
+        G --> H[crmd CLI]
         G --> I[FastAPI server]
     end
 ```
@@ -42,7 +42,7 @@ All numeric fields (`open`, `high`, `low`, `close`, `volume`) are stored as stri
 pip install -e .
 
 # Fetch one candle from the built-in FakeProvider
-cmpd fetch \
+crmd fetch \
   --mdt ohlcv \
   --symbol "BTC/USDT" \
   --timeframe 1h \
@@ -51,13 +51,13 @@ cmpd fetch \
   --provider fake
 
 # Inspect what was written
-cmpd inspect --path data --limit 5
+crmd inspect --path data --limit 5
 
 # Query it back
-cmpd query ohlcv --symbol "BTC/USDT" --limit 5
+crmd query ohlcv --symbol "BTC/USDT" --limit 5
 
 # Start the REST API
-cmpd serve --port 8000
+crmd serve --port 8000
 ```
 
 For a full walkthrough — live providers, concurrent symbol ingestion, the query API — see **[Getting Started](https://bigmikecreates.github.io/crypto-market-data-platform/getting-started/)**.
@@ -95,11 +95,42 @@ Each provider implements the `OHLCVProvider` or `FundingRateProvider` ABC. Addin
 
 ---
 
+## Cloud storage
+
+The pipeline runs against Azure Blob Storage by changing one flag:
+
+```bash
+# Write to Azure
+crmd fetch --provider kucoin --symbol BTC-USDT --timeframe 1h \
+           --start 2026-01-01 --end 2026-01-08 \
+           --output az://mycontainer/crypto-data
+
+# Read from Azure
+crmd query ohlcv --path az://mycontainer/crypto-data --symbol BTC-USDT
+crmd serve       --path az://mycontainer/crypto-data --port 8000
+```
+
+Install the Azure extra and set credentials:
+
+```bash
+pip install -e ".[azure]"
+export AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=..."
+# or: AZURE_STORAGE_ACCOUNT + AZURE_STORAGE_KEY, or managed identity (account name only)
+```
+
+Concurrent workers writing to the same partition are safe: each write acquires a 30-second Azure Blob lease, so racing writers queue rather than overwrite each other. Workers writing to different partitions — the common case when parallelising by symbol — are unaffected by locking.
+
+→ [Storage: Write Path](https://bigmikecreates.github.io/crypto-market-data-platform/storage-e2e/) for the full Azure pipeline and concurrency model.
+
+---
+
 ## Key design decisions
 
 **Strings-first data model.** `Candle` and `FundingRate` store all numeric fields as `str`. This saves ~68% per-candle memory versus `Decimal`, keeps providers free of type-import dependencies, and allows regex-based validation to run without allocating intermediate objects. Conversion to `decimal128(38,10)` happens once at the storage boundary via a vectorised C++ cast.
 
 **Row-level upsert merge.** Re-fetching an overlapping time range never produces duplicates. Each row is identified by its merge key (`exchange`, `symbol`, `timeframe`, `source`, `timestamp`). Two strategies are dispatched automatically: a Python `dict`-based merge for partitions under 50,000 rows, and a DuckDB `NOT EXISTS` SQL anti-join for larger partitions.
+
+**Lease-protected cloud writes.** When writing to Azure Blob Storage, `_azure_lease_write()` wraps the read-merge-write cycle in a 30-second Azure Blob lease. New blobs use a conditional PUT (`overwrite=False`) to detect racing creators. Both mechanisms enforce serialisation at the partition level without any external lock service.
 
 **Validation blocks writes.** `validate_candle_batch()` evaluates five provider-independent rules across the full batch and returns a `ValidationResult`. If `passed` is `False`, the service raises `ValueError` before calling the writer — no partial writes.
 
@@ -110,7 +141,7 @@ Each provider implements the `OHLCVProvider` or `FundingRateProvider` ABC. Addin
 ## Development
 
 ```bash
-pip install -e ".[test,lint]"
+pip install -e ".[test,lint,azure]"  # azure is optional; omit if not using Azure Blob
 
 pytest                          # run all tests
 ruff check src/ tests/          # lint
@@ -125,8 +156,8 @@ python scripts/benchmark_pipeline.py profile \
   --start 2026-05-01 --end 2026-05-02
 
 # Docker
-docker build -t cmpd .
-docker run -p 8000:8000 -v ./data:/app/data cmpd
+docker build -t crmd .
+docker run -p 8000:8000 -v ./data:/app/data crmd
 ```
 
 ---
@@ -137,10 +168,10 @@ Full documentation: **[bigmikecreates.github.io/crypto-market-data-platform](htt
 
 | Section | Contents |
 |---|---|
-| [Getting Started](https://bigmikecreates.github.io/crypto-market-data-platform/getting-started/) | Install, first fetch, live providers, concurrent ingestion |
-| [Architecture](https://bigmikecreates.github.io/crypto-market-data-platform/architecture/) | Write/read path layers, design decisions |
+| [Getting Started](https://bigmikecreates.github.io/crypto-market-data-platform/getting-started/) | Install, first fetch, live providers, concurrent ingestion, Azure Blob |
+| [Architecture](https://bigmikecreates.github.io/crypto-market-data-platform/architecture/) | Write/read path layers, cloud storage, design decisions |
 | [Data Model](https://bigmikecreates.github.io/crypto-market-data-platform/data-model/) | `Candle` and `FundingRate` schema; why strings |
 | [Validation Strategy](https://bigmikecreates.github.io/crypto-market-data-platform/validation-strategy/) | Rule set, `ValidationResult`, blocking behaviour |
-| [Storage: Write Path](https://bigmikecreates.github.io/crypto-market-data-platform/storage-e2e/) | Stage-by-stage write pipeline, merge strategies |
+| [Storage: Write Path](https://bigmikecreates.github.io/crypto-market-data-platform/storage-e2e/) | Stage-by-stage write pipeline, Azure variant, concurrency model |
 | [Benchmark Design](https://bigmikecreates.github.io/crypto-market-data-platform/benchmark-design/) | Measurement methodology, CPU vs network profiling |
 | [Performance Notes](https://bigmikecreates.github.io/crypto-market-data-platform/performance-notes/) | Measured baselines, provider profiles |

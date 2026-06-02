@@ -3,10 +3,10 @@ import pyarrow.parquet as pq
 
 from datetime import datetime, timezone
 
-from cmpd.ingestion import OhlcvService, FundingRateService
-from cmpd.models.candle import Candle
-from cmpd.models.funding_rate import FundingRate
-from cmpd.providers.fake import FakeProvider
+from crmd_platform.ingestion import OHLCVService, FundingRateService
+from crmd_platform.models.candle import Candle
+from crmd_platform.models.funding_rate import FundingRate
+from crmd_platform.providers.fake import FakeProvider
 
 
 _START = datetime(2026, 1, 1, tzinfo=timezone.utc)
@@ -15,7 +15,7 @@ _END = datetime(2026, 1, 2, tzinfo=timezone.utc)
 
 class TestOhlcvService:
     def test_ingest_writes_candles(self, tmp_path):
-        svc = OhlcvService(provider=FakeProvider())
+        svc = OHLCVService(provider=FakeProvider())
         count = svc.ingest(
             symbol="BTC/USDT",
             timeframe="1h",
@@ -47,7 +47,7 @@ class TestOhlcvService:
                     )
                 ]
 
-        svc = OhlcvService(provider=BadProvider())
+        svc = OHLCVService(provider=BadProvider())
         with pytest.raises(ValueError, match="Validation failed"):
             svc.ingest(
                 symbol="BTC/USDT",
@@ -61,36 +61,38 @@ class TestOhlcvService:
 
 class TestFundingRateService:
     def test_ingest_writes_rates(self, tmp_path):
-        rates = [
-            FundingRate(
-                exchange="fake",
-                symbol="BTC/USDT",
-                timestamp="2026-01-01T00:00:00",
-                rate="0.0001",
-                predicted_rate="0.0002",
-                next_funding_time="2026-01-01T08:00:00",
-                source="fake",
-            )
-        ]
-        svc = FundingRateService()
-        count = svc.ingest(rates, base_path=str(tmp_path))
+        svc = FundingRateService(provider=FakeProvider())
+        count = svc.ingest(
+            symbol="BTC/USDT",
+            start=_START,
+            end=_END,
+            base_path=str(tmp_path),
+        )
         assert count == 1
         files = list(tmp_path.rglob("*.parquet"))
         assert len(files) == 1
 
     def test_ingest_blocks_on_validation_failure(self, tmp_path):
-        rates = [
-            FundingRate(
-                exchange="fake",
-                symbol="BTC/USDT",
-                timestamp="2026-01-01T00:00:00",
-                rate="",
-                predicted_rate="0.0002",
-                next_funding_time="2026-01-01T08:00:00",
-                source="fake",
-            )
-        ]
-        svc = FundingRateService()
+        class BadFundingProvider(FakeProvider):
+            def fetch_funding_rates(self, symbol, start, end):
+                return [
+                    FundingRate(
+                        exchange="fake",
+                        symbol=symbol,
+                        timestamp="2026-01-01T00:00:00",
+                        rate="",
+                        predicted_rate="0.0002",
+                        next_funding_time="2026-01-01T08:00:00",
+                        source="fake",
+                    )
+                ]
+
+        svc = FundingRateService(provider=BadFundingProvider())
         with pytest.raises(ValueError, match="Validation failed"):
-            svc.ingest(rates, base_path=str(tmp_path))
+            svc.ingest(
+                symbol="BTC/USDT",
+                start=_START,
+                end=_END,
+                base_path=str(tmp_path),
+            )
         assert list(tmp_path.rglob("*.parquet")) == []

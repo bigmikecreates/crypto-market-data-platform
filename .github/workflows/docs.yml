@@ -32,7 +32,7 @@ jobs:
       - name: Copy Docsify API reference into site
         run: |
           mkdir -p site/reference/
-          cp reference/index.html site/reference/index.html
+          cp docs/reference/index.html site/reference/index.html
           cp docs/reference/*.md site/reference/
 
       - name: Deploy built site to gh-pages

@@ -6,19 +6,41 @@ The platform is organised as a write path (provider → validation → storage) 
 
 ```mermaid
 graph TD
-    subgraph "Write Path"
-        P["Exchange API"] --> A["OHLCVProvider / FundingRateProvider"]
-        A --> B["Candle / FundingRate\n(all-string fields)"]
-        B --> C["validate_candle_batch()\nValidationResult"]
-        C -- "passed = True" --> D["candle_to_table()\nPyArrow table"]
-        C -- "passed = False" --> E["ValueError — no write"]
-        D --> F["write_candles()\nRow-level upsert merge"]
-        F --> G["data/{exchange}/{symbol}/{tf}/{date}.parquet"]
+    subgraph "Write Path — Candles"
+        P1["Exchange API"] --> A1["OHLCVProvider"]
+        A1 --> B1["Candle\n(all-string fields)"]
+        B1 --> C1["validate_candle_batch()\nValidationResult"]
+        C1 -- "passed = True" --> D1["candle_to_table()\nPyArrow table"]
+        C1 -- "passed = False" --> E1["ValueError — no write"]
+        D1 --> F1["write_candles()\nRow-level upsert merge"]
+    end
+
+    subgraph "Write Path — Funding Rates"
+        P2["Exchange API"] --> A2["FundingRateProvider"]
+        A2 --> B2["FundingRate\n(all-string fields)"]
+        B2 --> C2["validate_funding_rate_batch()\nValidationResult"]
+        C2 -- "passed = True" --> D2["funding_rate_to_table()\nPyArrow table"]
+        C2 -- "passed = False" --> E2["ValueError — no write"]
+        D2 --> F2["write_funding_rates()\nRow-level upsert merge"]
+    end
+
+    subgraph "Storage"
+        G1["data/{exchange}/{symbol}/{tf}/{date}.parquet"]
+        G2["data/{exchange}/{symbol}/funding_rate/{date}.parquet"]
+        G1A["az://… (Azure Blob)"]
+        G2A["az://… (Azure Blob)"]
+        F1 --> G1
+        F1 -- "az:// or abfs://" --> G1A
+        F2 --> G2
+        F2 -- "az:// or abfs://" --> G2A
     end
 
     subgraph "Read Path"
-        G --> H["DuckDBQueryService\nread_parquet()"]
-        H --> I["cmpd query / cmpd datasets"]
+        G1 --> H["DuckDBQueryService\nread_parquet()"]
+        G2 --> H
+        G1A --> H
+        G2A --> H
+        H --> I["crmd query / crmd datasets"]
         H --> J["FastAPI — /candles, /funding-rates, /query"]
     end
 ```
@@ -39,9 +61,10 @@ All numeric fields (`open`, `high`, `low`, `close`, `volume`, `rate`, etc.) rema
 
 ### 3. Validation (`validation/`)
 
-`validate_candle_batch()` runs five provider-independent rules over the full list of candles and returns a `ValidationResult`. If `passed` is `False`, the ingestion service raises `ValueError` and the writer is not called. The Parquet file is either untouched or not created.
+`validate_candle_batch()` runs seven provider-independent rules over the full list of candles and returns a `ValidationResult`. `validate_funding_rate_batch()` applies equivalent rules over the `FundingRate` field set. If `passed` is `False`, the ingestion service raises `ValueError` and the writer is not called. The Parquet file is either untouched or not created.
 
-Rules: `EMPTY_FIELD`, `INVALID_DECIMAL`, `INVALID_TIMESTAMP`, `OHLC_INVARIANT`, `DUPLICATE_TIMESTAMP`.
+Candle rules: `EMPTY_FIELD`, `INVALID_DECIMAL`, `NEGATIVE_VALUE`, `PRECISION_OVERFLOW`, `INVALID_TIMESTAMP`, `OHLC_INVARIANT`, `DUPLICATE_TIMESTAMP`.
+Funding rate rules: `EMPTY_FIELD`, `INVALID_DECIMAL`, `PRECISION_OVERFLOW`, `FUNDING_RATE_OUT_OF_RANGE`, `INVALID_TIMESTAMP`, `FUTURE_BEFORE_CURRENT`, `DUPLICATE_TIMESTAMP`.
 
 → See [Validation Strategy](validation-strategy.md).
 
@@ -63,11 +86,29 @@ The `QueryService` ABC has five methods: `list_datasets`, `get_candles`, `get_fu
 
 ### 6. CLI (`cli/`)
 
-`cmpd` is a Typer application with commands: `fetch`, `datasets`, `inspect`, `query ohlcv`, `query funding-rate`, `query sql`, and `serve`. The `fetch` command accepts multiple `--symbol` values and dispatches concurrent fetches via `ThreadPoolExecutor`.
+`crmd` is a Typer application with commands: `fetch`, `datasets`, `inspect`, `query ohlcv`, `query funding-rate`, `query sql`, and `serve`. The `fetch` command accepts multiple `--symbol` values and dispatches concurrent fetches via `ThreadPoolExecutor`.
 
 ### 7. Server (`server/`)
 
 `create_app()` returns a FastAPI application configured with `CORSMiddleware` and a global exception handler that returns JSON error responses. The application holds a `ServerConfig` with an injected `QueryService` instance (default: `DuckDBQueryService`). All query logic runs through the injected service — the API layer contains no query implementation.
+
+## Cloud storage (Azure Blob)
+
+Passing an `az://container/prefix` or `abfs://container/prefix` URI as `base_path` switches both the write and read paths to Azure Blob Storage. No other code changes are required.
+
+**Read path** — `DuckDBQueryService` detects the URI scheme and loads the `azure` DuckDB extension before executing queries. File discovery uses DuckDB's `glob()` function over the blob namespace rather than `Path.rglob()`. All `read_parquet()` queries work transparently once the extension is loaded.
+
+**Write path** — `write_candles()` and `write_funding_rates()` detect the Azure scheme and use `adlfs.AzureBlobFileSystem` (optional dep `crmd-platform[azure]`) as the PyArrow filesystem. The upsert merge is wrapped in `azure_lease_write()`, which serialises concurrent writers at the partition level via Azure Blob leases.
+
+**Credentials** — loaded from standard Azure environment variables in priority order:
+
+| Variable | When used |
+|---|---|
+| `AZURE_STORAGE_CONNECTION_STRING` | Connection string (dev/test) |
+| `AZURE_STORAGE_ACCOUNT` + `AZURE_STORAGE_KEY` | Explicit account and key |
+| `AZURE_STORAGE_ACCOUNT` only | Managed identity / `DefaultAzureCredential` |
+
+→ See [Storage: Write Path](storage-e2e.md) for the full write pipeline including the lease-based concurrency model.
 
 ## Key design decisions
 

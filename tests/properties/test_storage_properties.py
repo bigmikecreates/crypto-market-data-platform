@@ -13,12 +13,12 @@ import pyarrow.parquet as pq
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from cmpd.config import TimestampConfig
-from cmpd.models.candle import Candle
-from cmpd.storage.parquet_writer import (
-    _CANDLE_KEY_COLS,
-    _merge_via_duckdb,
-    _merge_via_set,
+from crmd_platform.config import TimestampConfig
+from crmd_platform.models.candle import Candle
+from crmd_platform.storage.parquet_writer import (
+    CANDLE_KEY_COLS,
+    merge_via_duckdb,
+    merge_via_set,
     candle_to_table,
     write_candles,
 )
@@ -117,7 +117,7 @@ def test_written_candles_have_correct_exchange_and_symbol(
 def test_merge_set_idempotent(candles: list[Candle]) -> None:
     """merge_via_set(A, A) must return exactly the same number of rows as A."""
     table = candle_to_table(candles, _TS_CONFIG)
-    merged = _merge_via_set(table, table, _CANDLE_KEY_COLS)
+    merged = merge_via_set(table, table, CANDLE_KEY_COLS)
     assert merged.num_rows == table.num_rows
 
 
@@ -125,7 +125,7 @@ def test_merge_set_idempotent(candles: list[Candle]) -> None:
 def test_merge_duckdb_idempotent(candles: list[Candle]) -> None:
     """merge_via_duckdb(A, A) must return exactly the same number of rows as A."""
     table = candle_to_table(candles, _TS_CONFIG)
-    merged = _merge_via_duckdb(table, table, _CANDLE_KEY_COLS)
+    merged = merge_via_duckdb(table, table, CANDLE_KEY_COLS)
     assert merged.num_rows == table.num_rows
 
 
@@ -140,7 +140,7 @@ def test_merge_set_produces_unique_timestamps(
     """After set-merge, each timestamp must appear at most once."""
     table_a = candle_to_table(candles_a, _TS_CONFIG)
     table_b = candle_to_table(candles_b, _TS_CONFIG)
-    result = _merge_via_set(table_a, table_b, _CANDLE_KEY_COLS)
+    result = merge_via_set(table_a, table_b, CANDLE_KEY_COLS)
     timestamps = [str(t) for t in result.column("timestamp").to_pylist()]
     assert len(timestamps) == len(set(timestamps))
 
@@ -153,7 +153,7 @@ def test_merge_duckdb_produces_unique_timestamps(
     """After DuckDB-merge, each timestamp must appear at most once."""
     table_a = candle_to_table(candles_a, _TS_CONFIG)
     table_b = candle_to_table(candles_b, _TS_CONFIG)
-    result = _merge_via_duckdb(table_a, table_b, _CANDLE_KEY_COLS)
+    result = merge_via_duckdb(table_a, table_b, CANDLE_KEY_COLS)
     timestamps = [str(t) for t in result.column("timestamp").to_pylist()]
     assert len(timestamps) == len(set(timestamps))
 
@@ -170,7 +170,7 @@ def test_merge_row_count_bounded_by_union_of_keys(
     table_a = candle_to_table(candles_a, _TS_CONFIG)
     table_b = candle_to_table(candles_b, _TS_CONFIG)
     unique_keys = {c.timestamp for c in candles_a} | {c.timestamp for c in candles_b}
-    result = _merge_via_set(table_a, table_b, _CANDLE_KEY_COLS)
+    result = merge_via_set(table_a, table_b, CANDLE_KEY_COLS)
     assert result.num_rows == len(unique_keys)
 
 
@@ -185,6 +185,6 @@ def test_set_and_duckdb_merge_agree_on_row_count(
     """Both merge strategies must produce the same number of rows."""
     table_a = candle_to_table(candles_a, _TS_CONFIG)
     table_b = candle_to_table(candles_b, _TS_CONFIG)
-    set_result = _merge_via_set(table_a, table_b, _CANDLE_KEY_COLS)
-    duckdb_result = _merge_via_duckdb(table_a, table_b, _CANDLE_KEY_COLS)
+    set_result = merge_via_set(table_a, table_b, CANDLE_KEY_COLS)
+    duckdb_result = merge_via_duckdb(table_a, table_b, CANDLE_KEY_COLS)
     assert set_result.num_rows == duckdb_result.num_rows

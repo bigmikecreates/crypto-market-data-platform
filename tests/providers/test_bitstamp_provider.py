@@ -1,25 +1,15 @@
-import json
 from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any
 
 import pytest
 
-from cmpd.models.candle import Candle
-from cmpd.providers.bitstamp import (
+from crmd_platform.models.candle import Candle
+from crmd_platform.providers.bitstamp import (
     BitstampProvider,
     _parse_row,
     _to_bitstamp_symbol,
-    _to_bitstamp_step,
+    _to_bitstamp_timeframe,
 )
-
-_FIXTURE_DIR = Path(__file__).parent.parent / "fixtures"
-
-
-def _load_fixture(name: str) -> Any:
-    path = _FIXTURE_DIR / name
-    with open(path) as f:
-        return json.load(f)
+from tests.conftest import load_fixture as _load_fixture
 
 
 class TestBitstampHelpers:
@@ -35,30 +25,30 @@ class TestBitstampHelpers:
     def test_to_bitstamp_symbol_usdt(self) -> None:
         assert _to_bitstamp_symbol("BTC/USDT") == "btcusdt"
 
-    def test_to_bitstamp_step_1m(self) -> None:
-        assert _to_bitstamp_step("1m") == 60
+    def test_to_bitstamp_timeframe_1m(self) -> None:
+        assert _to_bitstamp_timeframe("1m") == 60
 
-    def test_to_bitstamp_step_5m(self) -> None:
-        assert _to_bitstamp_step("5m") == 300
+    def test_to_bitstamp_timeframe_5m(self) -> None:
+        assert _to_bitstamp_timeframe("5m") == 300
 
-    def test_to_bitstamp_step_15m(self) -> None:
-        assert _to_bitstamp_step("15m") == 900
+    def test_to_bitstamp_timeframe_15m(self) -> None:
+        assert _to_bitstamp_timeframe("15m") == 900
 
-    def test_to_bitstamp_step_1h(self) -> None:
-        assert _to_bitstamp_step("1h") == 3600
+    def test_to_bitstamp_timeframe_1h(self) -> None:
+        assert _to_bitstamp_timeframe("1h") == 3600
 
-    def test_to_bitstamp_step_4h(self) -> None:
-        assert _to_bitstamp_step("4h") == 14400
+    def test_to_bitstamp_timeframe_4h(self) -> None:
+        assert _to_bitstamp_timeframe("4h") == 14400
 
-    def test_to_bitstamp_step_1d(self) -> None:
-        assert _to_bitstamp_step("1d") == 86400
+    def test_to_bitstamp_timeframe_1d(self) -> None:
+        assert _to_bitstamp_timeframe("1d") == 86400
 
-    def test_to_bitstamp_step_3d(self) -> None:
-        assert _to_bitstamp_step("3d") == 259200
+    def test_to_bitstamp_timeframe_3d(self) -> None:
+        assert _to_bitstamp_timeframe("3d") == 259200
 
-    def test_to_bitstamp_step_invalid(self) -> None:
+    def test_to_bitstamp_timeframe_invalid(self) -> None:
         with pytest.raises(ValueError, match="Unsupported timeframe"):
-            _to_bitstamp_step("99z")
+            _to_bitstamp_timeframe("99z")
 
 
 class TestBitstampProvider:
@@ -68,7 +58,7 @@ class TestBitstampProvider:
         self.end = datetime(2024, 1, 2, tzinfo=timezone.utc)
 
     def test_provider_is_ohlcv_provider(self) -> None:
-        from cmpd.providers.base import OHLCVProvider
+        from crmd_platform.providers.base import OHLCVProvider
 
         assert isinstance(self.provider, OHLCVProvider)
 

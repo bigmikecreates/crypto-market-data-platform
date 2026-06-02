@@ -18,7 +18,7 @@ pip install -e .
 Verify the installation:
 
 ```bash
-cmpd --help
+crmd --help
 ```
 
 ## Step 1 — Fetch your first candles
@@ -26,7 +26,7 @@ cmpd --help
 The `FakeProvider` generates a single synthetic candle without any network access. It is the correct starting point for verifying that the pipeline is functional.
 
 ```bash
-cmpd fetch \
+crmd fetch \
   --mdt ohlcv \
   --symbol "BTC/USDT" \
   --timeframe 1h \
@@ -45,10 +45,10 @@ The candle is written to `data/fake/BTC/USDT/1h/2026-01-01.parquet`.
 
 ## Step 2 — Inspect the stored data
 
-`cmpd inspect` reads one or more Parquet files and prints schema, row count, and a sample:
+`crmd inspect` reads one or more Parquet files and prints schema, row count, and a sample:
 
 ```bash
-cmpd inspect --path data --limit 3
+crmd inspect --path data --limit 3
 ```
 
 ```
@@ -78,16 +78,16 @@ Note the schema: numeric columns are stored as `decimal128(38,10)`, not `float`.
 
 ## Step 3 — Query the data
 
-`cmpd query ohlcv` runs a DuckDB query over all Parquet files under the data directory:
+`crmd query ohlcv` runs a DuckDB query over all Parquet files under the data directory:
 
 ```bash
-cmpd query ohlcv --symbol "BTC/USDT" --limit 5
+crmd query ohlcv --symbol "BTC/USDT" --limit 5
 ```
 
 Filter by exchange, symbol, timeframe, or time range:
 
 ```bash
-cmpd query ohlcv \
+crmd query ohlcv \
   --exchange fake \
   --symbol "BTC/USDT" \
   --timeframe 1h \
@@ -99,7 +99,7 @@ cmpd query ohlcv \
 Run raw SQL directly via DuckDB:
 
 ```bash
-cmpd query sql \
+crmd query sql \
   "SELECT symbol, count(*) AS rows FROM read_parquet('data/**/*.parquet') GROUP BY symbol"
 ```
 
@@ -109,7 +109,7 @@ Replace `fake` with a live provider name. The symbol format is exchange-specific
 
 ```bash
 # Bitfinex — uses tBTCUSD notation
-cmpd fetch \
+crmd fetch \
   --mdt ohlcv \
   --symbol "tBTCUSD" \
   --timeframe 1h \
@@ -120,7 +120,7 @@ cmpd fetch \
 
 ```bash
 # KuCoin — uses BTC-USDT notation
-cmpd fetch \
+crmd fetch \
   --mdt ohlcv \
   --symbol "BTC-USDT" \
   --timeframe 1h \
@@ -136,7 +136,7 @@ Re-fetching the same range is safe. The writer performs a row-level upsert using
 Pass `--symbol` multiple times to ingest several symbols in a single command. Use `--workers` to control the number of concurrent fetches (default: 4):
 
 ```bash
-cmpd fetch \
+crmd fetch \
   --mdt ohlcv \
   --symbol "BTC-USDT" \
   --symbol "ETH-USDT" \
@@ -152,10 +152,10 @@ Each symbol is dispatched to a separate thread. Because KuCoin's pipeline is net
 
 ## Step 6 — List available datasets
 
-`cmpd datasets` prints a summary of all Parquet datasets under the data directory:
+`crmd datasets` prints a summary of all Parquet datasets under the data directory:
 
 ```bash
-cmpd datasets
+crmd datasets
 ```
 
 ```
@@ -167,10 +167,10 @@ cmpd datasets
 
 ## Step 7 — Start the REST API server
 
-`cmpd serve` starts a FastAPI server that exposes all stored data over HTTP:
+`crmd serve` starts a FastAPI server that exposes all stored data over HTTP:
 
 ```bash
-cmpd serve --host 127.0.0.1 --port 8000 --path data
+crmd serve --host 127.0.0.1 --port 8000 --path data
 ```
 
 The server exposes these endpoints:
@@ -190,14 +190,14 @@ Example:
 curl "http://127.0.0.1:8000/candles?symbol=BTC-USDT&limit=3"
 ```
 
-See the [HTTP API Reference](reference/http-api.md) for full endpoint documentation.
+See the [HTTP API Reference](/crypto-market-data-platform/reference/#/http-api) for full endpoint documentation.
 
 ## Step 8 — Fetch funding rates
 
 Funding rate ingestion uses the same `fetch` command with `--mdt funding-rate`:
 
 ```bash
-cmpd fetch \
+crmd fetch \
   --mdt funding-rate \
   --symbol "BTC/USDT" \
   --start 2026-01-01 \
@@ -207,12 +207,58 @@ cmpd fetch \
 ```
 
 ```bash
-cmpd query funding-rate --symbol "BTC/USDT" --limit 5
+crmd query funding-rate --symbol "BTC/USDT" --limit 5
 ```
+
+## Step 9 — Write and read from Azure Blob Storage
+
+Install the Azure extra:
+
+```bash
+pip install -e ".[azure]"
+```
+
+Set credentials (connection string, or account + key, or managed identity):
+
+```bash
+export AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=..."
+# or:
+export AZURE_STORAGE_ACCOUNT="myaccount"
+export AZURE_STORAGE_KEY="base64key=="
+```
+
+Point `--output` and `--path` at your container:
+
+```bash
+# Write
+crmd fetch \
+  --mdt ohlcv \
+  --symbol "BTC-USDT" \
+  --symbol "ETH-USDT" \
+  --timeframe 1h \
+  --start 2026-01-01 \
+  --end 2026-01-08 \
+  --provider kucoin \
+  --workers 2 \
+  --output az://mycontainer/crypto-data
+
+# Query
+crmd query ohlcv \
+  --path az://mycontainer/crypto-data \
+  --symbol "BTC-USDT" \
+  --limit 5
+
+# Serve
+crmd serve --path az://mycontainer/crypto-data --port 8000
+```
+
+Concurrent workers writing to the same partition are safe: the writer holds a 30-second Azure Blob lease during the read-merge-write cycle, so no rows are lost. Workers writing to different partitions (the common case when parallelising by symbol) are unaffected by locking.
+
+→ See [Storage: Write Path](storage-e2e.md#azure-blob-storage-variant) for the full Azure write pipeline and concurrency model.
 
 ## Next steps
 
 - [Architecture](architecture.md) — how the pipeline layers fit together
-- [CLI Reference](reference/cli.md) — all commands and options
+- [CLI Reference](/crypto-market-data-platform/reference/#/cli) — all commands and options
 - [Benchmark Design](benchmark-design.md) — how to measure pipeline performance
 - [Providers](providers.md) — symbol formats and provider-specific notes

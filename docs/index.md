@@ -7,18 +7,34 @@ A local-first pipeline for ingesting, validating, storing, and querying cryptocu
 ```mermaid
 graph TD
     subgraph Providers
-        A[Exchange API] --> B[OHLCVProvider / FundingRateProvider]
+        A1[Exchange API] --> B1[OHLCVProvider]
+        A2[Exchange API] --> B2[FundingRateProvider]
     end
-    subgraph Write Path
-        B --> C["Candle / FundingRate\n(all-string fields)"]
-        C --> D[Validation boundary]
-        D --> E[ParquetWriter]
-        E --> F["data/{exchange}/{symbol}/{tf}/{date}.parquet"]
+    subgraph Write Path — Candles
+        B1 --> C1["Candle\n(all-string fields)"]
+        C1 --> D1["validate_candle_batch()\nValidationResult"]
+        D1 -- "passed = True" --> E1["candle_to_table()\nPyArrow table"]
+        D1 -- "passed = False" --> F1["ValueError — no write"]
+        E1 --> G1["write_candles()\nRow-level upsert merge"]
+    end
+    subgraph Write Path — Funding Rates
+        B2 --> C2["FundingRate\n(all-string fields)"]
+        C2 --> D2["validate_funding_rate_batch()\nValidationResult"]
+        D2 -- "passed = True" --> E2["funding_rate_to_table()\nPyArrow table"]
+        D2 -- "passed = False" --> F2["ValueError — no write"]
+        E2 --> G2["write_funding_rates()\nRow-level upsert merge"]
+    end
+    subgraph Storage
+        H1["data/{exchange}/{symbol}/{tf}/{date}.parquet"]
+        H2["data/{exchange}/{symbol}/funding_rate/{date}.parquet"]
+        G1 --> H1
+        G2 --> H2
     end
     subgraph Read Path
-        F --> G[DuckDBQueryService]
-        G --> H[CLI — cmpd query]
-        G --> I[FastAPI — /candles, /funding-rates]
+        H1 --> I[DuckDBQueryService]
+        H2 --> I
+        I --> J[CLI — crmd query]
+        I --> K[FastAPI — /candles, /funding-rates]
     end
 ```
 
@@ -29,7 +45,7 @@ Install the package and run your first ingestion against the built-in `FakeProvi
 ```bash
 pip install -e .
 
-cmpd fetch \
+crmd fetch \
   --mdt ohlcv \
   --symbol "BTC/USDT" \
   --timeframe 1h \
@@ -43,9 +59,9 @@ cmpd fetch \
 Then inspect what was written and query it back:
 
 ```bash
-cmpd inspect --path data --limit 3
+crmd inspect --path data --limit 3
 
-cmpd query ohlcv --symbol "BTC/USDT" --limit 5
+crmd query ohlcv --symbol "BTC/USDT" --limit 5
 ```
 
 For a complete walkthrough — multiple providers, concurrent symbol ingestion, the REST API — see [Getting Started](getting-started.md).

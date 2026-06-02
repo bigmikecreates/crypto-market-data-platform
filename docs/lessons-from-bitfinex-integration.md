@@ -74,7 +74,7 @@ must be tested with a live API call at least once during development
 to uncover transport-layer issues (WAF blocks, DNS resolution, TLS
 version incompatibilities, redirect handling, rate-limit headers).
 
-→ See [Python API Reference](reference/python-api.md) for the exact
+→ See [Python API Reference](/crypto-market-data-platform/reference/#/python-api) for the exact
 field order and URL details for each provider.
 
 ### 2. Bitfinex's field ordering is non-standard and poorly documented
@@ -84,7 +84,7 @@ The response format `[MTS, OPEN, CLOSE, HIGH, LOW, VOLUME]` places
 `[timestamp, open, high, low, close, volume]`. This is a known
 Bitfinex quirk that is not prominently called out in their API docs.
 
-→ See [Python API Reference](reference/python-api.md) for the exact
+→ See [Python API Reference](/crypto-market-data-platform/reference/#/python-api) for the exact
 field positions for each provider.
 
 ### 3. Symbol mapping is not trivially automatable
@@ -94,7 +94,7 @@ USDT pairs require different handling (`BTC/USDT` → `tBTCUST`, where
 `UST` is Bitfinex's native code for USDT). A general-purpose symbol
 normaliser would require a full mapping table for every exchange.
 
-→ See [Python API Reference](reference/python-api.md) for symbol
+→ See [Python API Reference](/crypto-market-data-platform/reference/#/python-api) for symbol
 mapping details per provider.
 
 ### 4. Rate-limit behaviour requires empirical verification
@@ -105,7 +105,7 @@ penalty duration) can only be determined empirically. A
 `rate_limit_sleep` parameter with a configurable default allows
 tuning without code changes.
 
-→ See [Python API Reference](reference/python-api.md) for rate-limit
+→ See [Python API Reference](/crypto-market-data-platform/reference/#/python-api) for rate-limit
 configuration per provider.
 
 ### 5. The last candle in a Bitfinex response may be incomplete

@@ -1,42 +1,16 @@
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from cmpd.config import TimestampConfig
-from cmpd.models.candle import Candle
-from cmpd.storage.parquet_writer import (
-    _CANDLE_KEY_COLS,
-    _merge_tables,
-    _merge_via_set,
-    _merge_via_duckdb,
-    _ROW_MERGE_THRESHOLD,
+from crmd_platform.config import TimestampConfig
+from crmd_platform.storage.parquet_writer import (
+    CANDLE_KEY_COLS,
+    merge_tables,
+    merge_via_set,
+    merge_via_duckdb,
+    ROW_MERGE_THRESHOLD,
     write_candles,
 )
-
-
-def _make_candle(
-    timestamp: str,
-    exchange: str = "fake",
-    symbol: str = "BTC-USD",
-    timeframe: str = "1h",
-    open_str: str = "50000.00",
-    high: str = "51000.00",
-    low: str = "49000.00",
-    close: str = "50500.00",
-    volume: str = "100.5",
-    source: str = "test",
-) -> Candle:
-    return Candle(
-        exchange=exchange,
-        symbol=symbol,
-        timeframe=timeframe,
-        timestamp=timestamp,
-        open=open_str,
-        high=high,
-        low=low,
-        close=close,
-        volume=volume,
-        source=source,
-    )
+from tests.conftest import make_candle as _make_candle
 
 
 class TestMergeViaSet:
@@ -45,12 +19,12 @@ class TestMergeViaSet:
         c2 = _make_candle("2024-01-01T01:00:00")
         ts = TimestampConfig()
 
-        from cmpd.storage.parquet_writer import candle_to_table
+        from crmd_platform.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c1], ts)  # same c1, no changes
 
-        result = _merge_via_set(existing, incoming, _CANDLE_KEY_COLS)
+        result = merge_via_set(existing, incoming, CANDLE_KEY_COLS)
         assert result.num_rows == 2
         # return same object when nothing changed
         assert result is existing
@@ -61,12 +35,12 @@ class TestMergeViaSet:
         c3 = _make_candle("2024-01-01T02:00:00")
         ts = TimestampConfig()
 
-        from cmpd.storage.parquet_writer import candle_to_table
+        from crmd_platform.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1], ts)
         incoming = candle_to_table([c2, c3], ts)
 
-        result = _merge_via_set(existing, incoming, _CANDLE_KEY_COLS)
+        result = merge_via_set(existing, incoming, CANDLE_KEY_COLS)
         assert result.num_rows == 3
 
     def test_updated_row_replaces_existing(self) -> None:
@@ -75,12 +49,12 @@ class TestMergeViaSet:
         c2 = _make_candle("2024-01-01T01:00:00")
         ts = TimestampConfig()
 
-        from cmpd.storage.parquet_writer import candle_to_table
+        from crmd_platform.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c1_updated], ts)
 
-        result = _merge_via_set(existing, incoming, _CANDLE_KEY_COLS)
+        result = merge_via_set(existing, incoming, CANDLE_KEY_COLS)
         assert result.num_rows == 2
         opens = [str(v) for v in result.column("open").to_pylist()]
         assert "200.0000000000" in opens
@@ -93,12 +67,12 @@ class TestMergeViaSet:
         c3 = _make_candle("2024-01-01T02:00:00", open_str="102.00")
         ts = TimestampConfig()
 
-        from cmpd.storage.parquet_writer import candle_to_table
+        from crmd_platform.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c2_updated, c3], ts)
 
-        result = _merge_via_set(existing, incoming, _CANDLE_KEY_COLS)
+        result = merge_via_set(existing, incoming, CANDLE_KEY_COLS)
         assert result.num_rows == 3
         opens = sorted(str(v) for v in result.column("open").to_pylist())
         assert opens == ["100.0000000000", "102.0000000000", "999.0000000000"]
@@ -107,25 +81,25 @@ class TestMergeViaSet:
         c1 = _make_candle("2024-01-01T00:00:00")
         ts = TimestampConfig()
 
-        from cmpd.storage.parquet_writer import candle_to_table
+        from crmd_platform.storage.parquet_writer import candle_to_table
 
-        existing = pa.Table.from_pydict({})
+        existing = candle_to_table([], ts)
         incoming = candle_to_table([c1], ts)
 
-        result = _merge_via_set(existing, incoming, _CANDLE_KEY_COLS)
+        result = merge_via_set(existing, incoming, CANDLE_KEY_COLS)
         assert result.num_rows == 1
 
     def test_empty_incoming_returns_existing(self) -> None:
         c1 = _make_candle("2024-01-01T00:00:00")
         ts = TimestampConfig()
 
-        from cmpd.storage.parquet_writer import candle_to_table
+        from crmd_platform.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1], ts)
-        incoming = pa.Table.from_pydict({})
+        incoming = candle_to_table([], ts)
 
         # An empty incoming table after candle_to_table has 0 rows but may have schema
-        result = _merge_via_set(existing, incoming, _CANDLE_KEY_COLS)
+        result = merge_via_set(existing, incoming, CANDLE_KEY_COLS)
         # With empty incoming, existing stays unchanged
         assert result.num_rows == 1
 
@@ -136,12 +110,12 @@ class TestMergeViaDuckDB:
         c2 = _make_candle("2024-01-01T01:00:00")
         ts = TimestampConfig()
 
-        from cmpd.storage.parquet_writer import candle_to_table
+        from crmd_platform.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c1], ts)
 
-        result = _merge_via_duckdb(existing, incoming, _CANDLE_KEY_COLS)
+        result = merge_via_duckdb(existing, incoming, CANDLE_KEY_COLS)
         assert result.num_rows == 2
 
     def test_duckdb_new_rows_appended(self) -> None:
@@ -149,12 +123,12 @@ class TestMergeViaDuckDB:
         c2 = _make_candle("2024-01-01T01:00:00")
         ts = TimestampConfig()
 
-        from cmpd.storage.parquet_writer import candle_to_table
+        from crmd_platform.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1], ts)
         incoming = candle_to_table([c2], ts)
 
-        result = _merge_via_duckdb(existing, incoming, _CANDLE_KEY_COLS)
+        result = merge_via_duckdb(existing, incoming, CANDLE_KEY_COLS)
         assert result.num_rows == 2
 
     def test_duckdb_updated_row(self) -> None:
@@ -162,12 +136,12 @@ class TestMergeViaDuckDB:
         c1_updated = _make_candle("2024-01-01T00:00:00", open_str="200.00")
         ts = TimestampConfig()
 
-        from cmpd.storage.parquet_writer import candle_to_table
+        from crmd_platform.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1], ts)
         incoming = candle_to_table([c1_updated], ts)
 
-        result = _merge_via_duckdb(existing, incoming, _CANDLE_KEY_COLS)
+        result = merge_via_duckdb(existing, incoming, CANDLE_KEY_COLS)
         assert result.num_rows == 1
         opens = [str(v) for v in result.column("open").to_pylist()]
         assert opens == ["200.0000000000"]
@@ -178,12 +152,12 @@ class TestMergeViaDuckDB:
         c2 = _make_candle("2024-01-01T01:00:00", open_str="101.00")
         ts = TimestampConfig()
 
-        from cmpd.storage.parquet_writer import candle_to_table
+        from crmd_platform.storage.parquet_writer import candle_to_table
 
         existing = candle_to_table([c1, c2], ts)
         incoming = candle_to_table([c1_updated], ts)
 
-        result = _merge_via_duckdb(existing, incoming, _CANDLE_KEY_COLS)
+        result = merge_via_duckdb(existing, incoming, CANDLE_KEY_COLS)
         assert result.num_rows == 2
         opens = sorted(str(v) for v in result.column("open").to_pylist())
         assert opens == ["101.0000000000", "200.0000000000"]
@@ -193,24 +167,24 @@ class TestMergeDispatcher:
     def test_auto_uses_memory_below_threshold(self) -> None:
         table = pa.table({"a": [1]})
         incoming = pa.table({"a": [2]})
-        result = _merge_tables(table, incoming, ["a"], strategy="auto")
+        result = merge_tables(table, incoming, ["a"], strategy="auto")
         # Should use set merge (memory path) for small tables
         assert result.num_rows == 2
 
     def test_explicit_memory_strategy(self) -> None:
         table = pa.table({"a": [1]})
         incoming = pa.table({"a": [2]})
-        result = _merge_tables(table, incoming, ["a"], strategy="memory")
+        result = merge_tables(table, incoming, ["a"], strategy="memory")
         assert result.num_rows == 2
 
     def test_explicit_duckdb_strategy(self) -> None:
         table = pa.table({"a": [1]})
         incoming = pa.table({"a": [2]})
-        result = _merge_tables(table, incoming, ["a"], strategy="duckdb")
+        result = merge_tables(table, incoming, ["a"], strategy="duckdb")
         assert result.num_rows == 2
 
     def test_threshold_constant_is_reasonable(self) -> None:
-        assert _ROW_MERGE_THRESHOLD == 50_000
+        assert ROW_MERGE_THRESHOLD == 50_000
 
 
 class TestWriteCandlesMergeEndToEnd:

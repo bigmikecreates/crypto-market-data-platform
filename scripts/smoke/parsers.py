@@ -11,14 +11,14 @@ def parse_via_provider(provider: str, raw: str) -> str | None:
 
     try:
         if provider == "bitfinex":
-            from cmpd.providers.bitfinex import _parse_row
+            from crmd_platform.providers.bitfinex import _parse_row
 
             if not isinstance(data, list) or not data:
                 return f"expected non-empty list, got {type(data).__name__}"
             _parse_row(data[-1], "bitfinex", "BTC/USD", TIMEFRAME, "smoke")
 
         elif provider == "bitstamp":
-            from cmpd.providers.bitstamp import _parse_row
+            from crmd_platform.providers.bitstamp import _parse_row
 
             ohlc = data.get("data", {}).get("ohlc", [])
             if not ohlc:
@@ -26,7 +26,7 @@ def parse_via_provider(provider: str, raw: str) -> str | None:
             _parse_row(ohlc[-1], "bitstamp", "BTC/USD", TIMEFRAME, "smoke")
 
         elif provider == "bybit":
-            from cmpd.providers.bybit import _parse_row
+            from crmd_platform.providers.bybit import _parse_row
 
             lst = data.get("result", {}).get("list", [])
             if not lst:
@@ -36,7 +36,7 @@ def parse_via_provider(provider: str, raw: str) -> str | None:
             _parse_row(lst[-1], "bybit", "BTC/USDT", TIMEFRAME, "smoke")
 
         elif provider == "kucoin":
-            from cmpd.providers.kucoin import _parse_row
+            from crmd_platform.providers.kucoin import _parse_row
 
             candles = data.get("data", [])
             if not candles:
@@ -45,7 +45,7 @@ def parse_via_provider(provider: str, raw: str) -> str | None:
             _parse_row(candles[-1], "kucoin", "BTC/USDT", TIMEFRAME, "smoke")
 
         elif provider == "mexc":
-            from cmpd.providers.mexc import _parse_row
+            from crmd_platform.providers.mexc import _parse_row
 
             if not isinstance(data, list) or not data:
                 return f"expected non-empty list, got {type(data).__name__}"

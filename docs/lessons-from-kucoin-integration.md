@@ -13,7 +13,7 @@ was handled inside `providers/kucoin.py`. No changes were needed to
 `Candle`, validation, or the writer. This confirms that the provider
 boundary design generalises beyond a single exchange.
 
-→ See [Python API Reference](reference/python-api.md) for the exact
+→ See [Python API Reference](/crypto-market-data-platform/reference/#/python-api) for the exact
 KuCoin API endpoint, field order, symbol format, and limit.
 
 ### 2. Pre-emptive User-Agent header avoids WAF issues

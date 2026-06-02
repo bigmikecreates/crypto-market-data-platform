@@ -6,3 +6,11 @@ data/
 .bench_tmp*
 site/
 .opencode/plans/
+reports/
+.coverage
+coverage.xml
+htmlcov/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/

@@ -1,10 +1,10 @@
 import pytest
 
-from cmpd.models.candle import Candle
-from cmpd.validation.candles import validate_candle_batch
-from cmpd.validation.patterns import (
-    _decimal_gte,
-    _digit_count,
+from crmd_platform.models.candle import Candle
+from crmd_platform.validation.candles import validate_candle_batch
+from crmd_platform.validation.patterns import (
+    decimal_gte,
+    digit_count,
 )
 
 
@@ -235,50 +235,50 @@ def test_same_timestamp_different_source_allowed():
     assert result.issues == []
 
 
-# -- _decimal_gte ----------------------------------------------
+# -- decimal_gte ----------------------------------------------
 
 
 class TestDecimalGte:
     def test_equal(self):
-        assert _decimal_gte("1.0", "1.0")
+        assert decimal_gte("1.0", "1.0")
 
     def test_same_integer_part(self):
-        assert _decimal_gte("1.2", "1.1")
-        assert not _decimal_gte("1.1", "1.2")
+        assert decimal_gte("1.2", "1.1")
+        assert not decimal_gte("1.1", "1.2")
 
     def test_different_integer_length(self):
-        assert _decimal_gte("100", "99")
-        assert not _decimal_gte("50", "500")
+        assert decimal_gte("100", "99")
+        assert not decimal_gte("50", "500")
 
     def test_same_integer_different_fraction_length(self):
-        assert _decimal_gte("1.50", "1.5")
-        assert _decimal_gte("1.5", "1.50")
-        assert _decimal_gte("1.5", "1.5")
+        assert decimal_gte("1.50", "1.5")
+        assert decimal_gte("1.5", "1.50")
+        assert decimal_gte("1.5", "1.5")
 
     def test_no_fractional_part(self):
-        assert _decimal_gte("5", "3")
-        assert not _decimal_gte("2", "5")
+        assert decimal_gte("5", "3")
+        assert not decimal_gte("2", "5")
 
     def test_leading_zeros(self):
-        assert _decimal_gte("0010", "5")
-        assert not _decimal_gte("0005", "0010")
+        assert decimal_gte("0010", "5")
+        assert not decimal_gte("0005", "0010")
 
 
-# -- _digit_count ----------------------------------------------
+# -- digit_count ----------------------------------------------
 
 
 class TestDigitCount:
     def test_integer(self):
-        assert _digit_count("12345") == 5
+        assert digit_count("12345") == 5
 
     def test_with_decimal(self):
-        assert _digit_count("123.45") == 5
+        assert digit_count("123.45") == 5
 
     def test_leading_zeros(self):
-        assert _digit_count("00123.45") == 7
+        assert digit_count("00123.45") == 7
 
     def test_no_digits(self):
-        assert _digit_count("0") == 1
+        assert digit_count("0") == 1
 
     def test_decimal_point_only(self):
-        assert _digit_count(".") == 0
+        assert digit_count(".") == 0

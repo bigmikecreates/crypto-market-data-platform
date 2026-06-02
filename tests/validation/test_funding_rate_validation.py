@@ -1,7 +1,7 @@
 import pytest
 
-from cmpd.models.funding_rate import FundingRate
-from cmpd.validation.funding_rates import (
+from crmd_platform.models.funding_rate import FundingRate
+from crmd_platform.validation.funding_rates import (
     validate_funding_rate_batch,
 )
 

@@ -1,19 +1,19 @@
 import tracemalloc
 
 
-from cmpd.benchmark.core import (
+from crmd_platform.benchmark.core import (
     BenchmarkContext,
     BenchmarkResult,
     StageMetrics,
 )
-from cmpd.benchmark.rules import (
+from crmd_platform.benchmark.rules import (
     DEFAULT_RULES,
     VERBOSE_RULES,
     CrossValidationRule,
     evaluate_rules,
 )
-from cmpd.benchmark.runners import CandlePipelineRunner
-from cmpd.config import TimestampConfig
+from crmd_platform.benchmark.runners import CandlePipelineRunner
+from crmd_platform.config import TimestampConfig
 
 
 class TestBenchmarkContext:

@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from cmpd.models.candle import Candle
-from cmpd.models.funding_rate import FundingRate
-from cmpd.providers.base import (
+from crmd_platform.models.candle import Candle
+from crmd_platform.models.funding_rate import FundingRate
+from crmd_platform.providers.base import (
     FundingRateProvider,
     OHLCVProvider,
 )
-from cmpd.providers.fake import FakeProvider
+from crmd_platform.providers.fake import FakeProvider
 
 
 class TestFakeProvider:

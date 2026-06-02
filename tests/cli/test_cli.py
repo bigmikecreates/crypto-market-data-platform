@@ -3,7 +3,7 @@ from pathlib import Path
 import pyarrow.parquet as pq
 from typer.testing import CliRunner
 
-from cmpd.cli.main import app
+from crmd_platform.cli.main import app
 
 runner = CliRunner()
 

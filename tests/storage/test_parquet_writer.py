@@ -1,37 +1,11 @@
 import pyarrow.parquet as pq
 
-from cmpd.config import TimestampConfig
-from cmpd.models.candle import Candle
-from cmpd.storage.parquet_writer import (
-    _path_for_candle,
+from crmd_platform.config import TimestampConfig
+from crmd_platform.storage.parquet_writer import (
+    path_for_candle,
     write_candles,
 )
-
-
-def _make_candle(
-    timestamp: str,
-    exchange: str = "fake",
-    symbol: str = "BTC-USD",
-    timeframe: str = "1h",
-    open_str: str = "50000.00",
-    high: str = "51000.00",
-    low: str = "49000.00",
-    close: str = "50500.00",
-    volume: str = "100.5",
-    source: str = "test",
-) -> Candle:
-    return Candle(
-        exchange=exchange,
-        symbol=symbol,
-        timeframe=timeframe,
-        timestamp=timestamp,
-        open=open_str,
-        high=high,
-        low=low,
-        close=close,
-        volume=volume,
-        source=source,
-    )
+from tests.conftest import make_candle as _make_candle
 
 
 class TestWriteCandlesPartitioning:
@@ -127,7 +101,7 @@ class TestWriteCandlesPartitioning:
 class TestPathForCandle:
     def test_path_contains_date_and_trading_pair(self, tmp_path) -> None:
         candle = _make_candle("2024-01-15T12:30:00")
-        path = _path_for_candle(candle, str(tmp_path))
+        path = path_for_candle(candle, str(tmp_path))
         assert path.name == "2024-01-15.parquet"
         assert "fake" in str(path)
         assert "BTC-USD" in str(path)
@@ -135,7 +109,7 @@ class TestPathForCandle:
 
     def test_timestamp_truncation_to_date(self, tmp_path) -> None:
         candle = _make_candle("2024-12-31T23:59:59")
-        path = _path_for_candle(candle, str(tmp_path))
+        path = path_for_candle(candle, str(tmp_path))
         assert path.name == "2024-12-31.parquet"
 
 
