@@ -49,6 +49,18 @@ graph TD
     class Out output;
 ```
 
+### Notation
+
+| Symbol | Meaning |
+|--------|---------|
+| `──▶` | Solid arrow — data flows to the next stage |
+| `─ text ▶` | Labelled arrow — conditional path (checked only when label matches) |
+| `◇` | Diamond — decision node (branching by condition) |
+| `[  ]` | Rectangle — process step or stage |
+| `[[  ]]` | Rounded rectangle — terminal output (the written file) |
+| Grey fill | Stage or process node |
+| Green fill | Terminal output node |
+
 ---
 
 ## Stage 1 — Provider
