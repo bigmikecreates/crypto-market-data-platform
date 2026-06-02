@@ -1432,44 +1432,7 @@
 <h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
 <p>The platform is organised as a write path (provider → validation → storage) and a read path (storage → query → CLI/API). Both paths share the same Parquet files as the data layer. There is no separate database — DuckDB reads the files in place via <code>read_parquet</code>.</p>
 <h2 id="layer-diagram">Layer diagram<a class="headerlink" href="#layer-diagram" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TD
-    subgraph "Write Path — Candles"
-        P1["Exchange API"] --&gt; A1["OHLCVProvider"]
-        A1 --&gt; B1["Candle\n(all-string fields)"]
-        B1 --&gt; C1["validate_candle_batch()\nValidationResult"]
-        C1 -- "passed = True" --&gt; D1["candle_to_table()\nPyArrow table"]
-        C1 -- "passed = False" --&gt; E1["ValueError — no write"]
-        D1 --&gt; F1["write_candles()\nRow-level upsert merge"]
-    end
-
-    subgraph "Write Path — Funding Rates"
-        P2["Exchange API"] --&gt; A2["FundingRateProvider"]
-        A2 --&gt; B2["FundingRate\n(all-string fields)"]
-        B2 --&gt; C2["validate_funding_rate_batch()\nValidationResult"]
-        C2 -- "passed = True" --&gt; D2["funding_rate_to_table()\nPyArrow table"]
-        C2 -- "passed = False" --&gt; E2["ValueError — no write"]
-        D2 --&gt; F2["write_funding_rates()\nRow-level upsert merge"]
-    end
-
-    subgraph "Storage"
-        G1["data/{exchange}/{symbol}/{tf}/{date}.parquet"]
-        G2["data/{exchange}/{symbol}/funding_rate/{date}.parquet"]
-        G1A["az://… (Azure Blob)"]
-        G2A["az://… (Azure Blob)"]
-        F1 --&gt; G1
-        F1 -- "az:// or abfs://" --&gt; G1A
-        F2 --&gt; G2
-        F2 -- "az:// or abfs://" --&gt; G2A
-    end
-
-    subgraph "Read Path"
-        G1 --&gt; H["DuckDBQueryService\nread_parquet()"]
-        G2 --&gt; H
-        G1A --&gt; H
-        G2A --&gt; H
-        H --&gt; I["crmd query / crmd datasets"]
-        H --&gt; J["FastAPI — /candles, /funding-rates, /query"]
-    end</code></pre>
+<p>See the <a href="../#system-overview">Home page</a> for the full system architecture diagram showing the write path, storage, and read path layers.</p>
 <h2 id="write-path">Write path<a class="headerlink" href="#write-path" title="Permanent link">&para;</a></h2>
 <h3 id="1-provider-providers">1. Provider (<code>providers/</code>)<a class="headerlink" href="#1-provider-providers" title="Permanent link">&para;</a></h3>
 <p>Provider adapters implement <code>OHLCVProvider</code> (for candle data) or <code>FundingRateProvider</code> (for funding rates). Each adapter is responsible for exchange-specific concerns: URL construction, authentication headers, pagination, rate-limit handling, field ordering, and timestamp semantics. The adapter maps each raw JSON row to a <code>Candle</code> or <code>FundingRate</code> dataclass with all fields assigned as Python strings.</p>
