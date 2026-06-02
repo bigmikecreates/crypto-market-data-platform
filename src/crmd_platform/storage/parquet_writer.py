@@ -4,7 +4,7 @@ import random
 import time
 from collections import defaultdict
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 import duckdb
 import pyarrow as pa
@@ -363,7 +363,7 @@ def write_candles(
     base_path: Path | str = "data",
     ts_config: TimestampConfig | None = None,
     merge_strategy: str = "auto",
-) -> list[Path | str]:
+) -> Sequence[Path | str]:
     if not candles:
         return []
 
@@ -468,7 +468,7 @@ def write_funding_rates(
     base_path: Path | str = "data",
     ts_config: TimestampConfig | None = None,
     merge_strategy: str = "auto",
-) -> list[Path | str]:
+) -> Sequence[Path | str]:
     if not rates:
         return []
 

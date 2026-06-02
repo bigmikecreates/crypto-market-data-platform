@@ -76,7 +76,7 @@ class BybitProvider(BasePagedOHLCVProvider):
     def _fetch_page(
         self,
         prov_symbol: str,
-        prov_tf: str,
+        prov_tf: str | int,
         start: int,
         end: int,
     ) -> list[list[str]]:

@@ -61,14 +61,9 @@ jobs:
 
     services:
       azurite:
-        image: mcr.microsoft.com/azure-storage/azurite
+        image: mcr.microsoft.com/azure-storage/azurite:3.27.1
         ports:
           - "10000:10000"
-        options: >-
-          --health-cmd "curl -sf http://localhost:10000/devstoreaccount1 || exit 1"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
 
     env:
       # The devstoreaccount1 key is Azurite's publicly documented default — not a secret.

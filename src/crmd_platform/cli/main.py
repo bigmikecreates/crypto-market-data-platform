@@ -202,7 +202,7 @@ def fetch(
                     )
                     raise typer.Exit(code=1)
         else:
-            resolved_starts = {sym: start for sym in symbol}  # type: ignore[assignment]
+            resolved_starts = {sym: start for sym in symbol}  # type: ignore[misc]
 
         def _fetch_one(sym: str) -> tuple[str, int]:
             svc = OHLCVService(provider=provider_cls())
@@ -342,9 +342,11 @@ def query_sql(
     stripped = _STRIP_COMMENTS.sub("", sql).strip()
     m = _FIRST_KEYWORD.match(stripped)
     if not m or m.group(1).lower() not in _ALLOWED_KEYWORDS:
-        raise typer.Exit("Only SELECT (or WITH … SELECT) statements are permitted.")
+        typer.echo("Only SELECT (or WITH … SELECT) statements are permitted.", err=True)
+        raise typer.Exit(code=1)
     if has_multiple_statements(stripped):
-        raise typer.Exit("Multiple SQL statements are not permitted.")
+        typer.echo("Multiple SQL statements are not permitted.", err=True)
+        raise typer.Exit(code=1)
 
     svc = DuckDBQueryService()
     rows = svc.raw_sql(sql, base_path=path)

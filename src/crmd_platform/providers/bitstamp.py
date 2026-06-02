@@ -74,7 +74,7 @@ class BitstampProvider(BasePagedOHLCVProvider):
     def _fetch_page(
         self,
         prov_symbol: str,
-        prov_tf: int,
+        prov_tf: str | int,
         start: int,
         end: int,
     ) -> list[dict[str, str]]:
