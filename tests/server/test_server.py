@@ -307,7 +307,9 @@ class TestCORS:
             },
         )
         assert resp.status_code == 200
-        assert resp.headers.get("access-control-allow-origin") == "http://localhost:3000"
+        assert (
+            resp.headers.get("access-control-allow-origin") == "http://localhost:3000"
+        )
 
     def test_unlisted_origin_blocked(self, client):
         resp = client.options(

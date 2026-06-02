@@ -56,7 +56,9 @@ def create_app(config: ServerConfig | None = None) -> FastAPI:
     async def handle_exception(request: Request, exc: Exception) -> JSONResponse:
         if isinstance(exc, (SystemExit, KeyboardInterrupt, GeneratorExit)):
             raise exc
-        _log.error("Unhandled exception on %s %s", request.method, request.url, exc_info=exc)
+        _log.error(
+            "Unhandled exception on %s %s", request.method, request.url, exc_info=exc
+        )
         return JSONResponse(
             status_code=500,
             content={"error": "An internal server error occurred.", "code": 500},

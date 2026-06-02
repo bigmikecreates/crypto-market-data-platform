@@ -104,13 +104,13 @@ def fetch(
         False,
         "--since-last",
         help="Auto-detect start from the last stored candle for each symbol. "
-             "Replaces --start. Combine with --follow for continuous ingestion.",
+        "Replaces --start. Combine with --follow for continuous ingestion.",
     ),
     follow: Optional[int] = typer.Option(
         None,
         "--follow",
         help="After each fetch, sleep N seconds then fetch again. "
-             "Use with --since-last to keep data continuously current.",
+        "Use with --since-last to keep data continuously current.",
         min=1,
     ),
 ) -> None:
@@ -138,7 +138,10 @@ def fetch(
 
     if market_data_type == "funding-rate":
         if since_last or follow:
-            typer.echo("--since-last and --follow are not yet supported for funding-rate.", err=True)
+            typer.echo(
+                "--since-last and --follow are not yet supported for funding-rate.",
+                err=True,
+            )
             raise typer.Exit(code=1)
         fr_svc = FundingRateService(provider=FakeProvider())
         effective_end = end or datetime.now(tz=timezone.utc).replace(tzinfo=None)
@@ -177,7 +180,7 @@ def fetch(
             for sym in symbol:
                 last = svc_q.get_candles(
                     base_path=output,
-                    exchange=provider,   # scope to this provider's exchange only
+                    exchange=provider,  # scope to this provider's exchange only
                     symbol=sym,
                     timeframe=timeframe,
                     limit=1,
@@ -186,7 +189,9 @@ def fetch(
                 if last:
                     # Advance one interval past the last stored candle so it is not
                     # re-fetched on every --follow cycle.
-                    resolved_starts[sym] = datetime.fromisoformat(last[0].timestamp) + delta
+                    resolved_starts[sym] = (
+                        datetime.fromisoformat(last[0].timestamp) + delta
+                    )
                 elif start is not None:
                     resolved_starts[sym] = start
                 else:
@@ -337,9 +342,7 @@ def query_sql(
     stripped = _STRIP_COMMENTS.sub("", sql).strip()
     m = _FIRST_KEYWORD.match(stripped)
     if not m or m.group(1).lower() not in _ALLOWED_KEYWORDS:
-        raise typer.Exit(
-            "Only SELECT (or WITH … SELECT) statements are permitted."
-        )
+        raise typer.Exit("Only SELECT (or WITH … SELECT) statements are permitted.")
     if has_multiple_statements(stripped):
         raise typer.Exit("Multiple SQL statements are not permitted.")
 
@@ -363,7 +366,7 @@ def serve(
         "--api-key",
         envvar="CRMD_API_KEY",
         help="Require X-API-Key header on all data endpoints. "
-             "Generate one with: python -c \"import secrets; print(secrets.token_hex(32))\"",
+        'Generate one with: python -c "import secrets; print(secrets.token_hex(32))"',
     ),
     cors_origins: str = typer.Option(
         "http://localhost:3000,http://127.0.0.1:3000",

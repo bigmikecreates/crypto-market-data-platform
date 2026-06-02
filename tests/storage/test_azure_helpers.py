@@ -54,12 +54,16 @@ class TestIsAzure:
 
 class TestStripAzureScheme:
     def test_strips_az(self):
-        assert strip_azure_scheme("az://mycontainer/path/to/file.parquet") == \
-            "mycontainer/path/to/file.parquet"
+        assert (
+            strip_azure_scheme("az://mycontainer/path/to/file.parquet")
+            == "mycontainer/path/to/file.parquet"
+        )
 
     def test_strips_abfs(self):
-        assert strip_azure_scheme("abfs://mycontainer/data/sub/file.parquet") == \
-            "mycontainer/data/sub/file.parquet"
+        assert (
+            strip_azure_scheme("abfs://mycontainer/data/sub/file.parquet")
+            == "mycontainer/data/sub/file.parquet"
+        )
 
     def test_passthrough_for_non_azure(self):
         assert strip_azure_scheme("local/path.parquet") == "local/path.parquet"
@@ -75,12 +79,20 @@ class TestStripAzureScheme:
 # ── uri_for_candle ──────────────────────────────────────────────────────────
 
 
-def _candle(ts: str, exchange: str = "kucoin", symbol: str = "BTC-USDT",
-            timeframe: str = "1h") -> Candle:
+def _candle(
+    ts: str, exchange: str = "kucoin", symbol: str = "BTC-USDT", timeframe: str = "1h"
+) -> Candle:
     return Candle(
-        exchange=exchange, symbol=symbol, timeframe=timeframe,
-        timestamp=ts, open="1", high="2", low="0", close="1",
-        volume="10", source="test",
+        exchange=exchange,
+        symbol=symbol,
+        timeframe=timeframe,
+        timestamp=ts,
+        open="1",
+        high="2",
+        low="0",
+        close="1",
+        volume="10",
+        source="test",
     )
 
 
@@ -101,7 +113,7 @@ class TestUriForCandle:
         uri = uri_for_candle(c, "az://c/data")
         assert "BTC/USDT" in uri
         # No double-slash outside the scheme (POSIX Path would collapse az:// → az:/)
-        without_scheme = uri[len("az://"):]
+        without_scheme = uri[len("az://") :]
         assert "//" not in without_scheme
 
     def test_trailing_slash_on_base_is_normalised(self):
@@ -121,9 +133,13 @@ class TestUriForCandle:
 
 def _rate(ts: str, exchange: str = "bybit", symbol: str = "BTCUSDT") -> FundingRate:
     return FundingRate(
-        exchange=exchange, symbol=symbol, timestamp=ts,
-        rate="0.0001", predicted_rate="0.0001",
-        next_funding_time="2025-01-15T16:00:00", source="test",
+        exchange=exchange,
+        symbol=symbol,
+        timestamp=ts,
+        rate="0.0001",
+        predicted_rate="0.0001",
+        next_funding_time="2025-01-15T16:00:00",
+        source="test",
     )
 
 
@@ -142,7 +158,7 @@ class TestUriForFundingRate:
         r = _rate("2025-01-01T00:00:00")
         uri = uri_for_funding_rate(r, "az://c/data")
         # funding_rate URIs have no timeframe segment
-        parts = uri[len("az://"):].split("/")
+        parts = uri[len("az://") :].split("/")
         assert "funding_rate" in parts
         assert "1h" not in parts
 
@@ -158,7 +174,9 @@ class TestSerializeTable:
         assert len(data) > 0
 
     def test_round_trips_through_parquet(self):
-        table = pa.table({"x": pa.array([1, 2], type=pa.int64()), "y": ["hello", "world"]})
+        table = pa.table(
+            {"x": pa.array([1, 2], type=pa.int64()), "y": ["hello", "world"]}
+        )
         data = serialize_table(table)
         recovered = pq.read_table(io.BytesIO(data))
         assert recovered.equals(table)

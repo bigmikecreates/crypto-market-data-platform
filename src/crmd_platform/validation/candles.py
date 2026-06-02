@@ -131,7 +131,9 @@ def validate_candle_batch(candles: list[Candle]) -> ValidationResult:
         _check_timestamp(candle, idx, issues)
         _check_ohlc_invariants(candle, idx, issues)
 
-    check_duplicate_timestamps(candles, range(len(candles)), issues, _CANDLE_DUP_KEY_FIELDS)
+    check_duplicate_timestamps(
+        candles, range(len(candles)), issues, _CANDLE_DUP_KEY_FIELDS
+    )
 
     return ValidationResult(
         passed=not any(issue.severity == "error" for issue in issues),

@@ -23,6 +23,3 @@ class TimestampConfig:
             self.parquet_type = pa.timestamp("us")
         else:
             raise ValueError(f"Invalid timestamp resolution: {self.resolution}")
-
-
-

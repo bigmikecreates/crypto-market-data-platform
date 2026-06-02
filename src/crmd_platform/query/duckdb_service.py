@@ -70,7 +70,7 @@ def _configure_connection(con: duckdb.DuckDBPyConnection, base_path: str) -> Non
 def _relative_parts(uri: str, base: str) -> tuple[str, ...]:
     """Return path components of `uri` relative to `base`."""
     prefix = base.rstrip("/") + "/"
-    tail = uri[len(prefix):]
+    tail = uri[len(prefix) :]
     return tuple(p for p in tail.split("/") if p)
 
 
@@ -241,7 +241,9 @@ class DuckDBQueryService(QueryService):
 
     def raw_sql(self, sql: str, base_path: str = "data") -> list[dict[str, Any]]:
         if _BLOCKED_FUNCTIONS.search(sql):
-            raise ValueError("Query contains blocked functions (read_csv, read_text, read_blob, etc.)")
+            raise ValueError(
+                "Query contains blocked functions (read_csv, read_text, read_blob, etc.)"
+            )
         con = duckdb.connect()
         try:
             _configure_connection(con, base_path)

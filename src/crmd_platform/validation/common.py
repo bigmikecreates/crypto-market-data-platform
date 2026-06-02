@@ -5,7 +5,9 @@ from crmd_platform.validation.patterns import SIGNED_DECIMAL_PATTERN, digit_coun
 from crmd_platform.validation.result import ValidationIssue
 
 
-def _check_non_empty(all_fields: list[str]) -> Callable[[Any, int, list[ValidationIssue]], None]:
+def _check_non_empty(
+    all_fields: list[str],
+) -> Callable[[Any, int, list[ValidationIssue]], None]:
     def check(record: Any, index: int, issues: list[ValidationIssue]) -> None:
         for field in all_fields:
             if not getattr(record, field, "").strip():
@@ -18,6 +20,7 @@ def _check_non_empty(all_fields: list[str]) -> Callable[[Any, int, list[Validati
                         field=field,
                     )
                 )
+
     return check
 
 
@@ -52,6 +55,7 @@ def _check_decimals(
                     )
                 valid_decimals.append(val)
         return valid_decimals
+
     return check
 
 

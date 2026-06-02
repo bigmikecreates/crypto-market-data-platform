@@ -102,7 +102,9 @@ def validate_funding_rate_batch(rates: list[FundingRate]) -> ValidationResult:
         _check_timestamps(rate, idx, issues)
         _check_timestamp_ordering(rate, idx, issues)
 
-    check_duplicate_timestamps(rates, range(len(rates)), issues, _FUNDING_DUP_KEY_FIELDS)
+    check_duplicate_timestamps(
+        rates, range(len(rates)), issues, _FUNDING_DUP_KEY_FIELDS
+    )
 
     return ValidationResult(
         passed=not any(issue.severity == "error" for issue in issues),

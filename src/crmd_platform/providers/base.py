@@ -75,7 +75,9 @@ class BasePagedOHLCVProvider(OHLCVProvider):
 
     def __init__(self, rate_limit_sleep: float | None = None) -> None:
         self._rate_limit_sleep = (
-            rate_limit_sleep if rate_limit_sleep is not None else self._DEFAULT_RATE_LIMIT_SLEEP
+            rate_limit_sleep
+            if rate_limit_sleep is not None
+            else self._DEFAULT_RATE_LIMIT_SLEEP
         )
 
     def fetch_ohlcv(
@@ -94,7 +96,9 @@ class BasePagedOHLCVProvider(OHLCVProvider):
     def _provider_timeframe(self, timeframe: str) -> str | int: ...
 
     @abstractmethod
-    def _fetch_page(self, prov_symbol: str, prov_tf: str | int, start: int, end: int) -> list: ...
+    def _fetch_page(
+        self, prov_symbol: str, prov_tf: str | int, start: int, end: int
+    ) -> list: ...
 
     @abstractmethod
     def _row_timestamp(self, row) -> int: ...

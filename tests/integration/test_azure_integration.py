@@ -77,21 +77,36 @@ def data_root(azure_fs):
 # ── Candle helpers ────────────────────────────────────────────────────────────
 
 
-def _candle(ts: str, exchange: str = "kucoin", symbol: str = "BTC-USDT",
-            tf: str = "1h", open_: str = "50000") -> Candle:
+def _candle(
+    ts: str,
+    exchange: str = "kucoin",
+    symbol: str = "BTC-USDT",
+    tf: str = "1h",
+    open_: str = "50000",
+) -> Candle:
     return Candle(
-        exchange=exchange, symbol=symbol, timeframe=tf,
+        exchange=exchange,
+        symbol=symbol,
+        timeframe=tf,
         timestamp=ts,
-        open=open_, high="51000", low="49000", close="50500",
-        volume="10", source="test",
+        open=open_,
+        high="51000",
+        low="49000",
+        close="50500",
+        volume="10",
+        source="test",
     )
 
 
-def _rate(ts: str, exchange: str = "bybit", symbol: str = "BTCUSDT",
-          rate: str = "0.0001") -> FundingRate:
+def _rate(
+    ts: str, exchange: str = "bybit", symbol: str = "BTCUSDT", rate: str = "0.0001"
+) -> FundingRate:
     return FundingRate(
-        exchange=exchange, symbol=symbol, timestamp=ts,
-        rate=rate, predicted_rate=rate,
+        exchange=exchange,
+        symbol=symbol,
+        timestamp=ts,
+        rate=rate,
+        predicted_rate=rate,
         next_funding_time="2025-01-15T16:00:00",
         source="test",
     )
@@ -240,9 +255,7 @@ class TestConcurrentWrites:
 
     def test_three_concurrent_workers_same_partition(self, data_root):
         """Stress the retry path with three simultaneous writers."""
-        all_candles = [
-            [_candle(f"2025-02-10T{h:02d}:00:00")] for h in range(9)
-        ]
+        all_candles = [[_candle(f"2025-02-10T{h:02d}:00:00")] for h in range(9)]
 
         def write_one(batch):
             write_candles(batch, base_path=data_root)

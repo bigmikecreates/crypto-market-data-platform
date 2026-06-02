@@ -54,7 +54,7 @@ def strip_azure_scheme(uri: str) -> str:
     """Remove az:// or abfs:// prefix, yielding the container/blob path adlfs expects."""
     for scheme in AZURE_SCHEMES:
         if uri.startswith(scheme):
-            return uri[len(scheme):]
+            return uri[len(scheme) :]
     return uri
 
 
@@ -64,12 +64,16 @@ def uri_for_candle(c: Candle, base: str) -> str:
     Never uses pathlib.Path — POSIX normalisation silently collapses az:// to az:/.
     """
     date_str = c.timestamp[:10]
-    return "/".join([base.rstrip("/"), c.exchange, c.symbol, c.timeframe, f"{date_str}.parquet"])
+    return "/".join(
+        [base.rstrip("/"), c.exchange, c.symbol, c.timeframe, f"{date_str}.parquet"]
+    )
 
 
 def uri_for_funding_rate(r: FundingRate, base: str) -> str:
     date_str = r.timestamp[:10]
-    return "/".join([base.rstrip("/"), r.exchange, r.symbol, "funding_rate", f"{date_str}.parquet"])
+    return "/".join(
+        [base.rstrip("/"), r.exchange, r.symbol, "funding_rate", f"{date_str}.parquet"]
+    )
 
 
 def azure_blob_client(fs: Any, blob_path: str) -> Any:
@@ -92,7 +96,7 @@ def serialize_table(table: pa.Table) -> bytes:
 
 
 def backoff(attempt: int) -> None:
-    time.sleep(min(0.5 * (2 ** attempt), 8.0) + random.uniform(0, 0.5))
+    time.sleep(min(0.5 * (2**attempt), 8.0) + random.uniform(0, 0.5))
 
 
 def azure_lease_write(
@@ -140,14 +144,21 @@ def azure_lease_write(
                 existing = pq.read_table(blob_path, filesystem=fs)
                 if existing.schema != table.schema:
                     existing = existing.cast(table.schema)
-                merged = merge_tables(existing, table, key_cols, strategy=merge_strategy)
-                blob_client.upload_blob(serialize_table(merged), overwrite=True, lease=lease)
+                merged = merge_tables(
+                    existing, table, key_cols, strategy=merge_strategy
+                )
+                blob_client.upload_blob(
+                    serialize_table(merged), overwrite=True, lease=lease
+                )
                 return
             finally:
                 try:
                     lease.release()
                 except Exception:
-                    LOG.warning("Failed to release Azure lease (may have expired)", exc_info=True)
+                    LOG.warning(
+                        "Failed to release Azure lease (may have expired)",
+                        exc_info=True,
+                    )
 
         backoff(attempt)
 
@@ -312,18 +323,20 @@ def candle_to_table(
                 "volume": [],
                 "source": [],
             },
-            schema=pa.schema([
-                pa.field("exchange", pa.string()),
-                pa.field("symbol", pa.string()),
-                pa.field("timeframe", pa.string()),
-                pa.field("timestamp", ts_config.parquet_type),
-                pa.field("open", DECIMAL128_TYPE),
-                pa.field("high", DECIMAL128_TYPE),
-                pa.field("low", DECIMAL128_TYPE),
-                pa.field("close", DECIMAL128_TYPE),
-                pa.field("volume", DECIMAL128_TYPE),
-                pa.field("source", pa.string()),
-            ]),
+            schema=pa.schema(
+                [
+                    pa.field("exchange", pa.string()),
+                    pa.field("symbol", pa.string()),
+                    pa.field("timeframe", pa.string()),
+                    pa.field("timestamp", ts_config.parquet_type),
+                    pa.field("open", DECIMAL128_TYPE),
+                    pa.field("high", DECIMAL128_TYPE),
+                    pa.field("low", DECIMAL128_TYPE),
+                    pa.field("close", DECIMAL128_TYPE),
+                    pa.field("volume", DECIMAL128_TYPE),
+                    pa.field("source", pa.string()),
+                ]
+            ),
         )
 
     first = candles[0]
@@ -417,15 +430,17 @@ def funding_rate_to_table(
                 "next_funding_time": [],
                 "source": [],
             },
-            schema=pa.schema([
-                pa.field("exchange", pa.string()),
-                pa.field("symbol", pa.string()),
-                pa.field("timestamp", ts_config.parquet_type),
-                pa.field("rate", DECIMAL128_TYPE),
-                pa.field("predicted_rate", DECIMAL128_TYPE),
-                pa.field("next_funding_time", ts_config.parquet_type),
-                pa.field("source", pa.string()),
-            ]),
+            schema=pa.schema(
+                [
+                    pa.field("exchange", pa.string()),
+                    pa.field("symbol", pa.string()),
+                    pa.field("timestamp", ts_config.parquet_type),
+                    pa.field("rate", DECIMAL128_TYPE),
+                    pa.field("predicted_rate", DECIMAL128_TYPE),
+                    pa.field("next_funding_time", ts_config.parquet_type),
+                    pa.field("source", pa.string()),
+                ]
+            ),
         )
 
     first = rates[0]
@@ -470,7 +485,9 @@ def write_funding_rates(
         for uri, rates_for_uri in grouped_cloud.items():
             table = funding_rate_to_table(rates_for_uri, ts_config)
             blob_path = strip_azure_scheme(uri)
-            azure_lease_write(table, blob_path, fs, FUNDING_RATE_KEY_COLS, merge_strategy)
+            azure_lease_write(
+                table, blob_path, fs, FUNDING_RATE_KEY_COLS, merge_strategy
+            )
             written_uris.append(uri)
         return written_uris
 

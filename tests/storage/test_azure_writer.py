@@ -61,10 +61,16 @@ def minimal_table():
 def candles():
     return [
         Candle(
-            exchange="kucoin", symbol="BTC-USDT", timeframe="1h",
+            exchange="kucoin",
+            symbol="BTC-USDT",
+            timeframe="1h",
             timestamp="2025-01-15T00:00:00",
-            open="50000", high="51000", low="49000", close="50500",
-            volume="10", source="test",
+            open="50000",
+            high="51000",
+            low="49000",
+            close="50500",
+            volume="10",
+            source="test",
         )
     ]
 
@@ -73,9 +79,11 @@ def candles():
 def rates():
     return [
         FundingRate(
-            exchange="bybit", symbol="BTCUSDT",
+            exchange="bybit",
+            symbol="BTCUSDT",
             timestamp="2025-01-15T08:00:00",
-            rate="0.0001", predicted_rate="0.0001",
+            rate="0.0001",
+            predicted_rate="0.0001",
             next_funding_time="2025-01-15T16:00:00",
             source="test",
         )
@@ -87,7 +95,9 @@ def rates():
 
 class TestNewBlob:
     @patch("crmd_platform.storage.parquet_writer.backoff")
-    def test_uploads_without_overwrite(self, mock_backoff, mock_fs, mock_blob_client, minimal_table):
+    def test_uploads_without_overwrite(
+        self, mock_backoff, mock_fs, mock_blob_client, minimal_table
+    ):
         mock_fs.exists.return_value = False
 
         azure_lease_write(minimal_table, "c/file.parquet", mock_fs, ["k"], "auto")
@@ -118,7 +128,10 @@ class TestNewBlob:
         mock_blob_client.upload_blob.side_effect = [_http_409(), None]
         mock_blob_client.acquire_lease.return_value = lease
 
-        with patch("crmd_platform.storage.parquet_writer.pq.read_table", return_value=minimal_table):
+        with patch(
+            "crmd_platform.storage.parquet_writer.pq.read_table",
+            return_value=minimal_table,
+        ):
             azure_lease_write(minimal_table, "c/file.parquet", mock_fs, ["k"], "auto")
 
         assert mock_blob_client.upload_blob.call_count == 2
@@ -317,7 +330,9 @@ class TestWriteCandlesAzure:
 
     @patch("crmd_platform.storage.parquet_writer.azure_lease_write")
     @patch("crmd_platform.storage.parquet_writer.azure_filesystem")
-    def test_blob_path_passed_to_lease_write(self, mock_fs_factory, mock_lease_write, candles):
+    def test_blob_path_passed_to_lease_write(
+        self, mock_fs_factory, mock_lease_write, candles
+    ):
         mock_fs_factory.return_value = MagicMock()
 
         write_candles(candles, base_path="az://mycontainer/data")
@@ -351,7 +366,9 @@ class TestWriteFundingRatesAzure:
 
     @patch("crmd_platform.storage.parquet_writer.azure_lease_write")
     @patch("crmd_platform.storage.parquet_writer.azure_filesystem")
-    def test_uri_contains_funding_rate_segment(self, mock_fs_factory, mock_lease_write, rates):
+    def test_uri_contains_funding_rate_segment(
+        self, mock_fs_factory, mock_lease_write, rates
+    ):
         mock_fs_factory.return_value = MagicMock()
 
         result = write_funding_rates(rates, base_path="az://c/data")

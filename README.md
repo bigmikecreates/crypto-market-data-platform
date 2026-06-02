@@ -193,5 +193,10 @@ Full documentation: **[bigmikecreates.github.io/crypto-market-data-platform](htt
 | [Data Model](https://bigmikecreates.github.io/crypto-market-data-platform/data-model/) | `Candle` and `FundingRate` schema; why strings |
 | [Validation Strategy](https://bigmikecreates.github.io/crypto-market-data-platform/validation-strategy/) | Rule set, `ValidationResult`, blocking behaviour |
 | [Storage: Write Path](https://bigmikecreates.github.io/crypto-market-data-platform/storage-e2e/) | Stage-by-stage write pipeline, Azure variant, concurrency model |
-| [Benchmark Design](https://bigmikecreates.github.io/crypto-market-data-platform/benchmark-design/) | Measurement methodology, CPU vs network profiling |
 | [Benchmarking](https://bigmikecreates.github.io/crypto-market-data-platform/benchmark-design/) | How the benchmark works, baseline metrics, and provider profiles |
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE) — you are free to use, modify, and distribute it, provided the original copyright notice is included.
