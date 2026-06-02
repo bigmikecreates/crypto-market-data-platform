@@ -2,17 +2,18 @@
 
 ---
 
-## `cmpd.providers`
+## `crmd_platform.providers`
 
-All providers implement the abstract base class `OHLCVProvider`.
+Providers implement `OHLCVProvider` (candle data) or `FundingRateProvider` (funding rates). The import paths support both.
 
 ### Import
 
 ```python
-from cmpd.providers import (
+from crmd_platform.providers import (
     BitfinexProvider, BitstampProvider, BybitProvider,
     FakeProvider, KuCoinProvider, MexcProvider,
 )
+from crmd_platform.providers.base import FundingRateProvider
 ```
 
 ### `OHLCVProvider`
@@ -53,7 +54,7 @@ rates = provider.fetch_funding_rates("BTC/USDT", start, end)
 #### Examples
 
 ```python
->>> from cmpd.providers import FakeProvider
+>>> from crmd_platform.providers import FakeProvider
 >>> from datetime import datetime, timezone
 >>> p = FakeProvider()
 >>> candles = p.fetch_ohlcv("BTC/USDT", "1h",
@@ -120,7 +121,7 @@ class KuCoinProvider(OHLCVProvider):
 
 | Property | Value |
 |----------|-------|
-| URL | `https://api.kucoin.com/api/v1/market/candles/{sym}` |
+| URL | `https://api.kucoin.com/api/v1/market/candles?symbol={sym}` |
 | Field order | `[time, open, close, high, low, volume, turnover]` (standard + turnover) |
 | Max limit | 1500 (server-enforced, no `limit` param) |
 | Timestamps | Seconds (`int(row[0])`) |
@@ -142,15 +143,15 @@ class MexcProvider(OHLCVProvider):
 
 ---
 
-## `cmpd.models`
+## `crmd_platform.models`
 
 Data model classes.
 
 ### Import
 
 ```python
-from cmpd.models.candle import Candle
-from cmpd.models.funding_rate import FundingRate
+from crmd_platform.models.candle import Candle
+from crmd_platform.models.funding_rate import FundingRate
 ```
 
 ### Models
@@ -164,14 +165,14 @@ All fields are `str`. Numeric values are parsed and cast at write time.
 
 ---
 
-## `cmpd.validation`
+## `crmd_platform.validation`
 
 Batch validation functions.
 
 ### Import
 
 ```python
-from cmpd.validation import (
+from crmd_platform.validation import (
     validate_candle_batch,
     validate_funding_rate_batch,
     ValidationIssue,
@@ -198,8 +199,8 @@ result = validate_candle_batch(candles)
 #### Examples
 
 ```python
->>> from cmpd.validation import validate_candle_batch
->>> from cmpd.models.candle import Candle
+>>> from crmd_platform.validation import validate_candle_batch
+>>> from crmd_platform.models.candle import Candle
 >>> candles = [Candle("fake", "BTC/USDT", "1h", "2026-05-27T00:00:00",
 ...     "100", "110", "90", "105", "10", "fake")]
 >>> result = validate_candle_batch(candles)
@@ -233,34 +234,34 @@ result = validate_funding_rate_batch(rates)
 ### Helper functions
 
 ```python
-def _decimal_gte(a: str, b: str) -> bool:
+def decimal_gte(a: str, b: str) -> bool:
     """String-based decimal comparison. Compares integer parts with length-aware
     padding, zero-pads fractional parts. No Decimal objects created."""
 
-def _digit_count(s: str) -> int:
+def digit_count(s: str) -> int:
     """Counts significant digits in a decimal string (excludes '.')."""
 ```
 
 ### Regex patterns
 
 ```python
-_SIGNED_DECIMAL_PATTERN = re.compile(r"^-?[0-9]+(\.[0-9]+)?$")
-_UNSIGNED_DECIMAL_PATTERN = re.compile(r"^[0-9]+(\.[0-9]+)?$")
-_TIMESTAMP_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$")
+SIGNED_DECIMAL_PATTERN = re.compile(r"^-?[0-9]+(\.[0-9]+)?$")
+UNSIGNED_DECIMAL_PATTERN = re.compile(r"^[0-9]+(\.[0-9]+)?$")
+TIMESTAMP_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$")
 ```
 
 See [Validation Rules](validation-rules.md) for the full rule catalogue.
 
 ---
 
-## `cmpd.storage`
+## `crmd_platform.storage`
 
-Low-level write functions. Prefer `OhlcvService` / `FundingRateService` for normal use.
+Low-level write functions. Prefer `OHLCVService` / `FundingRateService` for normal use.
 
 ### Import
 
 ```python
-from cmpd.storage.parquet_writer import (
+from crmd_platform.storage.parquet_writer import (
     candle_to_table,
     funding_rate_to_table,
     write_candles,
@@ -271,10 +272,10 @@ from cmpd.storage.parquet_writer import (
 ### Constants
 
 ```python
-_DECIMAL128_TYPE = pa.decimal128(38, 10)
-_ROW_MERGE_THRESHOLD = 50_000
-_CANDLE_KEY_COLS = ["exchange", "symbol", "timeframe", "source", "timestamp"]
-_FUNDING_RATE_KEY_COLS = ["exchange", "symbol", "source", "timestamp"]
+DECIMAL128_TYPE = pa.decimal128(38, 10)
+ROW_MERGE_THRESHOLD = 50_000
+CANDLE_KEY_COLS = ["exchange", "symbol", "timeframe", "source", "timestamp"]
+FUNDING_RATE_KEY_COLS = ["exchange", "symbol", "source", "timestamp"]
 ```
 
 ### `candle_to_table`
@@ -352,35 +353,35 @@ paths = write_funding_rates(rates, base_path="data", ts_config=None, merge_strat
 ### Merge functions
 
 ```python
-def _merge_via_set(
+def merge_via_set(
     existing: pa.Table, incoming: pa.Table,
     key_cols: list[str],
 ) -> pa.Table:
     """In-memory set-based merge. Builds set of existing row keys,
     filters incoming to rows not in existing, concatenates."""
 
-def _merge_via_duckdb(
+def merge_via_duckdb(
     existing: pa.Table, incoming: pa.Table,
     key_cols: list[str],
 ) -> pa.Table:
     """DuckDB ANTI JOIN + UNION ALL merge. Best for large tables."""
 
-def _merge_tables(
+def merge_tables(
     existing: pa.Table, incoming: pa.Table,
     key_cols: list[str],
     strategy: str = "auto",
 ) -> pa.Table:
-    """Dispatches to _merge_via_set or _merge_via_duckdb based on strategy and row count."""
+    """Dispatches to merge_via_set or merge_via_duckdb based on strategy and row count."""
 ```
 
 ### Type cast functions
 
 ```python
-def _to_decimal128(
+def to_decimal128(
     values: list[str], label: str, candle_key: str,
 ) -> pa.Array:
 
-def _to_timestamp(
+def to_timestamp(
     values: list[str], ts_config: TimestampConfig,
 ) -> pa.Array:
 ```
@@ -403,30 +404,30 @@ data/{exchange}/{symbol}/funding_rate/{date}.parquet       # funding rates
 ### Path helpers
 
 ```python
-def _path_for_candle(c: Candle, base_path: str) -> Path: ...
-def _path_for_funding_rate(r: FundingRate, base_path: str) -> Path: ...
+def path_for_candle(c: Candle, base_path: str) -> Path: ...
+def path_for_funding_rate(r: FundingRate, base_path: str) -> Path: ...
 ```
 
 See [Parquet Schema](parquet-schema.md) for the full column type mapping.
 
 ---
 
-## `cmpd.ingestion`
+## `crmd_platform.ingestion`
 
 High-level ingestion services that combine fetching, validation, and storage.
 
 ### Import
 
 ```python
-from cmpd.ingestion import OhlcvService, FundingRateService
+from crmd_platform.ingestion import OHLCVService, FundingRateService
 ```
 
-### `OhlcvService`
+### `OHLCVService`
 
 #### Usage
 
 ```python
-service = OhlcvService(provider, ts_config=None)
+service = OHLCVService(provider, ts_config=None)
 count = service.ingest(symbol, timeframe, start, end, base_path="data", merge_strategy="auto")
 ```
 
@@ -451,10 +452,9 @@ count = service.ingest(symbol, timeframe, start, end, base_path="data", merge_st
 #### Examples
 
 ```python
->>> from cmpd.ingestion import OhlcvService
->>> from cmpd.providers import FakeProvider
->>> from datetime import datetime, timezone
->>> service = OhlcvService(FakeProvider())
+>>> from crmd_platform.ingestion import OHLCVService
+...
+>>> service = OHLCVService(FakeProvider())
 >>> count = service.ingest("BTC/USDT", "1h",
 ...     datetime(2026, 5, 27, tzinfo=timezone.utc),
 ...     datetime(2026, 5, 28, tzinfo=timezone.utc))
@@ -467,34 +467,37 @@ count = service.ingest(symbol, timeframe, start, end, base_path="data", merge_st
 #### Usage
 
 ```python
-service = FundingRateService(ts_config=None)
-count = service.ingest(rates, base_path="data", merge_strategy="auto")
+service = FundingRateService(provider, ts_config=None)
+count = service.ingest(symbol, start, end, base_path="data", merge_strategy="auto")
 ```
 
 #### Parameters — constructor
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
+| `provider` | `FundingRateProvider` | required | Provider instance for fetching funding rates |
 | `ts_config` | `TimestampConfig \| None` | `None` | Timestamp resolution configuration |
 
 #### Parameters — `ingest`
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `rates` | `list[FundingRate]` | required | Funding rates to validate and write |
+| `symbol` | `str` | required | Trading pair symbol |
+| `start` | `datetime` | required | Start of range (inclusive) |
+| `end` | `datetime` | required | End of range (exclusive) |
 | `base_path` | `str` | `"data"` | Base output directory |
 | `merge_strategy` | `str` | `"auto"` | Row merge strategy |
 
 ---
 
-## `cmpd.query`
+## `crmd_platform.query`
 
 Query interface for stored datasets.
 
 ### Import
 
 ```python
-from cmpd.query import QueryService, DuckDBQueryService
+from crmd_platform.query import QueryService, DuckDBQueryService
 ```
 
 ### `QueryService`
@@ -533,7 +536,7 @@ candles = qs.get_candles(exchange="bitfinex", limit=5)
 #### Examples
 
 ```python
->>> from cmpd.query import DuckDBQueryService
+>>> from crmd_platform.query import DuckDBQueryService
 >>> qs = DuckDBQueryService()
 >>> qs.list_datasets()
 {'candle': ['bitfinex/BTC/USD/1h']}
@@ -570,14 +573,14 @@ def DuckDBQueryService._build_query(
 
 ---
 
-## `cmpd.config`
+## `crmd_platform.config`
 
 Configuration types.
 
 ### Import
 
 ```python
-from cmpd.config import TimestampConfig
+from crmd_platform.config import TimestampConfig
 ```
 
 ### `TimestampConfig`
@@ -603,15 +606,15 @@ Computed properties:
 
 ---
 
-## `cmpd.server`
+## `crmd_platform.server`
 
 REST server factory and configuration.
 
 ### Import
 
 ```python
-from cmpd.server import create_app
-from cmpd.server.config import ServerConfig
+from crmd_platform.server import create_app
+from crmd_platform.server.config import ServerConfig
 ```
 
 ### `create_app`
@@ -656,14 +659,14 @@ config = ServerConfig(host="127.0.0.1", port=8000, base_path="data")
 
 ---
 
-## `cmpd.benchmark`
+## `crmd_platform.benchmark`
 
 Performance benchmark tooling.
 
 ### Import
 
 ```python
-from cmpd.benchmark import (
+from crmd_platform.benchmark import (
     BenchmarkContext, BenchmarkResult, CandlePipelineRunner,
     CrossValidationRule, PipelineRunner, ProviderCandlePipelineRunner,
     RUNNERS, StageMetrics, evaluate_rules,
@@ -746,14 +749,14 @@ def evaluate_rules(
 
 ---
 
-## `cmpd.utils`
+## `crmd_platform.utils`
 
 Utility functions.
 
 ### Import
 
 ```python
-from cmpd.utils.parquet_viewer import run_inspect
+from crmd_platform.utils.parquet_viewer import run_inspect
 ```
 
 ### `run_inspect`
@@ -777,3 +780,7 @@ output = run_inspect(path_str, limit=10, start=None, end=None,
 | `end` | `str \| None` | `None` | End of timestamp range (exclusive), ISO-8601 |
 | `show_stats` | `bool` | `False` | Show column statistics |
 | `show_verbose` | `bool` | `False` | Show full Parquet metadata |
+
+---
+
+← [API Reference Overview](overview.md)

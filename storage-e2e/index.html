@@ -25,7 +25,7 @@
     
     
       
-        <title>Storage — Write Path - Crypto Market Data Platform</title>
+        <title>Storage — Write Path - CrMD Platform</title>
       
     
     
@@ -92,7 +92,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Crypto Market Data Platform" class="md-header__button md-logo" aria-label="Crypto Market Data Platform" data-md-component="logo">
+    <a href=".." title="CrMD Platform" class="md-header__button md-logo" aria-label="CrMD Platform" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -106,7 +106,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Crypto Market Data Platform
+            CrMD Platform
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -377,45 +377,7 @@
   
     
   
-  Benchmark Design
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../performance-notes/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Performance Notes
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../roadmap/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Roadmap
+  Benchmarking
 
       </a>
     </li>
@@ -490,13 +452,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Crypto Market Data Platform" class="md-nav__button md-logo" aria-label="Crypto Market Data Platform" data-md-component="logo">
+    <a href=".." title="CrMD Platform" class="md-nav__button md-logo" aria-label="CrMD Platform" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Crypto Market Data Platform
+    CrMD Platform
   </label>
   
     <div class="md-nav__source">
@@ -858,6 +820,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#azure-blob-storage-variant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Blob Storage variant
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concurrency
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Concurrency">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-blob-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Blob Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#funding-rate-variant" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -917,61 +929,7 @@
   <span class="md-ellipsis">
     
   
-    Benchmark Design
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../performance-notes/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Performance Notes
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Roadmap
+    Benchmarking
   
 
     
@@ -1004,10 +962,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
             
   
   
@@ -1025,8 +983,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1119,10 +1077,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
         
           
-          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
             
   
   
@@ -1140,8 +1098,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_13">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1357,6 +1315,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#azure-blob-storage-variant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Blob Storage variant
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concurrency
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Concurrency">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-blob-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Blob Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#funding-rate-variant" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1390,53 +1398,55 @@
 <h1 id="storage-write-path">Storage: Write Path<a class="headerlink" href="#storage-write-path" title="Permanent link">&para;</a></h1>
 <p>The write path converts a list of <code>Candle</code> or <code>FundingRate</code> records into partitioned Parquet files on disk. It executes five sequential stages for each ingestion call.</p>
 <h2 id="pipeline">Pipeline<a class="headerlink" href="#pipeline" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cmpd fetch --provider kucoin --symbol BTC-USDT --timeframe 1h \
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>           --start 2026-05-01 --end 2026-05-08
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    |
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    v
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>+----------------------------------------------------------+
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>| Stage 1 - Provider                                       |
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>| Exchange API -&gt; list[Candle] with all-string fields      |
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>+----------------------------------------------------------+
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    |
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    v
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>+----------------------------------------------------------+
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>| Stage 2 - Validation                                     |
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>| validate_candle_batch() runs 5 rules over the batch.     |
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>| If any rule fails, raises ValueError -- write is blocked.|
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>+----------------------------------------------------------+
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    |
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    v
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>+----------------------------------------------------------+
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>| Stage 3 - Partition routing                              |
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>| Group candles by date -&gt; {exchange}/{symbol}/            |
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>| {timeframe}/{YYYY-MM-DD}.parquet                         |
-<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>+----------------------------------------------------------+
-<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    |
-<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>    v
-<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>+----------------------------------------------------------+
-<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>| Stage 4 - Type casting                                   |
-<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>| str -&gt; decimal128(38,10) for OHLCV columns               |
-<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>| str -&gt; timestamp[s] for timestamp column                 |
-<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>+----------------------------------------------------------+
-<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>    |
-<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>    v
-<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>+----------------------------------------------------------+
-<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>| Stage 5 - Row-level upsert merge                         |
-<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>| Existing partition: merge by key; skip identical rows,   |
-<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>| replace changed rows, append new rows.                   |
-<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>| New partition: write directly.                           |
-<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>+----------------------------------------------------------+
-<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>    |
-<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>    v
-<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>    {date}.parquet  (SNAPPY-compressed, partitioned by date)
-</code></pre></div>
+<pre class="mermaid"><code>graph TD
+    classDef stage fill:#f5f5f5,stroke:#666,stroke-width:2px;
+    classDef output fill:#e8f5e9,stroke:#2e7d32;
+
+    Start["crmd fetch --provider kucoin --symbol BTC-USDT --timeframe 1h&lt;br/&gt;--start 2026-05-01 --end 2026-05-08"]
+
+    subgraph "Stage 1 — Provider"
+        S1["Exchange API → list[Candle]&lt;br/&gt;all-string fields"]
+    end
+
+    subgraph "Stage 2 — Validation"
+        S2["validate_candle_batch()&lt;br/&gt;runs 5 provider-independent rules"]
+        Fail["ValueError raised&lt;br/&gt;write blocked"]
+    end
+
+    subgraph "Stage 3 — Partition routing"
+        S3["Group candles by date&lt;br/&gt;candles: {exchange}/{symbol}/{tf}/{date}.parquet&lt;br/&gt;funding: {exchange}/{symbol}/funding_rate/{date}.parquet"]
+    end
+
+    subgraph "Stage 4 — Type casting"
+        S4["str → decimal128(38,10) for OHLCV columns&lt;br/&gt;str → timestamp[s] for timestamp column"]
+    end
+
+    subgraph "Stage 5 — Row-level upsert merge"
+        S5{"Existing partition?"}
+        Merge["Read existing Parquet&lt;br/&gt;Merge by key:&lt;br/&gt;• skip identical rows&lt;br/&gt;• replace changed rows&lt;br/&gt;• append new rows"]
+        Direct["Write directly"]
+        S5 -- Yes --&gt; Merge
+        S5 -- No --&gt; Direct
+        Merge --&gt; Out
+        Direct --&gt; Out
+    end
+
+    Out["{date}.parquet&lt;br/&gt;SNAPPY-compressed"]
+
+    Start --&gt; S1
+    S1 --&gt; S2
+    S2 --&gt; S3
+    S2 -. "passed ✗" .-&gt; Fail
+    S3 --&gt; S4
+    S4 --&gt; S5
+
+    class Start,S1,S2,S3,S4,S5,Merge,Direct stage;
+    class Out output;</code></pre>
 <hr />
 <h2 id="stage-1-provider">Stage 1 — Provider<a class="headerlink" href="#stage-1-provider" title="Permanent link">&para;</a></h2>
 <p>Each provider adapter implements the <code>OHLCVProvider</code> or <code>FundingRateProvider</code> interface and absorbs exchange-specific differences: URL construction, field ordering, pagination, rate limits, and symbol naming conventions. The adapter maps each raw JSON row to a <code>Candle</code> or <code>FundingRate</code> dataclass with all fields assigned as strings.</p>
 <p>No type coercion occurs at the provider boundary. This keeps provider adapters stateless and free of schema decisions — the storage boundary owns the Parquet type mapping.</p>
-<p>→ See <code>OHLCVProvider</code> in the <a href="../reference/python-api/">Python API Reference</a> for the method signature.</p>
+<p>→ See <code>OHLCVProvider</code> in the <a href="/crypto-market-data-platform/reference/#/python-api">Python API Reference</a> for the method signature.</p>
 <hr />
 <h2 id="stage-2-validation">Stage 2 — Validation<a class="headerlink" href="#stage-2-validation" title="Permanent link">&para;</a></h2>
 <p><code>validate_candle_batch()</code> evaluates five provider-independent rules across the full batch and returns a <code>ValidationResult</code>. If <code>passed</code> is <code>False</code>, the service layer raises <code>ValueError</code> and the writer is not called.</p>
@@ -1445,11 +1455,11 @@
 <hr />
 <h2 id="stage-3-partition-routing">Stage 3 — Partition routing<a class="headerlink" href="#stage-3-partition-routing" title="Permanent link">&para;</a></h2>
 <p>Each candle is routed to a file based on its timestamp date:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>data/{exchange}/{symbol}/{timeframe}/{YYYY-MM-DD}.parquet
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>data/{exchange}/{symbol}/{timeframe}/{YYYY-MM-DD}.parquet
 </code></pre></div>
 <p>Symbols containing <code>/</code> (e.g. <code>BTC/USDT</code>) are preserved in the path, creating a two-level symbol directory. The file discovery algorithm uses the penultimate directory component as the dataset-type anchor: if it matches a known timeframe (e.g. <code>1h</code>, <code>1d</code>), the dataset is candles; if it is <code>funding_rate</code>, it is funding rates.</p>
 <p>Candles from the same batch are grouped by target path. Each partition is processed independently.</p>
-<p>→ See <a href="../reference/parquet-schema/">Parquet Schema Reference</a> for the exact partition layout.</p>
+<p>→ See <a href="/crypto-market-data-platform/reference/#/parquet-schema">Parquet Schema Reference</a> for the exact partition layout.</p>
 <hr />
 <h2 id="stage-4-type-casting">Stage 4 — Type casting<a class="headerlink" href="#stage-4-type-casting" title="Permanent link">&para;</a></h2>
 <p><code>candle_to_table()</code> converts a group of same-partition candles into a PyArrow table. String fields (<code>exchange</code>, <code>symbol</code>, <code>timeframe</code>, <code>source</code>) remain as dictionary-encoded strings. Numeric fields are cast via PyArrow's C++ <code>.cast()</code> kernel:</p>
@@ -1479,16 +1489,16 @@
 <code>decimal128</code> is always 16 bytes regardless of precision or scale. A fixed schema across all tickers guarantees that DuckDB <code>UNION</code> queries never encounter type mismatches. The 38-digit precision with 10 fractional digits covers all realistic cryptocurrency prices.</p>
 <p><strong>Why cast at the storage boundary, not in the provider?</strong>
 The storage boundary is the single authority on Parquet type decisions. Changing a column type requires modifying one function (<code>candle_to_table</code>) rather than each provider adapter.</p>
-<p>→ See <code>candle_to_table()</code> in the <a href="../reference/python-api/">Python API Reference</a> for the exact function signature.</p>
+<p>→ See <code>candle_to_table()</code> in the <a href="/crypto-market-data-platform/reference/#/python-api">Python API Reference</a> for the exact function signature.</p>
 <hr />
 <h2 id="stage-5-row-level-upsert-merge">Stage 5 — Row-level upsert merge<a class="headerlink" href="#stage-5-row-level-upsert-merge" title="Permanent link">&para;</a></h2>
 <p>When a target partition file already exists, the writer merges incoming records against the existing rows.</p>
 <h3 id="merge-key">Merge key<a class="headerlink" href="#merge-key" title="Permanent link">&para;</a></h3>
 <p>The row identity key for candles:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>(exchange, symbol, timeframe, source, timestamp)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>(exchange, symbol, timeframe, source, timestamp)
 </code></pre></div>
 <p>For funding rates:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>(exchange, symbol, source, timestamp)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>(exchange, symbol, source, timestamp)
 </code></pre></div>
 <h3 id="merge-behaviour">Merge behaviour<a class="headerlink" href="#merge-behaviour" title="Permanent link">&para;</a></h3>
 <p>For each partition that already has a file on disk:</p>
@@ -1533,14 +1543,119 @@ The storage boundary is the single authority on Parquet type decisions. Changing
 <li><strong>Self-healing:</strong> a corrected value from the provider replaces the stored row on the next fetch.</li>
 <li><strong>Append-safe:</strong> new rows are added without affecting rows not present in the incoming batch.</li>
 </ul>
-<p>→ See <code>write_candles()</code> and merge function signatures in the <a href="../reference/python-api/">Python API Reference</a>.</p>
+<p>→ See <code>write_candles()</code> and merge function signatures in the <a href="/crypto-market-data-platform/reference/#/python-api">Python API Reference</a>.</p>
+<hr />
+<h2 id="azure-blob-storage-variant">Azure Blob Storage variant<a class="headerlink" href="#azure-blob-storage-variant" title="Permanent link">&para;</a></h2>
+<p>When <code>base_path</code> starts with <code>az://</code> or <code>abfs://</code>, all five stages run identically except Stages 3 and 5, which are replaced by cloud-aware equivalents.</p>
+<p><strong>Stage 3 (cloud) — URI routing</strong></p>
+<p>Partition paths are built as plain strings rather than <code>pathlib.Path</code> objects. POSIX path normalisation silently collapses <code>az://</code> to <code>az:/</code>, so URI construction never goes through <code>Path</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>az://mycontainer/data/{exchange}/{symbol}/{timeframe}/{YYYY-MM-DD}.parquet
+</code></pre></div>
+<p><strong>Stage 5 (cloud) — Lease-protected upsert</strong></p>
+<p>The merge is wrapped in <code>azure_lease_write()</code>, which serialises concurrent writers at the blob level using Azure Blob Storage leases.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant W as Worker
+    participant Azure as Azure Blob Storage
+    participant Lease as Blob Lease
+
+    Note over W,Azure: New blob path
+    W-&gt;&gt;Azure: upload_blob(data, overwrite=False)
+    alt Racing writer
+        Azure--&gt;&gt;W: 409 Conflict
+        W-&gt;&gt;W: backoff &amp; retry via lease path
+    else Success
+        Azure--&gt;&gt;W: 201 Created
+    end
+
+    Note over W,Azure: Existing blob path
+    W-&gt;&gt;Azure: acquire_lease(30s)
+    Azure-&gt;&gt;Lease: lock blob
+    Lease--&gt;&gt;Azure: lease_id
+    Azure--&gt;&gt;W: granted
+    W-&gt;&gt;Azure: read existing Parquet
+    Azure--&gt;&gt;W: existing table
+    W-&gt;&gt;W: merge_tables(existing, incoming)
+    W-&gt;&gt;Azure: upload_blob(merged, overwrite=True, lease=lease_id)
+    Azure-&gt;&gt;Lease: verify lease_id
+    Lease--&gt;&gt;Azure: OK
+    Azure--&gt;&gt;W: 200 OK
+    W-&gt;&gt;Azure: release_lease()
+    Note over W,Azure: On 409: exponential backoff, up to 6 attempts</code></pre>
+<p>The 30-second lease duration is enough for the read-merge-write cycle to complete under load, and short enough that a crashed worker unblocks others automatically when the lease expires.</p>
+<p>→ See <a href="#concurrency">Concurrency</a> below for a detailed walkthrough of the race conditions this prevents.</p>
+<hr />
+<h2 id="concurrency">Concurrency<a class="headerlink" href="#concurrency" title="Permanent link">&para;</a></h2>
+<h3 id="local-storage">Local storage<a class="headerlink" href="#local-storage" title="Permanent link">&para;</a></h3>
+<p>No concurrency control is needed for local deployments. The CLI's <code>--workers</code> flag parallelises by symbol — each symbol maps to a distinct set of partition files. Two workers never write to the same file simultaneously.</p>
+<h3 id="azure-blob-storage">Azure Blob Storage<a class="headerlink" href="#azure-blob-storage" title="Permanent link">&para;</a></h3>
+<p><strong>What happens without locking:</strong></p>
+<p>Two workers targeting the same partition (same exchange, symbol, timeframe, and date) both read the existing blob, compute their merged tables independently, then race to write back. The last writer wins and silently discards the other's rows.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant WA as Worker A
+    participant WB as Worker B
+    participant Azure as Azure Blob Storage
+
+    Note over WA,Azure: Same partition — both read identical snapshot
+    WA-&gt;&gt;Azure: read existing blob
+    Azure--&gt;&gt;WA: 96 rows
+    WB-&gt;&gt;Azure: read existing blob
+    Azure--&gt;&gt;WB: 96 rows
+    WA-&gt;&gt;WA: merge → 102 rows
+    WB-&gt;&gt;WB: merge → 100 rows
+    WA-&gt;&gt;Azure: upload_blob(merged) → blob = 102 rows
+    Azure--&gt;&gt;WA: 200 OK
+    WB-&gt;&gt;Azure: upload_blob(merged) → blob = 100 rows
+    Note over Azure: A's 6 rows silently lost
+    Azure--&gt;&gt;WB: 200 OK</code></pre>
+<p><strong>What happens with <code>azure_lease_write</code>:</strong></p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant WA as Worker A
+    participant WB as Worker B
+    participant Azure as Azure Blob Storage
+    participant Lease as Blob Lease
+
+    WA-&gt;&gt;Azure: acquire_lease(30s)
+    Azure-&gt;&gt;Lease: lock blob
+    Lease--&gt;&gt;Azure: granted
+    Azure--&gt;&gt;WA: granted
+    WB-&gt;&gt;Azure: acquire_lease(30s)
+    Azure-&gt;&gt;Lease: check lock
+    Lease--&gt;&gt;Azure: held by A
+    Azure--&gt;&gt;WB: 409 Conflict
+    WA-&gt;&gt;Azure: read → merge → upload(lease=id)
+    Azure-&gt;&gt;Lease: verify lease_id
+    Lease--&gt;&gt;Azure: OK
+    Azure--&gt;&gt;WA: 200 OK
+
+    WA-&gt;&gt;Azure: release_lease()
+    Azure-&gt;&gt;Lease: unlock
+    Lease--&gt;&gt;Azure: released
+
+    WB-&gt;&gt;WB: retry
+    WB-&gt;&gt;Azure: acquire_lease(30s)
+    Azure-&gt;&gt;Lease: lock blob
+    Lease--&gt;&gt;Azure: granted
+    Azure--&gt;&gt;WB: granted
+    WB-&gt;&gt;Azure: read updated blob → merge B's rows → upload(lease=id)
+    Azure-&gt;&gt;Lease: verify lease_id
+    Lease--&gt;&gt;Azure: OK
+    Azure--&gt;&gt;WB: 200 OK
+    WB-&gt;&gt;Azure: release_lease()</code></pre>
+<p>Result: all rows from both workers are present in the final blob.</p>
+<p><strong>Scope of the guarantee:</strong></p>
+<p>Workers writing to <em>different</em> partitions are unaffected — each blob is an independent Azure object. The lease only matters when two workers happen to write to the same partition simultaneously, which in practice happens when:</p>
+<ul>
+<li>Backfilling overlapping date ranges for the same symbol across workers</li>
+<li>Re-running a failed ingestion while another run is still in progress</li>
+</ul>
+<p>The <code>--workers</code> flag on <code>crmd fetch</code> parallelises by symbol, so a single <code>fetch</code> invocation does not produce same-partition conflicts. The lease matters most when multiple independent <code>fetch</code> processes run against the same Azure container.</p>
 <hr />
 <h2 id="funding-rate-variant">Funding rate variant<a class="headerlink" href="#funding-rate-variant" title="Permanent link">&para;</a></h2>
 <p>Funding rates follow the same five stages. The partition path omits the timeframe component:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>data/{exchange}/{symbol}/funding_rate/{YYYY-MM-DD}.parquet
 </code></pre></div>
 <p>The merge key uses <code>(exchange, symbol, source, timestamp)</code>.</p>
-<p>→ See <a href="../reference/parquet-schema/">Parquet Schema Reference</a> for the full column set and partition layout.</p>
+<p>→ See <a href="/crypto-market-data-platform/reference/#/parquet-schema">Parquet Schema Reference</a> for the full column set and partition layout.</p>
 
 
 

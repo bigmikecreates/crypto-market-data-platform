@@ -1,26 +1,27 @@
 # CLI Reference
 
-Entry point: `cmpd` — installed by `pip install -e .` and wired to `cmpd.cli.main:app`.
+Entry point: `crmd` — installed by `pip install -e .` and wired to `crmd_platform.cli.main:app`.
 
 ---
 
-## `cmpd fetch`
+## `crmd fetch`
 
 Fetch market data from a provider and write to partitioned Parquet. Validates all records before writing; fails without writing if validation does not pass.
 
 ### Usage
 
 ```bash
-cmpd fetch \
+crmd fetch \
   --mdt {ohlcv,funding-rate} \
   --symbol SYMBOL [--symbol SYMBOL ...] \
   --timeframe TIMEFRAME \
-  --start START \
-  --end END \
+  { --start START | --since-last } \
+  [--end END] \
   --provider PROVIDER \
   [--output DIR] \
   [--merge-strategy {auto,memory,duckdb}] \
-  [--workers N]
+  [--workers N] \
+  [--follow SECONDS]
 ```
 
 ### Options
@@ -29,13 +30,15 @@ cmpd fetch \
 |---|---|---|---|
 | `--mdt` | `str` | required | Market data type: `ohlcv` or `funding-rate` |
 | `--symbol` | `str` (repeatable) | required | Trading pair symbol. Repeat the flag for multiple symbols: `--symbol BTC-USDT --symbol ETH-USDT`. Always quote symbols containing `/`. |
-| `--timeframe` | `str` | required | Candle timeframe: `1m`, `5m`, `15m`, `1h`, `4h`, `1d`. Provider support varies. |
-| `--start` | ISO-8601 | required | Start of the requested range. Formats: `2026-01-01` or `2026-01-01T00:00:00`. |
-| `--end` | ISO-8601 | required | End of the requested range (exclusive at the provider level; exact semantics vary by exchange). |
+| `--timeframe` | `str` | required | Candle timeframe: `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `6h`, `8h`, `12h`, `1d`, `3d`, `1w`. Provider support varies. |
+| `--start` | ISO-8601 | — | Start of the requested range. Formats: `2026-01-01` or `2026-01-01T00:00:00`. Mutually exclusive with `--since-last`; one of the two is required. |
+| `--end` | ISO-8601 | now | End of the requested range. Defaults to current UTC time when omitted. |
 | `--provider` | `str` | required | Provider name: `fake`, `bitfinex`, `bitstamp`, `kucoin`, `bybit`, `mexc`. Ignored when `--mdt funding-rate` (always `FakeProvider`). |
-| `--output` | `str` | `"data"` | Base output directory. Parquet files are written under `{output}/{exchange}/{symbol}/{timeframe}/{date}.parquet`. |
+| `--output` | `str` | `"data"` | Base output directory or `az://container/prefix` URI. Parquet files are written under `{output}/{exchange}/{symbol}/{timeframe}/{date}.parquet`. |
 | `--merge-strategy` | `str` | `"auto"` | Row merge strategy for existing partitions. See [Merge strategy](#merge-strategy) below. |
 | `--workers` | `int` | `4` | Number of concurrent symbol fetches. Applies when multiple `--symbol` values are given. Range: 1–32. |
+| `--since-last` | flag | `False` | Auto-detect `--start` from the last stored candle for each symbol (scoped to the chosen provider). Mutually exclusive with `--start`. Combine with `--follow` for continuous ingestion. |
+| `--follow` | `int` | — | After each fetch, sleep N seconds then fetch again. Use with `--since-last` to keep data continuously current. Transient per-symbol errors are logged but do not stop the loop. |
 
 ### Merge strategy
 
@@ -56,7 +59,7 @@ This merge makes ingestion **idempotent** — fetching the same range twice prod
 
 ### Concurrent symbol fetching
 
-When multiple `--symbol` values are provided, `cmpd fetch` dispatches each symbol to a separate thread using `ThreadPoolExecutor(max_workers=workers)`. Each thread constructs its own provider instance and writes to a distinct partition path, so there are no write conflicts.
+When multiple `--symbol` values are provided, `crmd fetch` dispatches each symbol to a separate thread using `ThreadPoolExecutor(max_workers=workers)`. Each thread constructs its own provider instance and writes to a distinct partition path, so there are no write conflicts.
 
 For network-bound providers (KuCoin: ~30x Net/CPU ratio, Bitfinex: ~6x), concurrent fetches reduce wall-clock time proportionally to the number of workers, since each thread spends most of its time waiting on HTTP responses rather than executing Python.
 
@@ -65,7 +68,7 @@ For network-bound providers (KuCoin: ~30x Net/CPU ratio, Bitfinex: ~6x), concurr
 Single symbol, fake provider:
 
 ```bash
-cmpd fetch \
+crmd fetch \
   --mdt ohlcv \
   --symbol "BTC/USDT" \
   --timeframe 1h \
@@ -78,7 +81,7 @@ cmpd fetch \
 Multiple symbols, live provider, 3 workers:
 
 ```bash
-cmpd fetch \
+crmd fetch \
   --mdt ohlcv \
   --symbol "BTC-USDT" \
   --symbol "ETH-USDT" \
@@ -96,7 +99,7 @@ cmpd fetch \
 Funding rates:
 
 ```bash
-cmpd fetch \
+crmd fetch \
   --mdt funding-rate \
   --symbol "BTC/USDT" \
   --timeframe 1h \
@@ -106,24 +109,50 @@ cmpd fetch \
 # Wrote 1 funding rate(s) for BTC/USDT to data/
 ```
 
+Continuous ingestion with `--since-last` and `--follow`:
+
+```bash
+# First run: seed with an explicit start date
+crmd fetch \
+  --mdt ohlcv \
+  --symbol "BTC-USDT" \
+  --symbol "ETH-USDT" \
+  --timeframe 1h \
+  --start 2026-01-01 \
+  --provider kucoin
+
+# Subsequent runs: auto-advance from last stored candle, poll every 5 minutes
+crmd fetch \
+  --mdt ohlcv \
+  --symbol "BTC-USDT" \
+  --symbol "ETH-USDT" \
+  --timeframe 1h \
+  --provider kucoin \
+  --since-last \
+  --follow 300
+# Wrote 3 candle(s) for BTC-USDT to data/
+# Wrote 3 candle(s) for ETH-USDT to data/
+# Sleeping 300s before next fetch...
+```
+
 Unknown provider:
 
 ```bash
-cmpd fetch --mdt ohlcv --symbol "BTC/USDT" --timeframe 1h \
+crmd fetch --mdt ohlcv --symbol "BTC/USDT" --timeframe 1h \
     --start 2026-01-01 --end 2026-01-02 --provider nonexistent
 # Unknown provider 'nonexistent'. Available: fake, bitfinex, bitstamp, kucoin, bybit, mexc
 ```
 
 ---
 
-## `cmpd datasets`
+## `crmd datasets`
 
 List all Parquet datasets under the data directory, grouped by type.
 
 ### Usage
 
 ```bash
-cmpd datasets [--path DIR]
+crmd datasets [--path DIR]
 ```
 
 ### Options
@@ -135,27 +164,27 @@ cmpd datasets [--path DIR]
 ### Examples
 
 ```bash
-cmpd datasets
+crmd datasets
   candle          kucoin     BTC-USDT    1h    files=7  rows=168
   candle          kucoin     ETH-USDT    1h    files=7  rows=168
   candle          fake       BTC/USDT    1h    files=1  rows=1
 ```
 
 ```bash
-cmpd datasets --path /nonexistent
+crmd datasets --path /nonexistent
 # No parquet files found under /nonexistent/
 ```
 
 ---
 
-## `cmpd inspect`
+## `crmd inspect`
 
 Read one or more Parquet files and print schema, row count, and a data sample. Accepts either a single `.parquet` file or a directory (scanned recursively).
 
 ### Usage
 
 ```bash
-cmpd inspect --path PATH [--limit N] [--start TS] [--end TS] [--stats] [--verbose]
+crmd inspect --path PATH [--limit N] [--start TS] [--end TS] [--stats] [--verbose]
 ```
 
 ### Options
@@ -172,7 +201,7 @@ cmpd inspect --path PATH [--limit N] [--start TS] [--end TS] [--stats] [--verbos
 ### Examples
 
 ```bash
-cmpd inspect --path data --limit 3
+crmd inspect --path data --limit 3
 # Directory: data
 # Files: 1  Rows: 1
 # Schema:
@@ -182,19 +211,19 @@ cmpd inspect --path data --limit 3
 ```
 
 ```bash
-cmpd inspect --path data/kucoin/BTC-USDT/1h/2026-05-01.parquet --stats
+crmd inspect --path data/kucoin/BTC-USDT/1h/2026-05-01.parquet --stats
 ```
 
 ---
 
-## `cmpd query ohlcv`
+## `crmd query ohlcv`
 
 Query stored candle data using DuckDB. All filters are applied as SQL predicates over the partitioned Parquet files.
 
 ### Usage
 
 ```bash
-cmpd query ohlcv [--path DIR] [--exchange EXCH] [--symbol SYM]
+crmd query ohlcv [--path DIR] [--exchange EXCH] [--symbol SYM]
     [--timeframe TF] [--start TS] [--end TS] [--limit N]
 ```
 
@@ -213,7 +242,7 @@ cmpd query ohlcv [--path DIR] [--exchange EXCH] [--symbol SYM]
 ### Examples
 
 ```bash
-cmpd query ohlcv --symbol "BTC-USDT" --timeframe 1h --limit 3
+crmd query ohlcv --symbol "BTC-USDT" --timeframe 1h --limit 3
   exchange | symbol   | timeframe | timestamp           | open   | ...
   -------- | -------- | --------- | ------------------- | ------ | ...
   kucoin   | BTC-USDT | 1h        | 2026-05-01T00:00:00 | 94800  | ...
@@ -224,14 +253,14 @@ No match returns `(no results)` and exits 0.
 
 ---
 
-## `cmpd query funding-rate`
+## `crmd query funding-rate`
 
 Query stored funding rate data.
 
 ### Usage
 
 ```bash
-cmpd query funding-rate [--path DIR] [--exchange EXCH] [--symbol SYM]
+crmd query funding-rate [--path DIR] [--exchange EXCH] [--symbol SYM]
     [--start TS] [--end TS] [--limit N]
 ```
 
@@ -249,7 +278,7 @@ cmpd query funding-rate [--path DIR] [--exchange EXCH] [--symbol SYM]
 ### Examples
 
 ```bash
-cmpd query funding-rate --symbol "BTC/USDT" --limit 3
+crmd query funding-rate --symbol "BTC/USDT" --limit 3
   exchange | symbol   | timestamp           | rate         | predicted_rate | ...
   -------- | -------- | ------------------- | ------------ | -------------- | ...
   fake     | BTC/USDT | 2026-01-01T00:00:00 | 0.0001000000 | 0.0002000000   | ...
@@ -258,14 +287,14 @@ cmpd query funding-rate --symbol "BTC/USDT" --limit 3
 
 ---
 
-## `cmpd query sql`
+## `crmd query sql`
 
 Execute a raw SQL query over stored Parquet files using DuckDB. Only `SELECT` and `WITH ... SELECT` statements are permitted; `COPY`, `CREATE`, `DROP`, `INSTALL`, and other write or extension commands are blocked at the server level and in the CLI wrapper.
 
 ### Usage
 
 ```bash
-cmpd query sql "SELECT ..." [--path DIR] [--limit N]
+crmd query sql "SELECT ..." [--path DIR] [--limit N]
 ```
 
 ### Options
@@ -281,7 +310,7 @@ Use `read_parquet('data/**/*.parquet')` to query all stored data across all exch
 ### Examples
 
 ```bash
-cmpd query sql "SELECT symbol, count(*) AS rows FROM read_parquet('data/**/*.parquet') GROUP BY symbol"
+crmd query sql "SELECT symbol, count(*) AS rows FROM read_parquet('data/**/*.parquet') GROUP BY symbol"
   symbol   | rows
   -------- | ----
   BTC-USDT | 168
@@ -289,20 +318,20 @@ cmpd query sql "SELECT symbol, count(*) AS rows FROM read_parquet('data/**/*.par
 ```
 
 ```bash
-cmpd query sql "DROP TABLE t"
+crmd query sql "DROP TABLE t"
 # Error: Only SELECT (or WITH ... SELECT) statements are permitted.
 ```
 
 ---
 
-## `cmpd serve`
+## `crmd serve`
 
-Start the FastAPI REST server. The server exposes the same query surface as the CLI over HTTP and accepts a `path` query parameter on each request to override the base data directory.
+Start the FastAPI REST server. The data path is fixed at startup — callers cannot override it per request.
 
 ### Usage
 
 ```bash
-cmpd serve [--host ADDR] [--port N] [--path DIR]
+crmd serve [--host ADDR] [--port N] [--path DIR] [--api-key KEY] [--cors-origins ORIGINS]
 ```
 
 ### Options
@@ -311,19 +340,28 @@ cmpd serve [--host ADDR] [--port N] [--path DIR]
 |---|---|---|---|
 | `--host` | `str` | `"127.0.0.1"` | Bind address |
 | `--port`, `-p` | `int` | `8000` | Bind port |
-| `--path` | `str` | `"data"` | Default base data directory |
+| `--path` | `str` | `"data"` | Storage root — a local path or `az://container/prefix`. All endpoints query this location. |
+| `--api-key` | `str` | — | Require `X-API-Key: KEY` on all data endpoints. Also read from `CRMD_API_KEY` env var. Generate a key with: `python -c "import secrets; print(secrets.token_hex(32))"`. Omitting the flag runs the server in **open dev mode** (a warning is logged). |
+| `--cors-origins` | `str` | `"http://localhost:3000,http://127.0.0.1:3000"` | Comma-separated list of allowed CORS origins. Also read from `CRMD_CORS_ORIGINS` env var. |
 
 ### Examples
 
+Local dev (open, localhost only):
+
 ```bash
-cmpd serve --host 127.0.0.1 --port 8000
-# INFO:     Started server process [12345]
-# INFO:     Application startup complete.
-# INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+crmd serve --path data --port 8000
+# WARNING: CRMD_API_KEY is not set — server running in open dev mode.
 ```
 
-→ See [HTTP API Reference](http-api.md) for endpoint documentation.
+Secured for LAN or cloud exposure:
+
+```bash
+export CRMD_API_KEY=$(python -c "import secrets; print(secrets.token_hex(32))")
+crmd serve --path az://mycontainer/crypto-data --port 8000
+```
+
+→ See [HTTP API Reference](http-api.md) for endpoint documentation including how to pass the `X-API-Key` header.
 
 ---
 
-See [Python API Reference](python-api.md) for provider classes, symbol conventions, URL endpoints, and rate-limit configuration.
+← [API Reference Overview](overview.md) · [Python API Reference](python-api.md) for provider classes, symbol conventions, URL endpoints, and rate-limit configuration.

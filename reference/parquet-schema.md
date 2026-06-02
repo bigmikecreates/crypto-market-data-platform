@@ -121,3 +121,7 @@ data/
 | Funding rates | `exchange / symbol / funding_rate | date` | `data/bitfinex/BTC/USD/funding_rate/2026-05-27.parquet` |
 
 The date component is derived from the earliest timestamp in each batch, formatted as `YYYY-MM-DD`.
+
+---
+
+← [API Reference Overview](overview.md)

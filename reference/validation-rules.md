@@ -12,9 +12,9 @@ Validated via [`validate_candle_batch`](python-api.md#validate_candle_batch).
 |------|----------|-------|--------|-------------------|
 | `EMPTY_FIELD` | error | Required fields must not be empty | All fields | `open=""` |
 | `INVALID_DECIMAL` | error | Numeric fields match signed decimal regex (`^-?[0-9]+(\.[0-9]+)?$`) | `open`, `high`, `low`, `close`, `volume` | `open="abc"`, `high="12,34"` |
-| `NEGATIVE_VALUE` | error | Numeric fields must be ≥ 0 | `open`, `high`, `low`, `close`, `volume` | `volume="-5"` |
+| `NEGATIVE_VALUE` | error | No negative values (checks `startswith('-')`) | `open`, `high`, `low`, `close`, `volume` | `volume="-5"` |
 | `PRECISION_OVERFLOW` | warning | No more than 38 significant digits | `open`, `high`, `low`, `close`, `volume` | `open` with 40 digits |
-| `INVALID_TIMESTAMP` | error | Timestamp matches ISO-8601 pattern (`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$`) | `timestamp` | `timestamp="yesterday"` |
+| `INVALID_TIMESTAMP` | error | Timestamp matches subset of ISO-8601 (`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$`) | `timestamp` | `timestamp="yesterday"` |
 | `OHLC_INVARIANT` | error | `high ≥ open`, `high ≥ close`, `low ≤ open`, `low ≤ close` | `open`, `high`, `low`, `close` | `high="50"`, `open="100"` (high < open) |
 | `DUPLICATE_TIMESTAMP` | error | No duplicate `(exchange, symbol, timeframe, source, timestamp)` within batch | All key cols | Two candles with same exchange/symbol/timeframe/source/timestamp |
 
@@ -23,8 +23,8 @@ Validated via [`validate_candle_batch`](python-api.md#validate_candle_batch).
 Success:
 
 ```python
->>> from cmpd.validation import validate_candle_batch
->>> from cmpd.models.candle import Candle
+>>> from crmd_platform.validation import validate_candle_batch
+>>> from crmd_platform.models.candle import Candle
 >>> candles = [
 ...     Candle("fake", "BTC/USDT", "1h", "2026-05-27T00:00:00",
 ...         "100", "110", "90", "105", "10", "fake"),
@@ -62,7 +62,7 @@ Validated via [`validate_funding_rate_batch`](python-api.md#validate_funding_rat
 | `INVALID_DECIMAL` | error | Numeric fields match signed decimal regex | `rate`, `predicted_rate` | `rate="NaN"` |
 | `PRECISION_OVERFLOW` | warning | No more than 38 significant digits | `rate`, `predicted_rate` | `rate` with 40 digits |
 | `FUNDING_RATE_OUT_OF_RANGE` | warning | Rate and predicted rate do not exceed ±0.5% | `rate`, `predicted_rate` | `rate="0.01"` (1% > 0.5%) |
-| `INVALID_TIMESTAMP` | error | Timestamps match ISO-8601 pattern | `timestamp`, `next_funding_time` | `next_funding_time="never"` |
+| `INVALID_TIMESTAMP` | error | Timestamps match subset of ISO-8601 | `timestamp`, `next_funding_time` | `next_funding_time="never"` |
 | `FUTURE_BEFORE_CURRENT` | error | `next_funding_time` must be after `timestamp` | `timestamp`, `next_funding_time` | `next_funding_time` < `timestamp` |
 | `DUPLICATE_TIMESTAMP` | error | No duplicate `(exchange, symbol, source, timestamp)` within batch | All key cols | Two rates with same exchange/symbol/source/timestamp |
 
@@ -71,8 +71,8 @@ Validated via [`validate_funding_rate_batch`](python-api.md#validate_funding_rat
 Success:
 
 ```python
->>> from cmpd.validation import validate_funding_rate_batch
->>> from cmpd.models.funding_rate import FundingRate
+>>> from crmd_platform.validation import validate_funding_rate_batch
+>>> from crmd_platform.models.funding_rate import FundingRate
 >>> rates = [
 ...     FundingRate("fake", "BTC/USDT", "2026-05-27T00:00:00",
 ...         "0.0001", "0.0002", "2026-01-01T16:00:00", "fake"),
@@ -121,18 +121,18 @@ True  # warnings don't fail validation
 
 ## Comparison helpers
 
-### `_decimal_gte`
+### `decimal_gte`
 
 ```python
-def _decimal_gte(a: str, b: str) -> bool:
+def decimal_gte(a: str, b: str) -> bool:
 ```
 
 String-based decimal comparison: returns `True` if `a >= b`. Compares integer parts with length-aware padding, zero-pads fractional parts. No `Decimal` objects created.
 
-### `_digit_count`
+### `digit_count`
 
 ```python
-def _digit_count(s: str) -> int:
+def digit_count(s: str) -> int:
 ```
 
 Counts significant digits in a decimal string (excludes `.`).
@@ -142,7 +142,11 @@ Counts significant digits in a decimal string (excludes `.`).
 ## Regex patterns
 
 ```python
-_SIGNED_DECIMAL_PATTERN = re.compile(r"^-?[0-9]+(\.[0-9]+)?$")
-_UNSIGNED_DECIMAL_PATTERN = re.compile(r"^[0-9]+(\.[0-9]+)?$")
-_TIMESTAMP_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$")
+SIGNED_DECIMAL_PATTERN = re.compile(r"^-?[0-9]+(\.[0-9]+)?$")
+UNSIGNED_DECIMAL_PATTERN = re.compile(r"^[0-9]+(\.[0-9]+)?$")
+TIMESTAMP_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$")
 ```
+
+---
+
+← [API Reference Overview](overview.md)
