@@ -17,11 +17,13 @@ A pipeline for ingesting, validating, storing, and querying cryptocurrency marke
 ```mermaid
 graph LR
     subgraph Providers
-        A[Exchange API] --> B[OHLCVProvider]
+        A1[Exchange API] --> B1[OHLCVProvider]
+        A2[Exchange API] --> B2[FundingRateProvider]
     end
     subgraph Write Path
-        B --> C[Candle / FundingRate]
-        C --> D[Validation]
+        B1 --> C1[Candle]
+        B2 --> C2[FundingRate]
+        C1 & C2 --> D[Validation]
         D --> E[ParquetWriter]
         E --> F[Parquet files]
     end
