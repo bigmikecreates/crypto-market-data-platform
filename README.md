@@ -1,6 +1,6 @@
 <div align="center">
 
-# Crypto Market Data Platform
+# CrMD Platform
 
 [![CI](https://github.com/bigmikecreates/crypto-market-data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/bigmikecreates/crypto-market-data-platform/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/github/bigmikecreates/crypto-market-data-platform/graph/badge.svg?token=CBJ67QDX5X)](https://codecov.io/github/bigmikecreates/crypto-market-data-platform)
