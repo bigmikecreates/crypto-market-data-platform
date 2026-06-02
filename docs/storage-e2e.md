@@ -19,8 +19,8 @@ graph TD
 
     subgraph "Stage 2 — Validation"
         S2["validate_candle_batch()<br/>runs 5 provider-independent rules"]
-        S2 -- "passed ✓" --> S3
-        S2 -- "passed ✗" --> Fail["ValueError raised<br/>write blocked"]
+        S2 --> S3
+        S2 -. "passed ✗" .-> Fail["ValueError raised<br/>write blocked"]
     end
 
     subgraph "Stage 3 — Partition routing"
@@ -48,18 +48,6 @@ graph TD
     class Start,S1,S2,S3,S4,S5,Merge,Direct stage;
     class Out output;
 ```
-
-### Notation
-
-| Symbol | Meaning |
-|--------|---------|
-| `──▶` | Solid arrow — data flows to the next stage |
-| `─ text ▶` | Labelled arrow — conditional path (checked only when label matches) |
-| `◇` | Diamond — decision node (branching by condition) |
-| `[  ]` | Rectangle — process step or stage |
-| `[[  ]]` | Rounded rectangle — terminal output (the written file) |
-| Grey fill | Stage or process node |
-| Green fill | Terminal output node |
 
 ---
 
