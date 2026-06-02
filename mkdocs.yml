@@ -58,9 +58,7 @@ nav:
   - Validation Strategy: validation-strategy.md
   - Storage — Write Path: storage-e2e.md
   - Philosophy: philosophy.md
-  - Benchmark Design: benchmark-design.md
-  - Performance Notes: performance-notes.md
-  - Roadmap: roadmap.md
+  - Benchmarking: benchmark-design.md
   - Lessons Learned:
     - Bitfinex Integration: lessons-from-bitfinex-integration.md
     - KuCoin Integration: lessons-from-kucoin-integration.md

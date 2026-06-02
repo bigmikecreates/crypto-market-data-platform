@@ -91,7 +91,7 @@ For a complete walkthrough — multiple providers, concurrent symbol ingestion, 
 
 ## Current status
 
-Core ingestion and query paths are stable. Providers: Bitfinex, KuCoin, Bybit, MEXC, Bitstamp, FakeProvider. The benchmark framework is feature-complete. See [Roadmap](roadmap.md) for planned work.
+Core ingestion and query paths are stable. Providers: Bitfinex, KuCoin, Bybit, MEXC, Bitstamp, FakeProvider. The benchmark framework is feature-complete.
 
 ## Navigation
 
@@ -103,6 +103,4 @@ Core ingestion and query paths are stable. Providers: Bitfinex, KuCoin, Bybit, M
 | [Providers](providers.md) | Supported exchanges, symbol mappings, adding new providers |
 | [Validation Strategy](validation-strategy.md) | Validation boundaries and rule set |
 | [Storage: Write Path](storage-e2e.md) | Stage-by-stage write pipeline |
-| [Benchmark Design](benchmark-design.md) | How the benchmark is structured and what it measures |
-| [Performance Notes](performance-notes.md) | Measured baseline metrics and provider profiles |
-| [Roadmap](roadmap.md) | Completed work and planned improvements |
+| [Benchmarking](benchmark-design.md) | How the benchmark works, baseline metrics, and provider profiles |

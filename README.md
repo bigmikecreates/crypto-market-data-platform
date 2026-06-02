@@ -196,4 +196,4 @@ Full documentation: **[bigmikecreates.github.io/crypto-market-data-platform](htt
 | [Validation Strategy](https://bigmikecreates.github.io/crypto-market-data-platform/validation-strategy/) | Rule set, `ValidationResult`, blocking behaviour |
 | [Storage: Write Path](https://bigmikecreates.github.io/crypto-market-data-platform/storage-e2e/) | Stage-by-stage write pipeline, Azure variant, concurrency model |
 | [Benchmark Design](https://bigmikecreates.github.io/crypto-market-data-platform/benchmark-design/) | Measurement methodology, CPU vs network profiling |
-| [Performance Notes](https://bigmikecreates.github.io/crypto-market-data-platform/performance-notes/) | Measured baselines, provider profiles |
+| [Benchmarking](https://bigmikecreates.github.io/crypto-market-data-platform/benchmark-design/) | How the benchmark works, baseline metrics, and provider profiles |

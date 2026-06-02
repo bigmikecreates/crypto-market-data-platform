@@ -310,5 +310,5 @@ Concurrent workers writing to the same partition are safe: the writer holds a 30
 
 - [Architecture](architecture.md) — how the pipeline layers fit together
 - [CLI Reference](/crypto-market-data-platform/reference/#/cli) — all commands and options
-- [Benchmark Design](benchmark-design.md) — how to measure pipeline performance
+- [Benchmarking](benchmark-design.md) — how to measure pipeline performance
 - [Providers](providers.md) — symbol formats and provider-specific notes
