@@ -12,12 +12,11 @@ graph TD
     classDef read fill:#f3e5f5,stroke:#6a1b9a;
 
     subgraph Providers
-        A1[Exchange API] --> B1[OHLCVProvider]
-        A2[Exchange API] --> B2[FundingRateProvider]
+        A[Exchange API] --> B[MarketDataProvider]
     end
 
     subgraph "Write Path — Candles"
-        B1 --> C1["Candle<br/><i>all-string fields</i>"]
+        B --> C1["Candle<br/><i>all-string fields</i>"]
         C1 --> D1["validate_candle_batch()<br/>ValidationResult"]
         D1 -- "passed ✓" --> E1["candle_to_table()<br/>PyArrow table"]
         D1 -- "passed ✗" --> F1["ValueError<br/>no write"]
@@ -25,7 +24,7 @@ graph TD
     end
 
     subgraph "Write Path — Funding Rates"
-        B2 --> C2["FundingRate<br/><i>all-string fields</i>"]
+        B --> C2["FundingRate<br/><i>all-string fields</i>"]
         C2 --> D2["validate_funding_rate_batch()<br/>ValidationResult"]
         D2 -- "passed ✓" --> E2["funding_rate_to_table()<br/>PyArrow table"]
         D2 -- "passed ✗" --> F2["ValueError<br/>no write"]
@@ -46,7 +45,7 @@ graph TD
         I --> K[API — /candles, /funding-rates]
     end
 
-    class A1,A2,B1,B2 provider;
+    class A,B provider;
     class C1,D1,E1,F1,G1,C2,D2,E2,F2,G2 write;
     class H1,H2 store;
     class I,J,K read;
