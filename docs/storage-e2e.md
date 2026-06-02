@@ -9,41 +9,43 @@ graph TD
     classDef stage fill:#f5f5f5,stroke:#666,stroke-width:2px;
     classDef output fill:#e8f5e9,stroke:#2e7d32;
 
-    Start["crmd fetch --provider kucoin --symbol BTC-USDT --timeframe 1h<br/>--start 2026-05-01 --end 2026-05-08"] --> S1
+    Start["crmd fetch --provider kucoin --symbol BTC-USDT --timeframe 1h<br/>--start 2026-05-01 --end 2026-05-08"]
 
     subgraph "Stage 1 — Provider"
         S1["Exchange API → list[Candle]<br/>all-string fields"]
     end
 
-    S1 --> S2
-
     subgraph "Stage 2 — Validation"
         S2["validate_candle_batch()<br/>runs 5 provider-independent rules"]
-        S2 --> S3
-        S2 -. "passed ✗" .-> Fail["ValueError raised<br/>write blocked"]
+        Fail["ValueError raised<br/>write blocked"]
     end
 
     subgraph "Stage 3 — Partition routing"
         S3["Group candles by date<br/>candles: {exchange}/{symbol}/{tf}/{date}.parquet<br/>funding: {exchange}/{symbol}/funding_rate/{date}.parquet"]
     end
 
-    S3 --> S4
-
     subgraph "Stage 4 — Type casting"
         S4["str → decimal128(38,10) for OHLCV columns<br/>str → timestamp[s] for timestamp column"]
     end
 
-    S4 --> S5
-
     subgraph "Stage 5 — Row-level upsert merge"
         S5{"Existing partition?"}
-        S5 -- Yes --> Merge["Read existing Parquet<br/>Merge by key:<br/>• skip identical rows<br/>• replace changed rows<br/>• append new rows"]
-        S5 -- No --> Direct["Write directly"]
+        Merge["Read existing Parquet<br/>Merge by key:<br/>• skip identical rows<br/>• replace changed rows<br/>• append new rows"]
+        Direct["Write directly"]
+        S5 -- Yes --> Merge
+        S5 -- No --> Direct
         Merge --> Out
         Direct --> Out
     end
 
     Out["{date}.parquet<br/>SNAPPY-compressed"]
+
+    Start --> S1
+    S1 --> S2
+    S2 --> S3
+    S2 -. "passed ✗" .-> Fail
+    S3 --> S4
+    S4 --> S5
 
     class Start,S1,S2,S3,S4,S5,Merge,Direct stage;
     class Out output;
