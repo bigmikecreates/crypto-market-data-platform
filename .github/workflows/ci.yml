@@ -78,18 +78,7 @@ jobs:
           --tableHost 0.0.0.0
 
     env:
-      # The devstoreaccount1 key is Azurite's publicly documented default — not a secret.
-      AZURITE_CONNECTION_STRING: >-
-        DefaultEndpointsProtocol=http;
-        AccountName=devstoreaccount1;
-        AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;
-        BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1
-      # DuckDB's azure extension reads this env var to configure the connection.
-      AZURE_STORAGE_CONNECTION_STRING: >-
-        DefaultEndpointsProtocol=http;
-        AccountName=devstoreaccount1;
-        AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;
-        BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1
+      AZURE_STORAGE_CONNECTION_STRING: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1"
 
     steps:
       - uses: actions/checkout@v6

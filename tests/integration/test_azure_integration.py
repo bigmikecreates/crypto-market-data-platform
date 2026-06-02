@@ -4,7 +4,7 @@ These tests require:
   1. adlfs installed:  pip install "cmpd[azure]"
   2. Azurite running:  docker run -p 10000:10000 mcr.microsoft.com/azure-storage/azurite
 
-Set AZURITE_CONNECTION_STRING to the Azurite connection string before running.
+Set AZURE_STORAGE_CONNECTION_STRING to the Azurite connection string before running.
 The default Azurite connection string is publicly known and contains no secrets.
 
 Run selectively:
@@ -33,10 +33,12 @@ _AZURITE_DEFAULT = (
     "AccountName=devstoreaccount1;"
     "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/"
     "K1SZFPTOtr/KBHBeksoGMGw==;"
-    "BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1"
+    "BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
+    "QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;"
+    "TableEndpoint=http://127.0.0.1:10002/devstoreaccount1"
 )
 
-_CONN_STR = os.environ.get("AZURITE_CONNECTION_STRING", _AZURITE_DEFAULT)
+_CONN_STR = os.environ.get("AZURE_STORAGE_CONNECTION_STRING", _AZURITE_DEFAULT)
 _CONTAINER = "test-market-data"
 _ACCOUNT = "devstoreaccount1"
 
