@@ -21,13 +21,11 @@ graph LR
     classDef shared fill:#f5f5f5,stroke:#666,stroke-width:1px;
 
     subgraph Providers
-        A1[Exchange API] --> B1[OHLCVProvider]
-        A2[Exchange API] --> B2[FundingRateProvider]
+        A[Exchange API] --> B[MarketDataProvider]
     end
     subgraph Validation
-        B1 --> C1[Candle]
-        B2 --> C2[FundingRate]
-        C1 & C2 --> D[Validation]
+        B --> C[Candle / FundingRate]
+        C --> D[Validation]
     end
     subgraph Storage
         D --> E1[Local parquet writer]
@@ -43,7 +41,7 @@ graph LR
 
     class E1,F1 local;
     class E2,F2 azure;
-    class A1,A2,B1,B2,C1,C2,D,G,H,I shared;
+    class A,B,C,D,G,H,I shared;
 
     linkStyle default stroke-width:1px;
 ```

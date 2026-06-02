@@ -4,46 +4,7 @@ The platform is organised as a write path (provider → validation → storage) 
 
 ## Layer diagram
 
-```mermaid
-graph TD
-    subgraph "Write Path — Candles"
-        P1["Exchange API"] --> A1["OHLCVProvider"]
-        A1 --> B1["Candle\n(all-string fields)"]
-        B1 --> C1["validate_candle_batch()\nValidationResult"]
-        C1 -- "passed = True" --> D1["candle_to_table()\nPyArrow table"]
-        C1 -- "passed = False" --> E1["ValueError — no write"]
-        D1 --> F1["write_candles()\nRow-level upsert merge"]
-    end
-
-    subgraph "Write Path — Funding Rates"
-        P2["Exchange API"] --> A2["FundingRateProvider"]
-        A2 --> B2["FundingRate\n(all-string fields)"]
-        B2 --> C2["validate_funding_rate_batch()\nValidationResult"]
-        C2 -- "passed = True" --> D2["funding_rate_to_table()\nPyArrow table"]
-        C2 -- "passed = False" --> E2["ValueError — no write"]
-        D2 --> F2["write_funding_rates()\nRow-level upsert merge"]
-    end
-
-    subgraph "Storage"
-        G1["data/{exchange}/{symbol}/{tf}/{date}.parquet"]
-        G2["data/{exchange}/{symbol}/funding_rate/{date}.parquet"]
-        G1A["az://… (Azure Blob)"]
-        G2A["az://… (Azure Blob)"]
-        F1 --> G1
-        F1 -- "az:// or abfs://" --> G1A
-        F2 --> G2
-        F2 -- "az:// or abfs://" --> G2A
-    end
-
-    subgraph "Read Path"
-        G1 --> H["DuckDBQueryService\nread_parquet()"]
-        G2 --> H
-        G1A --> H
-        G2A --> H
-        H --> I["crmd query / crmd datasets"]
-        H --> J["FastAPI — /candles, /funding-rates, /query"]
-    end
-```
+See the [Home page](index.md#system-overview) for the full system architecture diagram showing the write path, storage, and read path layers.
 
 ## Write path
 
