@@ -16,39 +16,43 @@ A pipeline for ingesting, validating, storing, and querying cryptocurrency marke
 
 ```mermaid
 graph LR
-    subgraph Local
+    classDef local fill:#e1ffe1,stroke:#2a2,stroke-width:2px;
+    classDef azure fill:#dff0ff,stroke:#22a,stroke-width:2px;
+    classDef shared fill:#f5f5f5,stroke:#666,stroke-width:1px;
+
+    subgraph Providers
         A1[Exchange API] --> B1[OHLCVProvider]
         A2[Exchange API] --> B2[FundingRateProvider]
+    end
+    subgraph Validation
         B1 --> C1[Candle]
         B2 --> C2[FundingRate]
         C1 & C2 --> D[Validation]
-        D --> E[Local parquet writer]
-        E --> F[Local Parquet files]
+    end
+    subgraph Storage
+        D --> E1[Local parquet writer]
+        D --> E2[Azure parquet writer<br/>lease-based concurrency]
+        E1 --> F1[Local Parquet files]
+        E2 --> F2[Azure Blob Storage]
     end
     subgraph Read Path
-        F --> G[DuckDBQueryService]
+        F1 & F2 --> G[DuckDBQueryService]
         G --> H[crmd CLI]
         G --> I[FastAPI server]
     end
+
+    class E1,F1 local;
+    class E2,F2 azure;
+    class A1,A2,B1,B2,C1,C2,D,G,H,I shared;
+
+    linkStyle default stroke-width:1px;
 ```
 
-```mermaid
-graph LR
-    subgraph Cloud (Azure)
-        A1[Exchange API] --> B1[OHLCVProvider]
-        A2[Exchange API] --> B2[FundingRateProvider]
-        B1 --> C1[Candle]
-        B2 --> C2[FundingRate]
-        C1 & C2 --> D[Validation]
-        D --> E[Azure parquet writer<br/>lease-based concurrency]
-        E --> F[Azure Blob Storage]
-    end
-    subgraph Read Path
-        F --> G[DuckDBQueryService]
-        G --> H[crmd CLI]
-        G --> I[FastAPI server]
-    end
-```
+<span style="font-size:0.85em;">
+■ <span style="color:#2a2">Green</span> = local filesystem &nbsp;&nbsp;
+■ <span style="color:#22a">Blue</span> = Azure Blob Storage &nbsp;&nbsp;
+■ <span style="color:#666">Grey</span> = shared
+</span>
 
 All numeric fields (`open`, `high`, `low`, `close`, `volume`) are stored as strings in the model layer and cast to `decimal128(38,10)` at write time via PyArrow's C++ `.cast()` kernel. Parquet files are the interchange format: portable, queryable by DuckDB without import, and readable by any Parquet-compatible tool.
 
