@@ -199,4 +199,4 @@ Full documentation: **[bigmikecreates.github.io/crypto-market-data-platform](htt
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE) — you are free to use, modify, and distribute it, provided the original copyright notice is included.
+All Rights Reserved. See [LICENSE](LICENSE) for details.
