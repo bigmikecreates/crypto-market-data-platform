@@ -64,11 +64,18 @@ jobs:
         image: mcr.microsoft.com/azure-storage/azurite:3.34.0
         ports:
           - "10000:10000"
+          - "10001:10001"
+          - "10002:10002"
         options: >-
           --health-cmd "nc -z 127.0.0.1 10000 || exit 1"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 20
+        command: >
+          azurite
+          --blobHost 0.0.0.0
+          --queueHost 0.0.0.0
+          --tableHost 0.0.0.0
 
     env:
       # The devstoreaccount1 key is Azurite's publicly documented default — not a secret.
@@ -98,8 +105,16 @@ jobs:
 
       - name: Wait for Azurite to be ready
         run: |
-          timeout 60 bash -c \
-            'until curl -sf http://127.0.0.1:10000/devstoreaccount1; do sleep 1; done'
+          for i in {1..60}; do
+            if timeout 1 bash -c "</dev/tcp/127.0.0.1/10000" 2>/dev/null; then
+              echo "Azurite is ready"
+              exit 0
+            fi
+            echo "Waiting for Azurite..."
+            sleep 1
+          done
+          echo "Azurite did not become ready in time"
+          exit 1
 
       - name: Run mock-based Azure unit tests
         run: |
