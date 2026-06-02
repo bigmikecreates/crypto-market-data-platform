@@ -16,16 +16,32 @@ A pipeline for ingesting, validating, storing, and querying cryptocurrency marke
 
 ```mermaid
 graph LR
-    subgraph Providers
+    subgraph Local
         A1[Exchange API] --> B1[OHLCVProvider]
         A2[Exchange API] --> B2[FundingRateProvider]
-    end
-    subgraph Write Path
         B1 --> C1[Candle]
         B2 --> C2[FundingRate]
         C1 & C2 --> D[Validation]
-        D --> E[ParquetWriter]
-        E --> F[Parquet files]
+        D --> E[Local parquet writer]
+        E --> F[Local Parquet files]
+    end
+    subgraph Read Path
+        F --> G[DuckDBQueryService]
+        G --> H[crmd CLI]
+        G --> I[FastAPI server]
+    end
+```
+
+```mermaid
+graph LR
+    subgraph Cloud (Azure)
+        A1[Exchange API] --> B1[OHLCVProvider]
+        A2[Exchange API] --> B2[FundingRateProvider]
+        B1 --> C1[Candle]
+        B2 --> C2[FundingRate]
+        C1 & C2 --> D[Validation]
+        D --> E[Azure parquet writer<br/>lease-based concurrency]
+        E --> F[Azure Blob Storage]
     end
     subgraph Read Path
         F --> G[DuckDBQueryService]
