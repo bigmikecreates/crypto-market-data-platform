@@ -1447,7 +1447,7 @@
 </code></pre></div>
 <h2 id="step-7-start-the-rest-api-server">Step 7 — Start the REST API server<a class="headerlink" href="#step-7-start-the-rest-api-server" title="Permanent link">&para;</a></h2>
 <p><code>crmd serve</code> starts a FastAPI server that exposes all stored data over HTTP:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>crmd<span class="w"> </span>serve<span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span><span class="w"> </span>--path<span class="w"> </span>data
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>crmd<span class="w"> </span>serve<span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>--port<span class="w"> </span><span class="m">8050</span><span class="w"> </span>--path<span class="w"> </span>data
 </code></pre></div>
 <p>The server exposes these endpoints:</p>
 <table>
@@ -1492,7 +1492,7 @@
 </tbody>
 </table>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>curl<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:8000/candles?symbol=BTC-USDT&amp;limit=3&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>curl<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:8050/candles?symbol=BTC-USDT&amp;limit=3&quot;</span>
 </code></pre></div>
 <p>See the <a href="/crypto-market-data-platform/reference/#/http-api">HTTP API Reference</a> for full endpoint documentation.</p>
 <h2 id="step-8-fetch-funding-rates">Step 8 — Fetch funding rates<a class="headerlink" href="#step-8-fetch-funding-rates" title="Permanent link">&para;</a></h2>
@@ -1537,7 +1537,7 @@
 <a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a><span class="w">  </span>--limit<span class="w"> </span><span class="m">5</span>
 <a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a>
 <a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a><span class="c1"># Serve</span>
-<a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a>crmd<span class="w"> </span>serve<span class="w"> </span>--path<span class="w"> </span>az://mycontainer/crypto-data<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span>
+<a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a>crmd<span class="w"> </span>serve<span class="w"> </span>--path<span class="w"> </span>az://mycontainer/crypto-data<span class="w"> </span>--port<span class="w"> </span><span class="m">8050</span>
 </code></pre></div>
 <p>Concurrent workers writing to the same partition are safe: the writer holds a 30-second Azure Blob lease during the read-merge-write cycle, so no rows are lost. Workers writing to different partitions (the common case when parallelising by symbol) are unaffected by locking.</p>
 <p>→ See <a href="../storage-e2e/#azure-blob-storage-variant">Storage: Write Path</a> for the full Azure write pipeline and concurrency model.</p>

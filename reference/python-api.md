@@ -638,7 +638,7 @@ app = create_app(config)
 #### Usage
 
 ```python
-config = ServerConfig(host="127.0.0.1", port=8000, base_path="data")
+config = ServerConfig(host="127.0.0.1", port=8050, base_path="data")
 ```
 
 #### Parameters
@@ -646,7 +646,7 @@ config = ServerConfig(host="127.0.0.1", port=8000, base_path="data")
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `host` | `str` | `"127.0.0.1"` | Bind address |
-| `port` | `int` | `8000` | Bind port |
+| `port` | `int` | `8050` | Bind port |
 | `base_path` | `str` | `"data"` | Base data directory |
 | `query_service` | `QueryService` | `DuckDBQueryService()` | Query service instance |
 
