@@ -361,7 +361,7 @@ def query_sql(
 @app.command()
 def serve(
     host: str = typer.Option("127.0.0.1", "--host", help="Bind address"),
-    port: int = typer.Option(8000, "--port", "-p", help="Bind port"),
+    port: int = typer.Option(8050, "--port", "-p", help="Bind port"),
     path: str = typer.Option("data", "--path", help="Base data directory or az:// URI"),
     api_key: Optional[str] = typer.Option(
         None,

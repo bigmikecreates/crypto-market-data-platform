@@ -339,7 +339,7 @@ crmd serve [--host ADDR] [--port N] [--path DIR] [--api-key KEY] [--cors-origins
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `--host` | `str` | `"127.0.0.1"` | Bind address |
-| `--port`, `-p` | `int` | `8000` | Bind port |
+| `--port`, `-p` | `int` | `8050` | Bind port |
 | `--path` | `str` | `"data"` | Storage root — a local path or `az://container/prefix`. All endpoints query this location. |
 | `--api-key` | `str` | — | Require `X-API-Key: KEY` on all data endpoints. Also read from `CRMD_API_KEY` env var. Generate a key with: `python -c "import secrets; print(secrets.token_hex(32))"`. Omitting the flag runs the server in **open dev mode** (a warning is logged). |
 | `--cors-origins` | `str` | `"http://localhost:3000,http://127.0.0.1:3000"` | Comma-separated list of allowed CORS origins. Also read from `CRMD_CORS_ORIGINS` env var. |
@@ -349,7 +349,7 @@ crmd serve [--host ADDR] [--port N] [--path DIR] [--api-key KEY] [--cors-origins
 Local dev (open, localhost only):
 
 ```bash
-crmd serve --path data --port 8000
+crmd serve --path data --port 8050
 # WARNING: CRMD_API_KEY is not set — server running in open dev mode.
 ```
 
@@ -357,7 +357,7 @@ Secured for LAN or cloud exposure:
 
 ```bash
 export CRMD_API_KEY=$(python -c "import secrets; print(secrets.token_hex(32))")
-crmd serve --path az://mycontainer/crypto-data --port 8000
+crmd serve --path az://mycontainer/crypto-data --port 8050
 ```
 
 → See [HTTP API Reference](http-api.md) for endpoint documentation including how to pass the `X-API-Key` header.

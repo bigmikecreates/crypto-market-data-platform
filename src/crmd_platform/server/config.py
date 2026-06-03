@@ -6,7 +6,7 @@ from crmd_platform.query import DuckDBQueryService, QueryService
 @dataclass(slots=True)
 class ServerConfig:
     host: str = "127.0.0.1"
-    port: int = 8000
+    port: int = 8050
     base_path: str = "data"
     query_service: QueryService = field(default_factory=DuckDBQueryService)
     # None = dev mode (open access). Set via CRMD_API_KEY env var or --api-key CLI flag.

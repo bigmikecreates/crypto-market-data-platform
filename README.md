@@ -77,7 +77,7 @@ crmd inspect --path data --limit 5
 crmd query ohlcv --symbol "BTC/USDT" --limit 5
 
 # Start the REST API
-crmd serve --port 8000
+crmd serve --port 8050
 ```
 
 For a full walkthrough — live providers, concurrent symbol ingestion, the query API — see **[Getting Started](https://bigmikecreates.github.io/crypto-market-data-platform/getting-started/)**.
@@ -127,7 +127,7 @@ crmd fetch --provider kucoin --symbol BTC-USDT --timeframe 1h \
 
 # Read from Azure
 crmd query ohlcv --path az://mycontainer/crypto-data --symbol BTC-USDT
-crmd serve       --path az://mycontainer/crypto-data --port 8000
+crmd serve       --path az://mycontainer/crypto-data --port 8050
 ```
 
 Install the Azure extra and set credentials:
@@ -175,9 +175,15 @@ python scripts/benchmark_pipeline.py run --count 10000 --iterations 10
 python scripts/benchmark_pipeline.py profile \
   --start 2026-05-01 --end 2026-05-02
 
-# Docker
+# Docker Compose (production)
+docker compose up --build
+
+# Docker Compose (development — hot-reload on source changes)
+docker compose -f docker-compose.dev.yml up --build
+
+# Or build and run the backend image manually
 docker build -t crmd .
-docker run -p 8000:8000 -v ./data:/app/data crmd
+docker run -p 8050:8050 -v ./data:/app/data crmd
 ```
 
 ---
@@ -194,6 +200,62 @@ Full documentation: **[bigmikecreates.github.io/crypto-market-data-platform](htt
 | [Validation Strategy](https://bigmikecreates.github.io/crypto-market-data-platform/validation-strategy/) | Rule set, `ValidationResult`, blocking behaviour |
 | [Storage: Write Path](https://bigmikecreates.github.io/crypto-market-data-platform/storage-e2e/) | Stage-by-stage write pipeline, Azure variant, concurrency model |
 | [Benchmarking](https://bigmikecreates.github.io/crypto-market-data-platform/benchmark-design/) | How the benchmark works, baseline metrics, and provider profiles |
+
+---
+
+## Web Console (frontend)
+
+A Next.js + TypeScript web console lives in `frontend/`. It connects to the FastAPI backend for querying, inspecting, and visualising market data.
+
+```
+frontend/
+  app/          — pages (explorer, datasets, home)
+  components/   — CandlestickChart, CandleTable
+  lib/          — Zod schemas, typed API client, TypeScript types
+```
+
+### Local dev (no Docker)
+
+```bash
+# Terminal 1 — start the backend
+crmd serve
+
+# Terminal 2 — start the frontend
+cd frontend
+cp .env.local.example .env.local   # defaults to http://localhost:8050
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`. The backend CORS is pre-configured for both `http://localhost:3000` and `http://127.0.0.1:3000`.
+
+### Docker Compose (dev — hot-reload)
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+Open `http://localhost:3000`. The dev compose file mounts `frontend/` as a volume so Next.js HMR picks up file changes immediately. The backend uses `--reload` and mounts `src/` for the same effect.
+
+### Docker Compose (production)
+
+```bash
+docker compose up --build
+```
+
+Open `http://localhost:3000`. Both services run in production mode with optimised images, no volume mounts for source.
+
+### Key dependencies
+
+- **Next.js 15** with App Router and server components
+- **TanStack Query** for API state management (caching, loading, error states)
+- **Zod** for response validation at the API boundary
+- **lightweight-charts** for candlestick visualisation
+- **Tailwind CSS 3** with `darkMode: "media"` (follows OS preference)
+
+### No backend changes needed
+
+The frontend calls the same FastAPI endpoints (`GET /candles`, `GET /datasets`, `GET /summary`, `GET /health`) that the CLI uses. No new backend endpoints were added.
 
 ---
 

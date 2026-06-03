@@ -1,0 +1,23 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "8050:8050"
+    volumes:
+      - data:/app/data
+    environment:
+      - CRMD_DATA_DIR=/app/data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://backend:8050
+    depends_on:
+      - backend
+
+volumes:
+  data:

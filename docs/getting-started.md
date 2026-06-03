@@ -174,7 +174,7 @@ crmd datasets
 `crmd serve` starts a FastAPI server that exposes all stored data over HTTP:
 
 ```bash
-crmd serve --host 127.0.0.1 --port 8000 --path data
+crmd serve --host 127.0.0.1 --port 8050 --path data
 ```
 
 The server exposes these endpoints:
@@ -191,7 +191,7 @@ The server exposes these endpoints:
 Example:
 
 ```bash
-curl "http://127.0.0.1:8000/candles?symbol=BTC-USDT&limit=3"
+curl "http://127.0.0.1:8050/candles?symbol=BTC-USDT&limit=3"
 ```
 
 See the [HTTP API Reference](/crypto-market-data-platform/reference/#/http-api) for full endpoint documentation.
@@ -253,7 +253,7 @@ crmd query ohlcv \
   --limit 5
 
 # Serve
-crmd serve --path az://mycontainer/crypto-data --port 8000
+crmd serve --path az://mycontainer/crypto-data --port 8050
 ```
 
 Concurrent workers writing to the same partition are safe: the writer holds a 30-second Azure Blob lease during the read-merge-write cycle, so no rows are lost. Workers writing to different partitions (the common case when parallelising by symbol) are unaffected by locking.
