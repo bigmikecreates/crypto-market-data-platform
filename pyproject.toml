@@ -28,7 +28,7 @@ docs = [
     "mkdocs-material==9.7.6",
 ]
 azure = [
-    "adlfs==2024.7.0",
+    "adlfs==2026.5.0",
 ]
 
 [tool.pytest.ini_options]
