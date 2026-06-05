@@ -5,9 +5,10 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-RUN useradd --create-home /bin/bash appuser
+RUN useradd --create-home --shell /bin/bash appuser
 
-COPY requirements.txt .
+# Uses 'test' and 'lint' optional dependencies defined in `pyproject.toml`
+COPY requirements.dev.txt .
 
 RUN pip install --no-cache-dir -r requirements.dev.txt
 
