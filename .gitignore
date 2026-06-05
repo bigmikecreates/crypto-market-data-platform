@@ -15,3 +15,4 @@ htmlcov/
 .ruff_cache/
 .pytest_cache/
 .opencode/anchored/session-brief.md
+*.log
