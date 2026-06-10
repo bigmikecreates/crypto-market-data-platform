@@ -14,43 +14,10 @@ A pipeline for ingesting, validating, storing, and querying cryptocurrency marke
 
 ## How it works
 
-```mermaid
-graph LR
-    classDef local fill:#e1ffe1,stroke:#2a2,stroke-width:2px;
-    classDef azure fill:#dff0ff,stroke:#22a,stroke-width:2px;
-    classDef shared fill:#f5f5f5,stroke:#666,stroke-width:1px;
-
-    subgraph Providers
-        A[Exchange API] --> B[MarketDataProvider]
-    end
-    subgraph Validation
-        B --> C[Candle / FundingRate]
-        C --> D[Validation]
-    end
-    subgraph Storage
-        D --> E1[Local parquet writer]
-        D --> E2[Azure parquet writer<br/>lease-based concurrency]
-        E1 --> F1[Local Parquet files]
-        E2 --> F2[Azure Blob Storage]
-    end
-    subgraph Read Path
-        F1 & F2 --> G[DuckDBQueryService]
-        G --> H[crmd CLI]
-        G --> I[FastAPI server]
-    end
-
-    class E1,F1 local;
-    class E2,F2 azure;
-    class A,B,C,D,G,H,I shared;
-
-    linkStyle default stroke-width:1px;
-```
-
-<span style="font-size:0.85em;">
-■ <span style="color:#2a2">Green</span> = local filesystem &nbsp;&nbsp;
-■ <span style="color:#22a">Blue</span> = Azure Blob Storage &nbsp;&nbsp;
-■ <span style="color:#666">Grey</span> = shared
-</span>
+1. **Fetch** — Provider adapters call exchange APIs and map responses to `Candle` or `FundingRate` records (all fields are strings at this point)
+2. **Validate** — Batch validation checks decimal format, OHLC invariants, duplicate timestamps, etc. If validation fails, the write is blocked entirely
+3. **Store** — Valid records are cast to `decimal128(38,10)` and written as partitioned Parquet files (local filesystem or cloud object storage)
+4. **Query** — DuckDB reads Parquet files in place via `read_parquet()`, exposed through CLI commands and a REST API
 
 All numeric fields (`open`, `high`, `low`, `close`, `volume`) are stored as strings in the model layer and cast to `decimal128(38,10)` at write time via PyArrow's C++ `.cast()` kernel. Parquet files are the interchange format: portable, queryable by DuckDB without import, and readable by any Parquet-compatible tool.
 
@@ -94,6 +61,7 @@ For a full walkthrough — live providers, concurrent symbol ingestion, the quer
 | `kucoin` | `BTC-USDT` | 1,500-candle server limit, second-precision timestamps. |
 | `bybit` | `BTCUSDT` | Category-based dispatch (spot), descending sort order. |
 | `mexc` | `BTCUSDT` | Standard field order, 500-candle limit. |
+| `gateio` | `BTC_USDT` | Non-standard field order (volume, close, high, low, open). 8-field response rows. |
 
 Each provider implements the `OHLCVProvider` or `FundingRateProvider` ABC. Adding a new exchange means implementing one method — no consumer code changes.
 
@@ -146,15 +114,20 @@ Concurrent workers writing to the same partition are safe: each write acquires a
 
 ## Key design decisions
 
-**Strings-first data model.** `Candle` and `FundingRate` store all numeric fields as `str`. This saves ~68% per-candle memory versus `Decimal`, keeps providers free of type-import dependencies, and allows regex-based validation to run without allocating intermediate objects. Conversion to `decimal128(38,10)` happens once at the storage boundary via a vectorised C++ cast.
+**Why strings for numeric fields?**
+You might wonder why we store prices like `"42250.0"` as strings instead of numbers. Three reasons: (1) Strings use ~68% less memory than Python `Decimal` objects — important when holding millions of candles in memory. (2) Providers can return prices as strings anyway, so we avoid parsing them into intermediate objects. (3) We can validate the format with regex before converting. The conversion to `decimal128(38,10)` happens once at write time, in a single vectorized C++ operation that's extremely fast.
 
-**Row-level upsert merge.** Re-fetching an overlapping time range never produces duplicates. Each row is identified by its merge key (`exchange`, `symbol`, `timeframe`, `source`, `timestamp`). Two strategies are dispatched automatically: a Python `dict`-based merge for partitions under 50,000 rows, and a DuckDB `NOT EXISTS` SQL anti-join for larger partitions.
+**What happens if I fetch the same date range twice?**
+Nothing bad. Each row is identified by a merge key (`exchange`, `symbol`, `timeframe`, `source`, `timestamp`). If you re-fetch overlapping data, the writer performs an upsert: identical rows are skipped, corrected rows replace the old ones, and new rows are appended. No duplicates, no data loss. For small partitions (<50k rows), we use a Python dict-based merge. For larger ones, we use a DuckDB SQL anti-join.
 
-**Lease-protected cloud writes.** When writing to Azure Blob Storage, `_azure_lease_write()` wraps the read-merge-write cycle in a 30-second Azure Blob lease. New blobs use a conditional PUT (`overwrite=False`) to detect racing creators. Both mechanisms enforce serialisation at the partition level without any external lock service.
+**What if two workers try to write at the same time?**
+For local storage, this isn't a problem — each symbol maps to different partition files, so workers never collide. For cloud storage (Azure Blob, S3, GCS), we use blob leases to serialize writes to the same partition. If two workers race to update the same file, one acquires the lease and writes first; the other waits, reads the updated file, merges its changes, and writes second. No data is lost.
 
-**Validation blocks writes.** `validate_candle_batch()` evaluates five provider-independent rules across the full batch and returns a `ValidationResult`. If `passed` is `False`, the service raises `ValueError` before calling the writer — no partial writes.
+**What does validation actually do?**
+Before writing any data, we run validation checks: Are all required fields present? Do numeric fields look like valid decimals? Are timestamps in the right format? Does `high >= open` and `high >= close`? Are there duplicate timestamps in the batch? If any check fails, the entire batch is rejected — no partial writes. This prevents invalid data from ever reaching storage.
 
-**`QueryService` ABC.** Both the CLI and the FastAPI server depend on the `QueryService` interface, not the DuckDB implementation. Swapping the query engine requires only a new concrete class.
+**Why use an ABC for the query service?**
+Both the CLI (`crmd query`) and the REST API (`GET /candles`) depend on a `QueryService` interface, not the DuckDB implementation directly. This means if we want to swap DuckDB for Postgres, InfluxDB, or something else, we just write a new class that implements the interface. The CLI and API code doesn't change.
 
 ---
 
