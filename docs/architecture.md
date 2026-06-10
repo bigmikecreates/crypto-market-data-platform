@@ -81,6 +81,21 @@ The `StorageBackend` ABC (`storage/backend.py`) provides a unified interface for
 
 The `create_backend(base_path)` factory function automatically selects the appropriate backend based on the URI scheme.
 
+**Recommended usage:**
+
+```python
+from crmd_platform.storage import create_backend, write_candles
+
+# Create backend explicitly (recommended)
+backend = create_backend("s3://mybucket/crypto-data")
+write_candles(candles, backend=backend)
+
+# OR use base_path (deprecated, will be removed in future version)
+write_candles(candles, base_path="s3://mybucket/crypto-data")  # Emits DeprecationWarning
+```
+
+The `base_path` parameter is deprecated. Use the `backend` parameter with an explicit backend instance for new code.
+
 ### Read path
 
 `DuckDBQueryService` detects the URI scheme and loads the appropriate DuckDB extension (`azure`, `httpfs` for S3/GCS) before executing queries. File discovery uses DuckDB's `glob()` function over the cloud namespace rather than `Path.rglob()`. All `read_parquet()` queries work transparently once the extension is loaded.

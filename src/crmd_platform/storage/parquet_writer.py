@@ -1,4 +1,5 @@
 import logging
+import warnings
 from collections import defaultdict
 from pathlib import Path
 from typing import Sequence
@@ -264,7 +265,7 @@ def write_candles(
 
     Args:
         candles: List of candles to write
-        base_path: Storage path (local path or cloud URI). Ignored if backend is provided.
+        base_path: Storage path (local path or cloud URI). Deprecated: use backend instead.
         ts_config: Timestamp configuration
         merge_strategy: Merge strategy for existing data ("auto", "memory", "duckdb")
         backend: Storage backend instance. If None, created from base_path.
@@ -274,6 +275,15 @@ def write_candles(
     """
     if not candles:
         return []
+
+    # Deprecation warning for base_path usage
+    if backend is None:
+        warnings.warn(
+            "base_path parameter is deprecated. Use backend parameter instead. "
+            "Example: backend=create_backend('s3://bucket/path')",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     ts_config = ts_config or TimestampConfig()
 
@@ -319,7 +329,7 @@ def write_funding_rates(
 
     Args:
         rates: List of funding rates to write
-        base_path: Storage path (local path or cloud URI). Ignored if backend is provided.
+        base_path: Storage path (local path or cloud URI). Deprecated: use backend instead.
         ts_config: Timestamp configuration
         merge_strategy: Merge strategy for existing data ("auto", "memory", "duckdb")
         backend: Storage backend instance. If None, created from base_path.
@@ -329,6 +339,15 @@ def write_funding_rates(
     """
     if not rates:
         return []
+
+    # Deprecation warning for base_path usage
+    if backend is None:
+        warnings.warn(
+            "base_path parameter is deprecated. Use backend parameter instead. "
+            "Example: backend=create_backend('s3://bucket/path')",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     ts_config = ts_config or TimestampConfig()
 

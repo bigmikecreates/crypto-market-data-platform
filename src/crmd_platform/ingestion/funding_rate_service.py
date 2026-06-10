@@ -1,4 +1,5 @@
 import logging
+import warnings
 from datetime import datetime
 
 from crmd_platform.config import TimestampConfig
@@ -36,13 +37,22 @@ class FundingRateService:
             symbol: Trading pair symbol
             start: Start datetime
             end: End datetime
-            base_path: Storage path (local path or cloud URI). Ignored if backend is provided.
+            base_path: Storage path (local path or cloud URI). Deprecated: use backend instead.
             merge_strategy: Merge strategy for existing data
             backend: Storage backend instance. If None, created from base_path.
 
         Returns:
             Number of funding rates ingested
         """
+        # Deprecation warning for base_path usage
+        if backend is None:
+            warnings.warn(
+                "base_path parameter is deprecated. Use backend parameter instead. "
+                "Example: backend=create_backend('s3://bucket/path')",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
         rates = self._provider.fetch_funding_rates(
             symbol=symbol,
             start=start,

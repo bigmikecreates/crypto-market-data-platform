@@ -177,6 +177,40 @@ Both the CLI (`crmd query`) and the REST API (`GET /candles`) depend on a `Query
 
 ---
 
+## Python API
+
+For programmatic access, use the `StorageBackend` abstraction to write data:
+
+```python
+from crmd_platform.storage import create_backend, write_candles
+from crmd_platform.models.candle import Candle
+
+# Create backend explicitly (recommended)
+backend = create_backend("s3://mybucket/crypto-data")
+
+# Write candles
+candles = [
+    Candle(
+        exchange="binance",
+        symbol="BTC/USDT",
+        timeframe="1h",
+        timestamp="2026-01-01T00:00:00",
+        open="42000.0",
+        high="42500.0",
+        low="41800.0",
+        close="42300.0",
+        volume="1234.5",
+        source="binance",
+    )
+]
+
+write_candles(candles, backend=backend)
+```
+
+**Note:** The `base_path` parameter is deprecated. Use the `backend` parameter with an explicit backend instance for new code. The `base_path` parameter will emit a `DeprecationWarning` and will be removed in a future version.
+
+---
+
 ## Development
 
 ```bash
