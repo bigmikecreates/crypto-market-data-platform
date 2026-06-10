@@ -69,6 +69,16 @@ Prefer focused tests for:
 - timestamp handling
 - decimal conversion
 
+## Implement-Validate-Report Cycle
+
+After completing any significant implementation, the agent must:
+
+1. **Re-review what was done** — re-read the requirements/user intent, the changed files, and confirm no scope drift or missed details
+2. **Run validation** — execute relevant existing tests, run a manual smoke test (e.g. CLI command or Python snippet that exercises the new code), and confirm the output is correct
+3. **Debug failures** — if tests fail or the smoke test produces wrong results, diagnose the root cause, fix the code, and run validation again
+4. **Report results** — summarise what was built, what was validated, and (if applicable) what was fixed after the first validation attempt
+5. **Await approval** — do not proceed to subsequent items on the itinerary until the user explicitly approves the completed work
+
 ## Drift Evaluation (Pending — tracked in issue #17)
 
 Drift detection between source code and API reference docs.

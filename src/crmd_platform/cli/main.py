@@ -5,16 +5,9 @@ from typing import Any, List, Optional
 
 import typer
 
-import uvicorn
-
-from crmd_platform.ingestion import FundingRateService, OHLCVService
-from crmd_platform.utils.last_fetch import mark as mark_last_fetch
-from crmd_platform.utils.parquet_viewer import run_inspect
+from crmd_platform.client import Client
 from crmd_platform.models.candle import Candle
 from crmd_platform.models.funding_rate import FundingRate
-from crmd_platform.providers import PROVIDERS, FakeProvider
-from crmd_platform.query import DuckDBQueryService
-from crmd_platform.server import create_app
 
 app = typer.Typer(name="crmd")
 
@@ -38,6 +31,12 @@ _TIMEFRAME_DELTAS: dict[str, timedelta] = {
 }
 
 # ── fetch ────────────────────────────────────────────────────────
+
+
+def _resolve_client(path: str, remote: str | None) -> Client:
+    if remote:
+        return Client.remote(remote)
+    return Client.local(path)
 
 
 @app.command()
@@ -100,6 +99,13 @@ def fetch(
         "Use with --since-last to keep data continuously current.",
         min=1,
     ),
+    remote: Optional[str] = typer.Option(
+        None,
+        "--remote",
+        envvar="CRMD_API_URL",
+        help="Remote API base URL (e.g. https://api.crmd.example.com). "
+        "Defaults to local DuckDB access when omitted.",
+    ),
 ) -> None:
     if market_data_type not in ("ohlcv", "funding-rate"):
         typer.echo(
@@ -123,6 +129,8 @@ def fetch(
         typer.echo("Either --start or --since-last is required.", err=True)
         raise typer.Exit(code=1)
 
+    client = _resolve_client(output, remote)
+
     if market_data_type == "funding-rate":
         if since_last or follow:
             typer.echo(
@@ -130,25 +138,22 @@ def fetch(
                 err=True,
             )
             raise typer.Exit(code=1)
-        fr_svc = FundingRateService(provider=FakeProvider())
+        if provider != "fake":
+            typer.echo(
+                "--provider is ignored for funding-rate; only fake provider is supported.",
+                err=True,
+            )
         effective_end = end or datetime.now(tz=timezone.utc).replace(tzinfo=None)
         for sym in symbol:
-            count = fr_svc.ingest(
+            result = client.fetch_funding_rates(
+                provider="fake",
                 symbol=sym,
                 start=start,  # type: ignore[arg-type]
                 end=effective_end,
-                base_path=output,
-                merge_strategy=merge_strategy,
             )
-            typer.echo(f"Wrote {count} funding rate(s) for {sym} to {output}/")
-        mark_last_fetch(output)
+            typer.echo(f"Wrote {result.count} funding rate(s) for {sym} to {output}/")
+        _mark_last_fetch(output)
         return
-
-    provider_cls = PROVIDERS.get(provider)
-    if provider_cls is None:
-        available = ", ".join(PROVIDERS)
-        typer.echo(f"Unknown provider '{provider}'. Available: {available}", err=True)
-        raise typer.Exit(code=1)
 
     while True:
         effective_end = end or datetime.now(tz=timezone.utc).replace(tzinfo=None)
@@ -163,20 +168,20 @@ def fetch(
                 )
                 raise typer.Exit(code=1)
             delta = _TIMEFRAME_DELTAS[timeframe]
-            svc_q = DuckDBQueryService()
             resolved_starts: dict[str, datetime] = {}
             for sym in symbol:
-                last = svc_q.get_candles(
-                    base_path=output,
-                    exchange=provider,  # scope to this provider's exchange only
-                    symbol=sym,
-                    timeframe=timeframe,
-                    limit=1,
-                    order="DESC",
-                )
+                try:
+                    last = client.query_candles(
+                        exchange=provider,
+                        symbol=sym,
+                        timeframe=timeframe,
+                        limit=1,
+                        order="DESC",
+                    )
+                except ConnectionError as e:
+                    typer.echo(f"Error fetching last candle: {e}", err=True)
+                    raise typer.Exit(code=1)
                 if last:
-                    # Advance one interval past the last stored candle so it is not
-                    # re-fetched on every --follow cycle.
                     resolved_starts[sym] = (
                         datetime.fromisoformat(last[0].timestamp) + delta
                     )
@@ -193,16 +198,14 @@ def fetch(
             resolved_starts = {sym: start for sym in symbol}  # type: ignore[misc]
 
         def _fetch_one(sym: str) -> tuple[str, int]:
-            svc = OHLCVService(provider=provider_cls())
-            n = svc.ingest(
+            result = client.fetch_candles(
+                provider=provider,
                 symbol=sym,
                 timeframe=timeframe,
                 start=resolved_starts[sym],
                 end=effective_end,
-                base_path=output,
-                merge_strategy=merge_strategy,
             )
-            return sym, n
+            return sym, result.count
 
         effective_workers = min(workers, len(symbol))
         errors: list[str] = []
@@ -218,13 +221,11 @@ def fetch(
                     typer.echo(f"Error fetching {sym}: {e}", err=True)
                     errors.append(sym)
 
-        mark_last_fetch(output)
+        _mark_last_fetch(output)
 
         if errors:
             if follow is None:
                 raise typer.Exit(code=1)
-            # In follow mode, log and continue — one transient provider error should
-            # not kill continuous ingestion for all other symbols.
             typer.echo(
                 f"[warn] {len(errors)} symbol(s) failed this cycle and will retry: "
                 + ", ".join(errors),
@@ -238,21 +239,41 @@ def fetch(
         time.sleep(follow)
 
 
+def _mark_last_fetch(output: str) -> None:
+    from crmd_platform.utils.last_fetch import mark
+
+    mark(output)
+
+
 # ── datasets ─────────────────────────────────────────────────────
 
 
 @app.command()
 def datasets(
     path: str = typer.Option("data", "--path", help="Base data directory"),
+    remote: Optional[str] = typer.Option(
+        None,
+        "--remote",
+        envvar="CRMD_API_URL",
+        help="Remote API base URL. Defaults to local DuckDB access when omitted.",
+    ),
 ) -> None:
     """List available datasets grouped by type."""
-    svc = DuckDBQueryService()
-    all_datasets = svc.list_datasets(path)
+    client = _resolve_client(path, remote)
+    try:
+        all_datasets = client.list_datasets()
+    except ConnectionError as e:
+        typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1)
     if not all_datasets:
         typer.echo(f"No parquet files found under {path}/")
         raise typer.Exit(code=1)
 
-    summary = svc.get_summary(path)
+    try:
+        summary = client.get_summary()
+    except ConnectionError as e:
+        typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1)
     for row in summary:
         parts = [
             f"  {row['type']:15s} {row['exchange']:10s} {row['symbol']:12s}",
@@ -278,18 +299,27 @@ def query_ohlcv(
     start: str = typer.Option(None, "--start", help="Start timestamp (inclusive)"),
     end: str = typer.Option(None, "--end", help="End timestamp (exclusive)"),
     limit: int = typer.Option(10, "--limit", "-n", help="Max rows"),
+    remote: Optional[str] = typer.Option(
+        None,
+        "--remote",
+        envvar="CRMD_API_URL",
+        help="Remote API base URL. Defaults to local DuckDB access when omitted.",
+    ),
 ) -> None:
     """Query candle data."""
-    svc = DuckDBQueryService()
-    rows = svc.get_candles(
-        base_path=path,
-        exchange=exchange,
-        symbol=symbol,
-        timeframe=timeframe,
-        start=start,
-        end=end,
-        limit=limit,
-    )
+    client = _resolve_client(path, remote)
+    try:
+        rows = client.query_candles(
+            exchange=exchange,
+            symbol=symbol,
+            timeframe=timeframe,
+            start=start,
+            end=end,
+            limit=limit,
+        )
+    except ConnectionError as e:
+        typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1)
     _print_rows(rows)
 
 
@@ -301,17 +331,26 @@ def query_funding_rate(
     start: str = typer.Option(None, "--start", help="Start timestamp (inclusive)"),
     end: str = typer.Option(None, "--end", help="End timestamp (exclusive)"),
     limit: int = typer.Option(10, "--limit", "-n", help="Max rows"),
+    remote: Optional[str] = typer.Option(
+        None,
+        "--remote",
+        envvar="CRMD_API_URL",
+        help="Remote API base URL. Defaults to local DuckDB access when omitted.",
+    ),
 ) -> None:
     """Query funding rate data."""
-    svc = DuckDBQueryService()
-    rows = svc.get_funding_rates(
-        base_path=path,
-        exchange=exchange,
-        symbol=symbol,
-        start=start,
-        end=end,
-        limit=limit,
-    )
+    client = _resolve_client(path, remote)
+    try:
+        rows = client.query_funding_rates(
+            exchange=exchange,
+            symbol=symbol,
+            start=start,
+            end=end,
+            limit=limit,
+        )
+    except ConnectionError as e:
+        typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1)
     _print_rows(rows)
 
 
@@ -320,8 +359,27 @@ def query_sql(
     sql: str = typer.Argument(..., help="SQL query"),
     path: str = typer.Option("data", "--path", help="Base data directory"),
     limit: int = typer.Option(100, "--limit", "-n", help="Max rows"),
+    remote: Optional[str] = typer.Option(
+        None,
+        "--remote",
+        envvar="CRMD_API_URL",
+        help="Remote API base URL. Defaults to local DuckDB access when omitted.",
+    ),
 ) -> None:
     """Run raw SQL via DuckDB read_parquet (SELECT/WITH only)."""
+    if not remote:
+        _validate_select_only(sql)
+
+    client = _resolve_client(path, remote)
+    try:
+        rows = client.query_sql(sql, limit=limit)
+    except ConnectionError as e:
+        typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1)
+    _print_rows(rows)
+
+
+def _validate_select_only(sql: str) -> None:
     from crmd_platform.server.routers.query import (
         _FIRST_KEYWORD,
         _ALLOWED_KEYWORDS,
@@ -337,12 +395,6 @@ def query_sql(
     if has_multiple_statements(stripped):
         typer.echo("Multiple SQL statements are not permitted.", err=True)
         raise typer.Exit(code=1)
-
-    svc = DuckDBQueryService()
-    rows = svc.raw_sql(sql, base_path=path)
-    if limit:
-        rows = rows[:limit]
-    _print_rows(rows)
 
 
 # ── serve ─────────────────────────────────────────────────────────
@@ -368,6 +420,9 @@ def serve(
     ),
 ) -> None:
     """Start the FastAPI REST server."""
+    import uvicorn
+
+    from crmd_platform.server import create_app
     from crmd_platform.server.config import ServerConfig
 
     config = ServerConfig(
@@ -401,6 +456,8 @@ def inspect(
     ),
 ) -> None:
     """Inspect a parquet file or dataset directory."""
+    from crmd_platform.utils.parquet_viewer import run_inspect
+
     try:
         output = run_inspect(
             path_str=path,
