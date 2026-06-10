@@ -4,20 +4,32 @@ version = "0.1.0"
 requires-python = ">=3.12"
 description = "CrMD Platform — crypto market data ingestion, validation, storage, and query platform. Supports local and cloud deployments."
 dependencies = [
-    "pyarrow>=24.0.0",
-    "duckdb>=1.5.3",
     "typer>=0.26.1",
-    "fastapi>=0.136.3",
-    "uvicorn[standard]>=0.48.0",
     "urllib3>=2.7.0",
 ]
 
 [project.optional-dependencies]
+local = [
+    "duckdb>=1.5.3",
+    "pyarrow>=24.0.0",
+]
+remote = [
+    "httpx>=0.28.1",
+]
+server = [
+    "fastapi>=0.136.3",
+    "uvicorn[standard]>=0.48.0",
+    "crmd-platform[local]",
+]
+cli = [
+    "crmd-platform[local]",
+]
 test = [
     "pytest>=9.0.3",
     "pytest-cov>=7.1.0",
     "httpx>=0.28.1",
     "hypothesis>=6.155.1",
+    "crmd-platform[local]",
 ]
 lint = [
     "ruff>=0.15.15",
@@ -29,6 +41,12 @@ docs = [
 ]
 azure = [
     "adlfs>=2024.7.0",
+]
+all = [
+    "crmd-platform[local]",
+    "crmd-platform[remote]",
+    "crmd-platform[server]",
+    "crmd-platform[azure]",
 ]
 
 [tool.pytest.ini_options]
