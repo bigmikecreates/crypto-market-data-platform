@@ -3,6 +3,7 @@ from datetime import datetime
 
 from crmd_platform.config import TimestampConfig
 from crmd_platform.providers.base import FundingRateProvider
+from crmd_platform.storage.backend import StorageBackend, create_backend
 from crmd_platform.storage.parquet_writer import write_funding_rates
 from crmd_platform.validation.funding_rates import (
     validate_funding_rate_batch,
@@ -27,7 +28,21 @@ class FundingRateService:
         end: datetime,
         base_path: str = "data",
         merge_strategy: str = "auto",
+        backend: StorageBackend | None = None,
     ) -> int:
+        """Ingest funding rates from provider and write to storage.
+
+        Args:
+            symbol: Trading pair symbol
+            start: Start datetime
+            end: End datetime
+            base_path: Storage path (local path or cloud URI). Ignored if backend is provided.
+            merge_strategy: Merge strategy for existing data
+            backend: Storage backend instance. If None, created from base_path.
+
+        Returns:
+            Number of funding rates ingested
+        """
         rates = self._provider.fetch_funding_rates(
             symbol=symbol,
             start=start,
@@ -46,10 +61,16 @@ class FundingRateService:
             raise ValueError(
                 f"Validation failed with {len(result.issues)} issue(s); no data written."
             )
+
+        # Create backend if not provided
+        if backend is None:
+            backend = create_backend(base_path)
+
         write_funding_rates(
             rates,
             base_path=base_path,
             ts_config=self._ts_config,
             merge_strategy=merge_strategy,
+            backend=backend,
         )
         return len(rates)

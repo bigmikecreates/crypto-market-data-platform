@@ -35,6 +35,8 @@ def create_app(config: ServerConfig | None = None) -> FastAPI:
     app.state.query_service = config.query_service
     app.state.base_path = config.base_path
     app.state.api_key = config.api_key
+    if config.storage_backend is not None:
+        app.state.storage_backend = config.storage_backend
 
     if config.api_key is None:
         _log.warning(

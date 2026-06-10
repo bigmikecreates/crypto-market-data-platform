@@ -8,7 +8,12 @@ from crmd_platform.ingestion import OHLCVService
 from crmd_platform.providers import PROVIDERS
 from crmd_platform.providers.base import OHLCVProvider
 from crmd_platform.query import QueryService
-from crmd_platform.server.dependencies import get_base_path, get_query_service
+from crmd_platform.server.dependencies import (
+    get_base_path,
+    get_query_service,
+    get_storage_backend,
+)
+from crmd_platform.storage.backend import StorageBackend
 from crmd_platform.utils.last_fetch import mark as mark_last_fetch
 
 LOG = logging.getLogger(__name__)
@@ -78,6 +83,7 @@ def handle_fetch(
     req: FetchRequest,
     base_path: str = Depends(get_base_path),
     qs: QueryService = Depends(get_query_service),
+    backend: StorageBackend = Depends(get_storage_backend),
 ) -> FetchResponse:
     if req.data_type == "funding-rates":
         raise HTTPException(
@@ -142,6 +148,7 @@ def handle_fetch(
             end=end_dt,
             base_path=base_path,
             merge_strategy="auto",
+            backend=backend,
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
