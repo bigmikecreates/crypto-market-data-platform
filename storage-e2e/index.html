@@ -412,6 +412,26 @@
     
     
       <li class="md-tabs__item">
+        <a href="../deploy/self-hosted/" class="md-tabs__link">
+          
+  
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
         <a href="../benchmarks/provider-selection/" class="md-tabs__link">
           
   
@@ -1087,7 +1107,7 @@
   <span class="md-ellipsis">
     
   
-    Deep Dives
+    Deployment
   
 
     
@@ -1100,6 +1120,93 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deploy/self-hosted/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-hosted
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Dives
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1409,7 +1516,7 @@
     end
 
     subgraph "Stage 2 — Validation"
-        S2["validate_candle_batch()&lt;br/&gt;runs 5 provider-independent rules"]
+        S2["validate_candle_batch()&lt;br/&gt;runs 7 provider-independent rules"]
         Fail["ValueError raised&lt;br/&gt;write blocked"]
     end
 
@@ -1449,7 +1556,7 @@
 <p>→ See <code>OHLCVProvider</code> in the <a href="/crypto-market-data-platform/reference/#/python-api">Python API Reference</a> for the method signature.</p>
 <hr />
 <h2 id="stage-2-validation">Stage 2 — Validation<a class="headerlink" href="#stage-2-validation" title="Permanent link">&para;</a></h2>
-<p><code>validate_candle_batch()</code> evaluates five provider-independent rules across the full batch and returns a <code>ValidationResult</code>. If <code>passed</code> is <code>False</code>, the service layer raises <code>ValueError</code> and the writer is not called.</p>
+<p><code>validate_candle_batch()</code> evaluates seven provider-independent rules across the full batch and returns a <code>ValidationResult</code>. If <code>passed</code> is <code>False</code>, the service layer raises <code>ValueError</code> and the writer is not called.</p>
 <p>The write is blocked entirely on validation failure. No partial writes occur — the Parquet file is either untouched (if the partition already existed) or not created.</p>
 <p>→ See <a href="../validation-strategy/">Validation Strategy</a> for the full rule set, blocking behaviour, and design rationale.</p>
 <hr />
