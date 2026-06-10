@@ -16,7 +16,7 @@ graph TD
     end
 
     subgraph "Stage 2 — Validation"
-        S2["validate_candle_batch()<br/>runs 5 provider-independent rules"]
+        S2["validate_candle_batch()<br/>runs 7 provider-independent rules"]
         Fail["ValueError raised<br/>write blocked"]
     end
 
@@ -65,7 +65,7 @@ No type coercion occurs at the provider boundary. This keeps provider adapters s
 
 ## Stage 2 — Validation
 
-`validate_candle_batch()` evaluates five provider-independent rules across the full batch and returns a `ValidationResult`. If `passed` is `False`, the service layer raises `ValueError` and the writer is not called.
+`validate_candle_batch()` evaluates seven provider-independent rules across the full batch and returns a `ValidationResult`. If `passed` is `False`, the service layer raises `ValueError` and the writer is not called.
 
 The write is blocked entirely on validation failure. No partial writes occur — the Parquet file is either untouched (if the partition already existed) or not created.
 

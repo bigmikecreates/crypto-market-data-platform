@@ -33,10 +33,20 @@ _TIMEFRAME_DELTAS: dict[str, timedelta] = {
 # ── fetch ────────────────────────────────────────────────────────
 
 
-def _resolve_client(path: str, remote: str | None) -> Client:
+def _resolve_client(
+    path: str, remote: str | None, api_key: str | None = None
+) -> Client:
     if remote:
-        return Client.remote(remote)
+        return Client.remote(remote, api_key=api_key)
     return Client.local(path)
+
+
+_API_KEY_OPTION = typer.Option(
+    None,
+    "--api-key",
+    envvar="CRMD_API_KEY",
+    help="API key for remote server. Required when the server uses --api-key.",
+)
 
 
 @app.command()
@@ -106,6 +116,7 @@ def fetch(
         help="Remote API base URL (e.g. https://api.crmd.example.com). "
         "Defaults to local DuckDB access when omitted.",
     ),
+    api_key: Optional[str] = _API_KEY_OPTION,
 ) -> None:
     if market_data_type not in ("ohlcv", "funding-rate"):
         typer.echo(
@@ -129,7 +140,7 @@ def fetch(
         typer.echo("Either --start or --since-last is required.", err=True)
         raise typer.Exit(code=1)
 
-    client = _resolve_client(output, remote)
+    client = _resolve_client(output, remote, api_key=api_key)
 
     if market_data_type == "funding-rate":
         if since_last or follow:
@@ -257,9 +268,10 @@ def datasets(
         envvar="CRMD_API_URL",
         help="Remote API base URL. Defaults to local DuckDB access when omitted.",
     ),
+    api_key: Optional[str] = _API_KEY_OPTION,
 ) -> None:
     """List available datasets grouped by type."""
-    client = _resolve_client(path, remote)
+    client = _resolve_client(path, remote, api_key=api_key)
     try:
         all_datasets = client.list_datasets()
     except ConnectionError as e:
@@ -305,9 +317,10 @@ def query_ohlcv(
         envvar="CRMD_API_URL",
         help="Remote API base URL. Defaults to local DuckDB access when omitted.",
     ),
+    api_key: Optional[str] = _API_KEY_OPTION,
 ) -> None:
     """Query candle data."""
-    client = _resolve_client(path, remote)
+    client = _resolve_client(path, remote, api_key=api_key)
     try:
         rows = client.query_candles(
             exchange=exchange,
@@ -337,9 +350,10 @@ def query_funding_rate(
         envvar="CRMD_API_URL",
         help="Remote API base URL. Defaults to local DuckDB access when omitted.",
     ),
+    api_key: Optional[str] = _API_KEY_OPTION,
 ) -> None:
     """Query funding rate data."""
-    client = _resolve_client(path, remote)
+    client = _resolve_client(path, remote, api_key=api_key)
     try:
         rows = client.query_funding_rates(
             exchange=exchange,
@@ -365,12 +379,13 @@ def query_sql(
         envvar="CRMD_API_URL",
         help="Remote API base URL. Defaults to local DuckDB access when omitted.",
     ),
+    api_key: Optional[str] = _API_KEY_OPTION,
 ) -> None:
     """Run raw SQL via DuckDB read_parquet (SELECT/WITH only)."""
     if not remote:
         _validate_select_only(sql)
 
-    client = _resolve_client(path, remote)
+    client = _resolve_client(path, remote, api_key=api_key)
     try:
         rows = client.query_sql(sql, limit=limit)
     except ConnectionError as e:

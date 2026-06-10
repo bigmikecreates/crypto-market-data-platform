@@ -58,7 +58,7 @@ Every layer depends on an ABC, not a concrete implementation:
 
 | Boundary | ABC | Implementation |
 |----------|-----|----------------|
-| Provider | `OHLCVProvider` | `FakeProvider`, `BitfinexProvider`, `KuCoinProvider` |
+| Provider | `OHLCVProvider` | `FakeProvider`, `BitfinexProvider`, `KuCoinProvider`, … |
 | Query | `QueryService` | `DuckDBQueryService` |
 | Server | `QueryService` (injected) | FastAPI wraps the ABC |
 
