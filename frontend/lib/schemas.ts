@@ -28,6 +28,30 @@ export const SummaryItemSchema = z.object({
 
 export const SummaryArraySchema = z.array(SummaryItemSchema);
 
+export const FundingRateSchema = z.object({
+  exchange: z.string().min(1),
+  symbol: z.string().min(1),
+  timestamp: z.string().min(1),
+  rate: z.string(),
+  predicted_rate: z.string(),
+  next_funding_time: z.string().min(1),
+  source: z.string().min(1),
+});
+
+export const FundingRateArraySchema = z.array(FundingRateSchema);
+
 export const HealthResponseSchema = z.object({
   status: z.string(),
+});
+
+export const LastFetchSchema = z.object({
+  timestamp: z.string().nullable(),
+});
+
+export const FetchResponseSchema = z.object({
+  count: z.number(),
+  data_type: z.string(),
+  provider: z.string(),
+  symbol: z.string(),
+  timeframe: z.string().nullable(),
 });

@@ -5,6 +5,15 @@ from crmd_platform.providers.fake import FakeProvider
 from crmd_platform.providers.kucoin import KuCoinProvider
 from crmd_platform.providers.mexc import MexcProvider
 
+PROVIDERS: dict[str, type] = {
+    "fake": FakeProvider,
+    "bitfinex": BitfinexProvider,
+    "bitstamp": BitstampProvider,
+    "kucoin": KuCoinProvider,
+    "bybit": BybitProvider,
+    "mexc": MexcProvider,
+}
+
 __all__ = [
     "BitfinexProvider",
     "BitstampProvider",
@@ -12,4 +21,5 @@ __all__ = [
     "FakeProvider",
     "KuCoinProvider",
     "MexcProvider",
+    "PROVIDERS",
 ]

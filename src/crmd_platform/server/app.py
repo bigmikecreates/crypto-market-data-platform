@@ -11,9 +11,11 @@ from crmd_platform.server.routers import (
     health,
     datasets,
     candles,
+    fetch,
     funding,
     query,
     summary,
+    last_fetch,
 )
 
 _log = logging.getLogger(__name__)
@@ -64,10 +66,12 @@ def create_app(config: ServerConfig | None = None) -> FastAPI:
             content={"error": "An internal server error occurred.", "code": 500},
         )
 
-    # /health is exempt — load-balancers probe it without credentials.
+    # /health and /last-fetch are exempt — load-balancers probe them without credentials.
     app.include_router(health.router)
+    app.include_router(last_fetch.router)
     app.include_router(datasets.router, dependencies=_auth)
     app.include_router(candles.router, dependencies=_auth)
+    app.include_router(fetch.router, dependencies=_auth)
     app.include_router(funding.router, dependencies=_auth)
     app.include_router(query.router, dependencies=_auth)
     app.include_router(summary.router, dependencies=_auth)

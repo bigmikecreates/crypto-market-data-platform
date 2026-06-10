@@ -1,10 +1,13 @@
 import {
   CandleArraySchema,
   DatasetMapSchema,
+  FetchResponseSchema,
+  FundingRateArraySchema,
   HealthResponseSchema,
+  LastFetchSchema,
   SummaryArraySchema,
 } from "./schemas";
-import type { ApiError, CandlesQuery, Candle, DatasetMap, HealthResponse, SummaryItem } from "./types";
+import type { ApiError, CandlesQuery, Candle, DatasetMap, FetchRequest, FetchResponse, FundingRate, FundingRatesQuery, HealthResponse, LastFetch, SummaryItem } from "./types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8050";
 
@@ -46,6 +49,7 @@ export async function fetchDatasets(): Promise<DatasetMap> {
 }
 
 export async function fetchCandles(query: CandlesQuery): Promise<Candle[]> {
+  if (query.limit === 0) return [];
   const params = new URLSearchParams();
   if (query.exchange) params.set("exchange", query.exchange);
   if (query.symbol) params.set("symbol", query.symbol);
@@ -61,6 +65,31 @@ export async function fetchCandles(query: CandlesQuery): Promise<Candle[]> {
 
 export async function fetchSummary(): Promise<SummaryItem[]> {
   return request("/summary", SummaryArraySchema);
+}
+
+export async function fetchData(req: FetchRequest): Promise<FetchResponse> {
+  return request("/fetch", FetchResponseSchema, {
+    method: "POST",
+    body: JSON.stringify(req),
+  });
+}
+
+export async function fetchLastFetch(): Promise<LastFetch> {
+  return request("/last-fetch", LastFetchSchema);
+}
+
+export async function fetchFundingRates(query: FundingRatesQuery): Promise<FundingRate[]> {
+  if (query.limit === 0) return [];
+  const params = new URLSearchParams();
+  if (query.exchange) params.set("exchange", query.exchange);
+  if (query.symbol) params.set("symbol", query.symbol);
+  if (query.start) params.set("start", query.start);
+  if (query.end) params.set("end", query.end);
+  if (query.limit !== undefined) params.set("limit", String(query.limit));
+  if (query.order) params.set("order", query.order);
+
+  const qs = params.toString();
+  return request(`/funding-rates${qs ? `?${qs}` : ""}`, FundingRateArraySchema);
 }
 
 export { ApiRequestError };

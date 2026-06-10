@@ -8,15 +8,11 @@ import typer
 import uvicorn
 
 from crmd_platform.ingestion import FundingRateService, OHLCVService
+from crmd_platform.utils.last_fetch import mark as mark_last_fetch
 from crmd_platform.utils.parquet_viewer import run_inspect
 from crmd_platform.models.candle import Candle
 from crmd_platform.models.funding_rate import FundingRate
-from crmd_platform.providers.bitfinex import BitfinexProvider
-from crmd_platform.providers.bitstamp import BitstampProvider
-from crmd_platform.providers.bybit import BybitProvider
-from crmd_platform.providers.fake import FakeProvider
-from crmd_platform.providers.kucoin import KuCoinProvider
-from crmd_platform.providers.mexc import MexcProvider
+from crmd_platform.providers import PROVIDERS, FakeProvider
 from crmd_platform.query import DuckDBQueryService
 from crmd_platform.server import create_app
 
@@ -39,15 +35,6 @@ _TIMEFRAME_DELTAS: dict[str, timedelta] = {
     "1d": timedelta(days=1),
     "3d": timedelta(days=3),
     "1w": timedelta(weeks=1),
-}
-
-PROVIDERS: dict[str, type] = {
-    "fake": FakeProvider,
-    "bitfinex": BitfinexProvider,
-    "bitstamp": BitstampProvider,
-    "kucoin": KuCoinProvider,
-    "bybit": BybitProvider,
-    "mexc": MexcProvider,
 }
 
 # ── fetch ────────────────────────────────────────────────────────
@@ -154,6 +141,7 @@ def fetch(
                 merge_strategy=merge_strategy,
             )
             typer.echo(f"Wrote {count} funding rate(s) for {sym} to {output}/")
+        mark_last_fetch(output)
         return
 
     provider_cls = PROVIDERS.get(provider)
@@ -229,6 +217,8 @@ def fetch(
                 except Exception as e:
                     typer.echo(f"Error fetching {sym}: {e}", err=True)
                     errors.append(sym)
+
+        mark_last_fetch(output)
 
         if errors:
             if follow is None:
