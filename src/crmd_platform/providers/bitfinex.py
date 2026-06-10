@@ -10,6 +10,7 @@ from crmd_platform.providers.http import fetch_json
 def _normalize(val: Any) -> str:
     return str(Decimal(str(val)))
 
+
 _BASE_URL = "https://api-pub.bitfinex.com/v2"
 
 _TIMEFRAME_MAP: dict[str, str] = {

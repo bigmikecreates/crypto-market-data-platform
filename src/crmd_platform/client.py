@@ -29,12 +29,10 @@ class Client(ABC):
         return _RemoteClient(base_url, api_key)
 
     @abstractmethod
-    def list_datasets(self) -> dict[str, list[str]]:
-        ...
+    def list_datasets(self) -> dict[str, list[str]]: ...
 
     @abstractmethod
-    def get_summary(self) -> list[dict[str, Any]]:
-        ...
+    def get_summary(self) -> list[dict[str, Any]]: ...
 
     @abstractmethod
     def query_candles(
@@ -46,8 +44,7 @@ class Client(ABC):
         end: str | None = None,
         limit: int = 100,
         order: str = "DESC",
-    ) -> list[Candle]:
-        ...
+    ) -> list[Candle]: ...
 
     @abstractmethod
     def query_funding_rates(
@@ -58,12 +55,10 @@ class Client(ABC):
         end: str | None = None,
         limit: int = 100,
         order: str = "DESC",
-    ) -> list[FundingRate]:
-        ...
+    ) -> list[FundingRate]: ...
 
     @abstractmethod
-    def query_sql(self, sql: str, limit: int = 100) -> list[dict[str, Any]]:
-        ...
+    def query_sql(self, sql: str, limit: int = 100) -> list[dict[str, Any]]: ...
 
     @abstractmethod
     def fetch_candles(
@@ -73,8 +68,7 @@ class Client(ABC):
         timeframe: str,
         start: datetime | str,
         end: datetime | str | None = None,
-    ) -> FetchResult:
-        ...
+    ) -> FetchResult: ...
 
     @abstractmethod
     def fetch_funding_rates(
@@ -83,8 +77,7 @@ class Client(ABC):
         symbol: str,
         start: datetime | str,
         end: datetime | str | None = None,
-    ) -> FetchResult:
-        ...
+    ) -> FetchResult: ...
 
 
 class _LocalClient(Client):
@@ -179,9 +172,7 @@ class _LocalClient(Client):
         provider_cls = PROVIDERS.get(provider)
         if provider_cls is None:
             available = ", ".join(PROVIDERS)
-            raise ValueError(
-                f"Unknown provider '{provider}'. Available: {available}."
-            )
+            raise ValueError(f"Unknown provider '{provider}'. Available: {available}.")
 
         if not issubclass(provider_cls, OHLCVProvider):
             raise ValueError(
@@ -231,9 +222,7 @@ class _LocalClient(Client):
         provider_cls = PROVIDERS.get(provider)
         if provider_cls is None:
             available = ", ".join(PROVIDERS)
-            raise ValueError(
-                f"Unknown provider '{provider}'. Available: {available}."
-            )
+            raise ValueError(f"Unknown provider '{provider}'. Available: {available}.")
 
         if not issubclass(provider_cls, FundingRateProvider):
             raise ValueError(
@@ -299,9 +288,7 @@ class _RemoteClient(Client):
             detail = resp.json().get("detail", "Bad request")
             raise ValueError(detail)
         if resp.status_code == 401:
-            raise PermissionError(
-                "Authentication failed. Check your API key."
-            )
+            raise PermissionError("Authentication failed. Check your API key.")
         resp.raise_for_status()
         return resp.json()
 
