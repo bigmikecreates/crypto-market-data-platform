@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from crmd_platform.ingestion import FundingRateService, OHLCVService
+from crmd_platform.ingestion import OHLCVService
 from crmd_platform.providers import PROVIDERS
 from crmd_platform.providers.base import OHLCVProvider
 from crmd_platform.query import QueryService
