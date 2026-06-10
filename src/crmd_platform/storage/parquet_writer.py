@@ -5,7 +5,6 @@ from typing import Sequence
 
 import duckdb
 import pyarrow as pa
-import pyarrow.parquet as pq
 
 from crmd_platform.config import TimestampConfig
 from crmd_platform.models.candle import Candle

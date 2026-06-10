@@ -9,7 +9,7 @@ import random
 import time
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Callable
+from typing import Callable
 
 import pyarrow as pa
 import pyarrow.parquet as pq

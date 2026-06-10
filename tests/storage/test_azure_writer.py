@@ -9,11 +9,9 @@ The azure_lease_write function was removed and its logic moved into AzureBlobBac
 See https://github.com/bigmikecreates/crypto-market-data-platform/issues/34
 """
 
-import io
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 import pyarrow as pa
-import pyarrow.parquet as pq
 import pytest
 
 adlfs = pytest.importorskip("adlfs", reason="adlfs not installed")
@@ -22,11 +20,6 @@ from azure.core.exceptions import HttpResponseError  # noqa: E402
 from crmd_platform.models.candle import Candle  # noqa: E402
 from crmd_platform.models.funding_rate import FundingRate  # noqa: E402
 from crmd_platform.storage.backend import AzureBlobBackend  # noqa: E402
-from crmd_platform.storage.parquet_writer import (  # noqa: E402
-    merge_tables,
-    write_candles,
-    write_funding_rates,
-)
 
 
 # ── Fixtures ─────────────────────────────────────────────────────────────────
