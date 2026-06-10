@@ -18,6 +18,7 @@ interface.
 | `KuCoinProvider` | Stable | Seconds timestamps, server-enforced batch limit (1,500). |
 | `BybitProvider` | Stable | Category-based dispatch (spot). Descending sort order. |
 | `MexcProvider` | Stable | Standard field order, 500-candle limit. |
+| `GateioProvider` | Stable | Non-standard field order (volume, close, high, low, open). 8-field response rows. |
 
 ## Adding a New Provider
 

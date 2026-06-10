@@ -90,7 +90,7 @@ For a complete walkthrough — multiple providers, concurrent symbol ingestion, 
 
 ## Current status
 
-Core ingestion and query paths are stable. Providers: Bitfinex, KuCoin, Bybit, MEXC, Bitstamp, FakeProvider. The benchmark framework is feature-complete.
+Core ingestion and query paths are stable. Providers: Bitfinex, KuCoin, Bybit, MEXC, Bitstamp, Gate.io, FakeProvider. The benchmark framework is feature-complete.
 
 ## Navigation
 

@@ -62,6 +62,8 @@ nav:
   - Lessons Learned:
     - Bitfinex Integration: lessons-from-bitfinex-integration.md
     - KuCoin Integration: lessons-from-kucoin-integration.md
+  - Deployment:
+    - Self-hosted: deploy/self-hosted.md
   - Deep Dives:
     - Provider Selection: benchmarks/provider-selection.md
     - Design Rationale: benchmarks/design-rationale.md

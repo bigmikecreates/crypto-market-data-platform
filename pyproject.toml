@@ -4,7 +4,6 @@ version = "0.1.0"
 requires-python = ">=3.12"
 description = "CrMD Platform — crypto market data ingestion, validation, storage, and query platform. Supports local and cloud deployments."
 dependencies = [
-    "typer>=0.26.1",
     "urllib3>=2.7.0",
 ]
 
@@ -23,6 +22,7 @@ server = [
 ]
 cli = [
     "crmd-platform[local]",
+    "typer>=0.26.1",
 ]
 test = [
     "pytest>=9.0.3",
@@ -31,6 +31,7 @@ test = [
     "hypothesis>=6.155.1",
     "fastapi>=0.136.3",
     "uvicorn[standard]>=0.48.0",
+    "typer>=0.26.1",
     "crmd-platform[local]",
 ]
 lint = [
@@ -48,6 +49,7 @@ all = [
     "crmd-platform[local]",
     "crmd-platform[remote]",
     "crmd-platform[server]",
+    "crmd-platform[cli]",
     "crmd-platform[azure]",
 ]
 

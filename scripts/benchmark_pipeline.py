@@ -34,8 +34,8 @@ from crmd_platform.providers.bitfinex import BitfinexProvider
 from crmd_platform.providers.fake import FakeProvider
 from crmd_platform.providers.kucoin import KuCoinProvider
 from crmd_platform.storage.parquet_writer import (
-    _to_decimal128,
-    _to_timestamp,
+    to_decimal128,
+    to_timestamp,
 )
 
 app = typer.Typer()
@@ -443,8 +443,8 @@ def run(
         )
         for _ in range(10)
     ]
-    _to_decimal128([c.open for c in wc], "open", "warmup")
-    _to_timestamp([c.timestamp for c in wc], ts_config)
+    to_decimal128([c.open for c in wc], "open", "warmup")
+    to_timestamp([c.timestamp for c in wc], ts_config)
 
     # ── run benchmark (N iterations) ──────────────────────────
     results: list[Any] = []
@@ -801,8 +801,8 @@ def profile(
         )
         for _ in range(10)
     ]
-    _to_decimal128([c.open for c in wc], "open", "warmup")
-    _to_timestamp([c.timestamp for c in wc], ts_config)
+    to_decimal128([c.open for c in wc], "open", "warmup")
+    to_timestamp([c.timestamp for c in wc], ts_config)
 
     tracemalloc.start()
 
