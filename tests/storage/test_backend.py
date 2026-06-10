@@ -1,6 +1,7 @@
 """Tests for StorageBackend abstraction."""
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -22,9 +23,10 @@ class TestCreateBackend:
         assert isinstance(backend, LocalStorageBackend)
 
     def test_azure_uri_raises_import_error_when_adlfs_missing(self):
-        # When adlfs is not installed, AzureBlobBackend raises ImportError
-        with pytest.raises(ImportError, match="adlfs"):
-            create_backend("az://container/path")
+        # Mock adlfs import to raise ImportError
+        with patch.dict('sys.modules', {'adlfs': None}):
+            with pytest.raises(ImportError, match="adlfs"):
+                create_backend("az://container/path")
 
     def test_s3_uri_raises_not_implemented(self):
         with pytest.raises(NotImplementedError, match="S3 backend"):

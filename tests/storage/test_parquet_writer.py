@@ -2,7 +2,6 @@ import pyarrow.parquet as pq
 
 from crmd_platform.config import TimestampConfig
 from crmd_platform.storage.parquet_writer import (
-    path_for_candle,
     write_candles,
 )
 from tests.conftest import make_candle as _make_candle
@@ -96,21 +95,6 @@ class TestWriteCandlesPartitioning:
 
         opens = sorted(day1.column("open").to_pylist())
         assert opens == [100.00, 101.00, 102.00]
-
-
-class TestPathForCandle:
-    def test_path_contains_date_and_trading_pair(self, tmp_path) -> None:
-        candle = _make_candle("2024-01-15T12:30:00")
-        path = path_for_candle(candle, str(tmp_path))
-        assert path.name == "2024-01-15.parquet"
-        assert "fake" in str(path)
-        assert "BTC-USD" in str(path)
-        assert "1h" in str(path)
-
-    def test_timestamp_truncation_to_date(self, tmp_path) -> None:
-        candle = _make_candle("2024-12-31T23:59:59")
-        path = path_for_candle(candle, str(tmp_path))
-        assert path.name == "2024-12-31.parquet"
 
 
 class TestWriteCandlesEdgeCases:

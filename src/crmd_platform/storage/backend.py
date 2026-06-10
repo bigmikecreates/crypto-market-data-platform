@@ -81,6 +81,15 @@ class StorageBackend(ABC):
         """Ensure the directory for a file path exists."""
         pass
 
+    @abstractmethod
+    def wrap_path(self, path: str) -> Path | str:
+        """Wrap a path string in the appropriate type for this backend.
+        
+        LocalStorageBackend returns Path objects.
+        Cloud backends return strings (since paths may be URIs).
+        """
+        pass
+
 
 class LocalStorageBackend(StorageBackend):
     """Local filesystem storage backend."""
@@ -141,6 +150,10 @@ class LocalStorageBackend(StorageBackend):
     def ensure_dir(self, path: str) -> None:
         Path(path).parent.mkdir(parents=True, exist_ok=True)
 
+    def wrap_path(self, path: str) -> Path:
+        """Wrap a path string in a Path object for local storage."""
+        return Path(path)
+
 
 class AzureBlobBackend(StorageBackend):
     """Azure Blob Storage backend using adlfs."""
@@ -154,6 +167,7 @@ class AzureBlobBackend(StorageBackend):
         """
         try:
             import adlfs
+            from azure.storage.blob import BlobServiceClient
         except ImportError:
             raise ImportError(
                 "Azure Blob Storage requires adlfs. "
@@ -170,17 +184,16 @@ class AzureBlobBackend(StorageBackend):
             )
 
         self._fs = adlfs.AzureBlobFileSystem(connection_string=self._connection_string)
+        # Cache the service client to avoid recreating it on every blob operation
+        self._service_client = BlobServiceClient.from_connection_string(self._connection_string)
 
     def _get_blob_client(self, blob_path: str):
         """Get Azure Blob client for a path."""
-        from azure.storage.blob import BlobServiceClient
-
-        service_client = BlobServiceClient.from_connection_string(self._connection_string)
         # blob_path format: "container/path/to/file.parquet"
         parts = blob_path.split("/", 1)
         container = parts[0]
         blob = parts[1] if len(parts) > 1 else ""
-        return service_client.get_blob_client(container=container, blob=blob)
+        return self._service_client.get_blob_client(container=container, blob=blob)
 
     def exists(self, path: str) -> bool:
         return self._fs.exists(path)
@@ -272,6 +285,10 @@ class AzureBlobBackend(StorageBackend):
     def ensure_dir(self, path: str) -> None:
         """No-op for Azure Blob Storage (directories don't exist)."""
         pass
+
+    def wrap_path(self, path: str) -> str:
+        """Return path as string for cloud storage (paths may be URIs)."""
+        return path
 
 
 def create_backend(base_path: str) -> StorageBackend:

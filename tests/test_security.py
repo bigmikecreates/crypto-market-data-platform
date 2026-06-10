@@ -14,7 +14,7 @@ from crmd_platform.server.routers.query import (
     has_multiple_statements,
     validate_select_only,
 )
-from crmd_platform.storage.parquet_writer import azure_blob_client, merge_tables
+from crmd_platform.storage.parquet_writer import merge_tables
 import pyarrow as pa
 from fastapi import HTTPException
 
@@ -332,25 +332,3 @@ class TestM2MergeStrategyValidation:
         t = self._table()
         with pytest.raises(ValueError, match="merge_strategy must be one of"):
             merge_tables(t, t, ["k"], strategy="duck")
-
-
-# ── M4: azure_blob_client guard ─────────────────────────────────────────────
-
-
-class TestM4AzureBlobClientGuard:
-    """azure_blob_client must give a clear error when service_client is absent."""
-
-    def test_missing_service_client_raises_runtime_error(self):
-        from unittest.mock import MagicMock
-
-        fs = MagicMock(spec=[])  # spec=[] means NO attributes exist
-        with pytest.raises(RuntimeError, match="service_client"):
-            azure_blob_client(fs, "container/path.parquet")
-
-    def test_none_service_client_raises_runtime_error(self):
-        from unittest.mock import MagicMock
-
-        fs = MagicMock()
-        fs.service_client = None
-        with pytest.raises(RuntimeError, match="service_client"):
-            azure_blob_client(fs, "container/path.parquet")

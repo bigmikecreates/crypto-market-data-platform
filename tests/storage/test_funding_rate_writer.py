@@ -10,7 +10,6 @@ from crmd_platform.config import TimestampConfig
 from crmd_platform.models.funding_rate import FundingRate
 from crmd_platform.storage.parquet_writer import (
     funding_rate_to_table,
-    path_for_funding_rate,
     write_funding_rates,
 )
 
@@ -73,23 +72,6 @@ class TestFundingRateToTable:
             "next_funding_time",
             "source",
         ]
-
-
-# -- path_for_funding_rate ------------------------------------
-
-
-class TestPathForFundingRate:
-    def test_path_contains_date_and_symbol(self):
-        r = _fr()
-        path = path_for_funding_rate(r, "/tmp/data")
-        expected = "/tmp/data/test_exchange/PI_XBTUSD/funding_rate/2024-01-01.parquet"
-        assert str(path) == expected
-
-    def test_timestamp_truncation_to_date(self):
-        r = _fr(timestamp="2024-06-15T23:59:59")
-        path = path_for_funding_rate(r, "/tmp/data")
-        assert path.name == "2024-06-15.parquet"
-        assert "funding_rate" in str(path)
 
 
 # -- write_funding_rates ---------------------------------------
