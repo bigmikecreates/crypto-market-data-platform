@@ -13,6 +13,7 @@ import pyarrow.parquet as pq
 from crmd_platform.config import TimestampConfig
 from crmd_platform.models.candle import Candle
 from crmd_platform.models.funding_rate import FundingRate
+from crmd_platform.storage.backend import StorageBackend, create_backend
 from crmd_platform.validation.patterns import SIGNED_DECIMAL_PATTERN
 
 LOG = logging.getLogger(__name__)
@@ -22,11 +23,63 @@ ROW_MERGE_THRESHOLD = 50_000
 CANDLE_KEY_COLS = ["exchange", "symbol", "timeframe", "source", "timestamp"]
 FUNDING_RATE_KEY_COLS = ["exchange", "symbol", "source", "timestamp"]
 
+# Azure-specific constants and helpers (kept for backward compatibility)
 AZURE_SCHEMES = ("az://", "abfs://")
 
 
 def is_azure(base_path: str) -> bool:
+    """Check if base_path is an Azure Blob Storage URI."""
     return base_path.startswith(AZURE_SCHEMES)
+
+
+def strip_azure_scheme(uri: str) -> str:
+    """Remove az:// or abfs:// prefix from URI."""
+    for scheme in AZURE_SCHEMES:
+        if uri.startswith(scheme):
+            return uri[len(scheme) :]
+    return uri
+
+
+def uri_for_candle(c: Candle, base: str) -> str:
+    """Build URI for candle data (kept for backward compatibility)."""
+    date_str = c.timestamp[:10]
+    return "/".join(
+        [base.rstrip("/"), c.exchange, c.symbol, c.timeframe, f"{date_str}.parquet"]
+    )
+
+
+def uri_for_funding_rate(r: FundingRate, base: str) -> str:
+    """Build URI for funding rate data (kept for backward compatibility)."""
+    date_str = r.timestamp[:10]
+    return "/".join(
+        [base.rstrip("/"), r.exchange, r.symbol, "funding_rate", f"{date_str}.parquet"]
+    )
+
+
+def serialize_table(table: pa.Table) -> bytes:
+    """Serialize PyArrow table to Parquet bytes."""
+    sink = pa.BufferOutputStream()
+    pq.write_table(table, sink)
+    return sink.getvalue().to_pybytes()
+
+
+def backoff(attempt: int) -> None:
+    """Exponential backoff with jitter."""
+    time.sleep(min(0.5 * (2**attempt), 8.0) + random.uniform(0, 0.5))
+
+
+def path_for_candle(c: Candle, base_path: Path | str) -> Path:
+    """Build local path for candle data (kept for backward compatibility)."""
+    date_str = c.timestamp[:10]
+    return Path(base_path) / c.exchange / c.symbol / c.timeframe / f"{date_str}.parquet"
+
+
+def path_for_funding_rate(r: FundingRate, base_path: Path | str) -> Path:
+    """Build local path for funding rate data (kept for backward compatibility)."""
+    date_str = r.timestamp[:10]
+    return (
+        Path(base_path) / r.exchange / r.symbol / "funding_rate" / f"{date_str}.parquet"
+    )
 
 
 def azure_filesystem() -> Any:
@@ -50,34 +103,8 @@ def azure_filesystem() -> Any:
     return adlfs.AzureBlobFileSystem(account_name=account, account_key=key)
 
 
-def strip_azure_scheme(uri: str) -> str:
-    """Remove az:// or abfs:// prefix, yielding the container/blob path adlfs expects."""
-    for scheme in AZURE_SCHEMES:
-        if uri.startswith(scheme):
-            return uri[len(scheme) :]
-    return uri
-
-
-def uri_for_candle(c: Candle, base: str) -> str:
-    """Build a full cloud URI as a plain string.
-
-    Never uses pathlib.Path — POSIX normalisation silently collapses az:// to az:/.
-    """
-    date_str = c.timestamp[:10]
-    return "/".join(
-        [base.rstrip("/"), c.exchange, c.symbol, c.timeframe, f"{date_str}.parquet"]
-    )
-
-
-def uri_for_funding_rate(r: FundingRate, base: str) -> str:
-    date_str = r.timestamp[:10]
-    return "/".join(
-        [base.rstrip("/"), r.exchange, r.symbol, "funding_rate", f"{date_str}.parquet"]
-    )
-
-
 def azure_blob_client(fs: Any, blob_path: str) -> Any:
-    """Return a BlobClient for ``blob_path`` (container/rest) from an adlfs filesystem."""
+    """Return a BlobClient for blob_path from an adlfs filesystem."""
     service_client = getattr(fs, "service_client", None)
     if service_client is None:
         raise RuntimeError(
@@ -86,86 +113,6 @@ def azure_blob_client(fs: Any, blob_path: str) -> Any:
         )
     container, _, blob = blob_path.partition("/")
     return service_client.get_blob_client(container=container, blob=blob)
-
-
-def serialize_table(table: pa.Table) -> bytes:
-    """Serialize a PyArrow table to Parquet bytes using the same defaults as pq.write_table."""
-    sink = pa.BufferOutputStream()
-    pq.write_table(table, sink)
-    return sink.getvalue().to_pybytes()
-
-
-def backoff(attempt: int) -> None:
-    time.sleep(min(0.5 * (2**attempt), 8.0) + random.uniform(0, 0.5))
-
-
-def azure_lease_write(
-    table: pa.Table,
-    blob_path: str,
-    fs: Any,
-    key_cols: list[str],
-    merge_strategy: str,
-    max_attempts: int = 6,
-) -> None:
-    """Write a Parquet table to Azure Blob Storage with lease-based concurrency control.
-
-    New blobs are written with ``overwrite=False`` (conditional PUT) so that a
-    racing creator causes a 409 that this function retries through the lease path.
-    Existing blobs are protected by a 30-second Azure Blob lease: only the lease
-    holder can upload, so concurrent workers queue rather than overwrite each other.
-    """
-    from azure.core.exceptions import HttpResponseError
-
-    blob_client = azure_blob_client(fs, blob_path)
-
-    for attempt in range(max_attempts):
-        if not fs.exists(blob_path):
-            # No blob yet — write conditionally so a racing creator triggers 409.
-            try:
-                blob_client.upload_blob(serialize_table(table), overwrite=False)
-                return
-            except HttpResponseError as e:
-                if e.status_code != 409:
-                    raise
-                # Another worker created the blob between our exists() check and write;
-                # fall through to the lease path on the next iteration.
-        else:
-            # Blob exists — acquire an exclusive lease before read-merge-write.
-            try:
-                lease = blob_client.acquire_lease(lease_duration=30)
-            except HttpResponseError as e:
-                if e.status_code != 409:
-                    raise
-                # Another worker holds the lease; back off and retry.
-                backoff(attempt)
-                continue
-
-            try:
-                existing = pq.read_table(blob_path, filesystem=fs)
-                if existing.schema != table.schema:
-                    existing = existing.cast(table.schema)
-                merged = merge_tables(
-                    existing, table, key_cols, strategy=merge_strategy
-                )
-                blob_client.upload_blob(
-                    serialize_table(merged), overwrite=True, lease=lease
-                )
-                return
-            finally:
-                try:
-                    lease.release()
-                except Exception:
-                    LOG.warning(
-                        "Failed to release Azure lease (may have expired)",
-                        exc_info=True,
-                    )
-
-        backoff(attempt)
-
-    raise RuntimeError(
-        f"Could not write to '{blob_path}' after {max_attempts} attempts — "
-        "lease contention or transient Azure error"
-    )
 
 
 def _row_key(table: pa.Table, i: int, key_cols: list[str]) -> tuple:
@@ -300,11 +247,6 @@ def to_timestamp(
     return arr.cast(ts_config.parquet_type)
 
 
-def path_for_candle(c: Candle, base_path: Path | str) -> Path:
-    date_str = c.timestamp[:10]
-    return Path(base_path) / c.exchange / c.symbol / c.timeframe / f"{date_str}.parquet"
-
-
 def candle_to_table(
     candles: list[Candle],
     ts_config: TimestampConfig,
@@ -358,63 +300,6 @@ def candle_to_table(
     )
 
 
-def write_candles(
-    candles: list[Candle],
-    base_path: Path | str = "data",
-    ts_config: TimestampConfig | None = None,
-    merge_strategy: str = "auto",
-) -> Sequence[Path | str]:
-    if not candles:
-        return []
-
-    ts_config = ts_config or TimestampConfig()
-
-    # ── Azure Blob Storage write path ───────────────────────────────────────
-    if is_azure(str(base_path)):
-        fs = azure_filesystem()
-        grouped_cloud: dict[str, list[Candle]] = defaultdict(list)
-        for c in candles:
-            grouped_cloud[uri_for_candle(c, str(base_path))].append(c)
-
-        written_uris: list[str] = []
-        for uri, candles_for_uri in grouped_cloud.items():
-            table = candle_to_table(candles_for_uri, ts_config)
-            blob_path = strip_azure_scheme(uri)
-            azure_lease_write(table, blob_path, fs, CANDLE_KEY_COLS, merge_strategy)
-            written_uris.append(uri)
-        return written_uris
-
-    # ── Local write path ────────────────────────────────────────────────────
-    grouped: dict[Path, list[Candle]] = defaultdict(list)
-    for c in candles:
-        grouped[path_for_candle(c, base_path)].append(c)
-
-    written: list[Path] = []
-    for path, candles_for_path in grouped.items():
-        table = candle_to_table(candles_for_path, ts_config)
-        path.parent.mkdir(parents=True, exist_ok=True)
-
-        if path.exists():
-            existing = pq.read_table(str(path))
-            if existing.schema != table.schema:
-                existing = existing.cast(table.schema)
-            table = merge_tables(
-                existing, table, CANDLE_KEY_COLS, strategy=merge_strategy
-            )
-
-        pq.write_table(table, str(path))
-        written.append(path)
-
-    return written
-
-
-def path_for_funding_rate(r: FundingRate, base_path: Path | str) -> Path:
-    date_str = r.timestamp[:10]
-    return (
-        Path(base_path) / r.exchange / r.symbol / "funding_rate" / f"{date_str}.parquet"
-    )
-
-
 def funding_rate_to_table(
     rates: list[FundingRate],
     ts_config: TimestampConfig,
@@ -463,53 +348,119 @@ def funding_rate_to_table(
     )
 
 
+def write_candles(
+    candles: list[Candle],
+    base_path: Path | str = "data",
+    ts_config: TimestampConfig | None = None,
+    merge_strategy: str = "auto",
+    backend: StorageBackend | None = None,
+) -> Sequence[Path | str]:
+    """Write candles to storage.
+
+    Args:
+        candles: List of candles to write
+        base_path: Storage path (local path or cloud URI). Ignored if backend is provided.
+        ts_config: Timestamp configuration
+        merge_strategy: Merge strategy for existing data ("auto", "memory", "duckdb")
+        backend: Storage backend instance. If None, created from base_path.
+
+    Returns:
+        List of written file paths
+    """
+    if not candles:
+        return []
+
+    ts_config = ts_config or TimestampConfig()
+
+    # Create backend if not provided
+    if backend is None:
+        backend = create_backend(str(base_path))
+
+    # Group candles by target path
+    grouped: dict[str, list[Candle]] = defaultdict(list)
+    for c in candles:
+        date_str = c.timestamp[:10]
+        path = backend.join_path(
+            str(base_path), c.exchange, c.symbol, c.timeframe, f"{date_str}.parquet"
+        )
+        grouped[path].append(c)
+
+    written: list[Path | str] = []
+    for path, candles_for_path in grouped.items():
+        table = candle_to_table(candles_for_path, ts_config)
+        backend.ensure_dir(path)
+
+        def merge_fn(existing: pa.Table) -> pa.Table:
+            if existing.schema != table.schema:
+                existing = existing.cast(table.schema)
+            return merge_tables(existing, table, CANDLE_KEY_COLS, strategy=merge_strategy)
+
+        backend.write_parquet_with_lease(path, table, merge_fn)
+        # Return Path objects for local storage, strings for cloud storage
+        from crmd_platform.storage.backend import LocalStorageBackend
+        if isinstance(backend, LocalStorageBackend):
+            written.append(Path(path))
+        else:
+            written.append(path)
+
+    return written
+
+
 def write_funding_rates(
     rates: list[FundingRate],
     base_path: Path | str = "data",
     ts_config: TimestampConfig | None = None,
     merge_strategy: str = "auto",
+    backend: StorageBackend | None = None,
 ) -> Sequence[Path | str]:
+    """Write funding rates to storage.
+
+    Args:
+        rates: List of funding rates to write
+        base_path: Storage path (local path or cloud URI). Ignored if backend is provided.
+        ts_config: Timestamp configuration
+        merge_strategy: Merge strategy for existing data ("auto", "memory", "duckdb")
+        backend: Storage backend instance. If None, created from base_path.
+
+    Returns:
+        List of written file paths
+    """
     if not rates:
         return []
 
     ts_config = ts_config or TimestampConfig()
 
-    # ── Azure Blob Storage write path ───────────────────────────────────────
-    if is_azure(str(base_path)):
-        fs = azure_filesystem()
-        grouped_cloud: dict[str, list[FundingRate]] = defaultdict(list)
-        for r in rates:
-            grouped_cloud[uri_for_funding_rate(r, str(base_path))].append(r)
+    # Create backend if not provided
+    if backend is None:
+        backend = create_backend(str(base_path))
 
-        written_uris: list[str] = []
-        for uri, rates_for_uri in grouped_cloud.items():
-            table = funding_rate_to_table(rates_for_uri, ts_config)
-            blob_path = strip_azure_scheme(uri)
-            azure_lease_write(
-                table, blob_path, fs, FUNDING_RATE_KEY_COLS, merge_strategy
-            )
-            written_uris.append(uri)
-        return written_uris
-
-    # ── Local write path ────────────────────────────────────────────────────
-    grouped: dict[Path, list[FundingRate]] = defaultdict(list)
+    # Group rates by target path
+    grouped: dict[str, list[FundingRate]] = defaultdict(list)
     for r in rates:
-        grouped[path_for_funding_rate(r, base_path)].append(r)
+        date_str = r.timestamp[:10]
+        path = backend.join_path(
+            str(base_path), r.exchange, r.symbol, "funding_rate", f"{date_str}.parquet"
+        )
+        grouped[path].append(r)
 
-    written: list[Path] = []
+    written: list[Path | str] = []
     for path, rates_for_path in grouped.items():
         table = funding_rate_to_table(rates_for_path, ts_config)
-        path.parent.mkdir(parents=True, exist_ok=True)
+        backend.ensure_dir(path)
 
-        if path.exists():
-            existing = pq.read_table(str(path))
+        def merge_fn(existing: pa.Table) -> pa.Table:
             if existing.schema != table.schema:
                 existing = existing.cast(table.schema)
-            table = merge_tables(
+            return merge_tables(
                 existing, table, FUNDING_RATE_KEY_COLS, strategy=merge_strategy
             )
 
-        pq.write_table(table, str(path))
-        written.append(path)
+        backend.write_parquet_with_lease(path, table, merge_fn)
+        # Return Path objects for local storage, strings for cloud storage
+        from crmd_platform.storage.backend import LocalStorageBackend
+        if isinstance(backend, LocalStorageBackend):
+            written.append(Path(path))
+        else:
+            written.append(path)
 
     return written
