@@ -1733,6 +1733,17 @@ Funding rate rules: <code>EMPTY_FIELD</code>, <code>INVALID_DECIMAL</code>, <cod
 <li><code>wrap_path(path)</code> — wrap a path string in the appropriate type for the backend</li>
 </ul>
 <p>The <code>create_backend(base_path)</code> factory function automatically selects the appropriate backend based on the URI scheme.</p>
+<p><strong>Recommended usage:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">crmd_platform.storage</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_backend</span><span class="p">,</span> <span class="n">write_candles</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Create backend explicitly (recommended)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">backend</span> <span class="o">=</span> <span class="n">create_backend</span><span class="p">(</span><span class="s2">&quot;s3://mybucket/crypto-data&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">write_candles</span><span class="p">(</span><span class="n">candles</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># OR use base_path (deprecated, will be removed in future version)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">write_candles</span><span class="p">(</span><span class="n">candles</span><span class="p">,</span> <span class="n">base_path</span><span class="o">=</span><span class="s2">&quot;s3://mybucket/crypto-data&quot;</span><span class="p">)</span>  <span class="c1"># Emits DeprecationWarning</span>
+</code></pre></div>
+<p>The <code>base_path</code> parameter is deprecated. Use the <code>backend</code> parameter with an explicit backend instance for new code.</p>
 <h3 id="read-path_1">Read path<a class="headerlink" href="#read-path_1" title="Permanent link">&para;</a></h3>
 <p><code>DuckDBQueryService</code> detects the URI scheme and loads the appropriate DuckDB extension (<code>azure</code>, <code>httpfs</code> for S3/GCS) before executing queries. File discovery uses DuckDB's <code>glob()</code> function over the cloud namespace rather than <code>Path.rglob()</code>. All <code>read_parquet()</code> queries work transparently once the extension is loaded.</p>
 <h3 id="write-path_1">Write path<a class="headerlink" href="#write-path_1" title="Permanent link">&para;</a></h3>
