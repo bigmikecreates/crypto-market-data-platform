@@ -2,7 +2,7 @@
 
 ## Project Direction
 
-This project is a local-first crypto market-data ingestion platform. Preserve the current architecture:
+This project is a crypto market-data ingestion platform supporting both local and cloud deployments. Preserve the current architecture:
 
 Provider -> Candle[] -> validation boundary -> Parquet writer -> benchmark/query tooling
 

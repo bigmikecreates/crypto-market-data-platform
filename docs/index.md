@@ -1,6 +1,6 @@
 # CrMD Platform
 
-A local-first pipeline for ingesting, validating, storing, and querying cryptocurrency market data. Exchange API responses are mapped to `Candle` and `FundingRate` records, validated at explicit system boundaries, persisted as partitioned Parquet files, and exposed through a Typer CLI and a FastAPI REST server.
+A pipeline for ingesting, validating, storing, and querying cryptocurrency market data across local and cloud environments. Exchange API responses are mapped to `Candle` and `FundingRate` records, validated at explicit system boundaries, persisted as partitioned Parquet files, and exposed through a Typer CLI and a FastAPI REST server.
 
 ## System overview
 
