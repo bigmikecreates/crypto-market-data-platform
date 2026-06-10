@@ -49,10 +49,10 @@ def read_and_filter(
         mask = pa.array([True] * len(table), type=pa.bool_())
         if range_start_ts is not None:
             start_scalar = pa.scalar(range_start_ts, type=pa.timestamp("s"))
-            mask = pc.and_(mask, pc.greater_equal(ts_col, start_scalar))
+            mask = pc.and_(mask, pc.greater_equal(ts_col, start_scalar))  # type: ignore[attr-defined]
         if range_end_ts is not None:
             end_scalar = pa.scalar(range_end_ts, type=pa.timestamp("s"))
-            mask = pc.and_(mask, pc.less(ts_col, end_scalar))
+            mask = pc.and_(mask, pc.less(ts_col, end_scalar))  # type: ignore[attr-defined]
         table = table.filter(mask)
 
     return table
@@ -69,8 +69,8 @@ def get_column_stats(table: pa.Table) -> list[dict[str, Any]]:
         info: dict[str, Any] = {"name": col_name, "nulls": col.null_count}
         if pa.types.is_decimal(col.type):
             try:
-                min_val = pc.min(col)
-                max_val = pc.max(col)
+                min_val = pc.min(col)  # type: ignore[attr-defined]
+                max_val = pc.max(col)  # type: ignore[attr-defined]
                 if min_val.is_valid:
                     info["min"] = str(min_val.as_py())
                 if max_val.is_valid:

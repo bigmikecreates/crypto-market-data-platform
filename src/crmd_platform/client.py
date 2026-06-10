@@ -326,7 +326,7 @@ class _RemoteClient(Client):
         if end:
             params["end"] = end
         if limit:
-            params["limit"] = limit
+            params["limit"] = str(limit)
         if order:
             params["order"] = order
         data = self._get("/candles", params=params)
@@ -351,7 +351,7 @@ class _RemoteClient(Client):
         if end:
             params["end"] = end
         if limit:
-            params["limit"] = limit
+            params["limit"] = str(limit)
         if order:
             params["order"] = order
         data = self._get("/funding-rates", params=params)
