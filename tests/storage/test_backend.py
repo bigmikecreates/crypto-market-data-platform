@@ -1,4 +1,5 @@
 """Tests for StorageBackend abstraction."""
+
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -24,7 +25,7 @@ class TestCreateBackend:
 
     def test_azure_uri_raises_import_error_when_adlfs_missing(self):
         # Mock adlfs import to raise ImportError
-        with patch.dict('sys.modules', {'adlfs': None}):
+        with patch.dict("sys.modules", {"adlfs": None}):
             with pytest.raises(ImportError, match="adlfs"):
                 create_backend("az://container/path")
 

@@ -298,7 +298,9 @@ def write_candles(
         def merge_fn(existing: pa.Table, table=table) -> pa.Table:
             if existing.schema != table.schema:
                 existing = existing.cast(table.schema)
-            return merge_tables(existing, table, CANDLE_KEY_COLS, strategy=merge_strategy)
+            return merge_tables(
+                existing, table, CANDLE_KEY_COLS, strategy=merge_strategy
+            )
 
         backend.write_parquet_with_lease(path, table, merge_fn)
         written.append(backend.wrap_path(path))

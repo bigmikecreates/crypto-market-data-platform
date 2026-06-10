@@ -3,6 +3,7 @@
 This module provides a unified interface for reading and writing Parquet files
 across different storage systems (local filesystem, Azure Blob, S3, GCS).
 """
+
 import logging
 import os
 import random
@@ -84,7 +85,7 @@ class StorageBackend(ABC):
     @abstractmethod
     def wrap_path(self, path: str) -> Path | str:
         """Wrap a path string in the appropriate type for this backend.
-        
+
         LocalStorageBackend returns Path objects.
         Cloud backends return strings (since paths may be URIs).
         """
@@ -185,7 +186,9 @@ class AzureBlobBackend(StorageBackend):
 
         self._fs = adlfs.AzureBlobFileSystem(connection_string=self._connection_string)
         # Cache the service client to avoid recreating it on every blob operation
-        self._service_client = BlobServiceClient.from_connection_string(self._connection_string)
+        self._service_client = BlobServiceClient.from_connection_string(
+            self._connection_string
+        )
 
     def _get_blob_client(self, blob_path: str):
         """Get Azure Blob client for a path."""

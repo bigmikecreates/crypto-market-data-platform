@@ -53,7 +53,9 @@ def mock_blob_client(mock_fs):
 def mock_backend(mock_fs, mock_blob_client):
     """Create an AzureBlobBackend with mocked internal filesystem and blob client."""
     with patch("adlfs.AzureBlobFileSystem", return_value=mock_fs):
-        backend = AzureBlobBackend(connection_string="DefaultEndpointsProtocol=https;AccountName=test")
+        backend = AzureBlobBackend(
+            connection_string="DefaultEndpointsProtocol=https;AccountName=test"
+        )
         backend._get_blob_client = MagicMock(return_value=mock_blob_client)
         return backend
 
@@ -99,14 +101,17 @@ def rates():
 
 def _make_merge_fn(key_cols, strategy="auto"):
     """Create a merge function that mimics the old azure_lease_write behavior."""
+
     def merge_fn(existing):
         return existing
+
     return merge_fn
 
 
 # All tests below need refactoring for the new StorageBackend API
 # Marking them as skipped for now to fix the critical import error
 # See issue #34 for tracking the refactoring work
+
 
 @pytest.mark.skip(reason="Needs refactoring for StorageBackend - see issue #34")
 class TestNewBlob:
