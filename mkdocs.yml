@@ -1,5 +1,5 @@
 site_name: CrMD Platform
-site_description: Local-first cryptocurrency market data ingestion, validation, storage, and query platform.
+site_description: Cryptocurrency market data ingestion, validation, storage, and query platform. Supports local and cloud deployments.
 repo_url: https://github.com/bigmikecreates/crypto-market-data-platform
 edit_uri: edit/docs/mkdocs-material/docs/
 

@@ -2,7 +2,7 @@
 name = "crmd-platform"
 version = "0.1.0"
 requires-python = ">=3.12"
-description = "CrMD Platform — local-first crypto market data ingestion, validation, storage, and query platform."
+description = "CrMD Platform — crypto market data ingestion, validation, storage, and query platform. Supports local and cloud deployments."
 dependencies = [
     "pyarrow>=24.0.0",
     "duckdb>=1.5.3",
