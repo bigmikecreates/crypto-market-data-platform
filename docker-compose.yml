@@ -1,12 +1,31 @@
 services:
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8050:8050"
     volumes:
-      - data:/app/data
+      - data:/data
     environment:
-      - CRMD_DATA_DIR=/app/data
+      - CRMD_API_KEY=${CRMD_API_KEY:-}
+      - CRMD_DATA_DIR=/data
+    restart: unless-stopped
+
+  fetcher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      crmd fetch --mdt ohlcv --symbol BTC/USDT --timeframe 1h
+                 --provider bitfinex --since-last --follow 3600
+    volumes:
+      - data:/data
+    environment:
+      - CRMD_DATA_DIR=/data
+    depends_on:
+      - backend
+    restart: unless-stopped
 
   frontend:
     build:
@@ -18,6 +37,7 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    restart: unless-stopped
 
 volumes:
   data:
