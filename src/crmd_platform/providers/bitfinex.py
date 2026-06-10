@@ -1,9 +1,14 @@
 from datetime import datetime, timezone
+from decimal import Decimal
 from typing import Any
 
 from crmd_platform.models.candle import Candle
 from crmd_platform.providers.base import BasePagedOHLCVProvider
 from crmd_platform.providers.http import fetch_json
+
+
+def _normalize(val: Any) -> str:
+    return str(Decimal(str(val)))
 
 _BASE_URL = "https://api-pub.bitfinex.com/v2"
 
@@ -53,11 +58,11 @@ def _parse_row(
         symbol=symbol,
         timeframe=timeframe,
         timestamp=ts.strftime("%Y-%m-%dT%H:%M:%S"),
-        open=str(row[1]),
-        high=str(row[3]),
-        low=str(row[4]),
-        close=str(row[2]),
-        volume=str(row[5]),
+        open=_normalize(row[1]),
+        high=_normalize(row[3]),
+        low=_normalize(row[4]),
+        close=_normalize(row[2]),
+        volume=_normalize(row[5]),
         source=source,
     )
 

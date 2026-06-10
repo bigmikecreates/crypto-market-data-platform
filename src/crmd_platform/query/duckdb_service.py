@@ -139,7 +139,12 @@ def _discover_files(base_path: str) -> dict[str, dict[str, list[str]]]:
 class DuckDBQueryService(QueryService):
     def list_datasets(self, base_path: str = "data") -> dict[str, list[str]]:
         files = _discover_files(base_path)
-        return {k: sorted(v.keys()) for k, v in files.items()}
+        result = {}
+        for k, v in files.items():
+            filtered = [key for key in v if not key.startswith("fake/")]
+            if filtered:
+                result[k] = sorted(filtered)
+        return result
 
     def get_candles(
         self,

@@ -1,4 +1,6 @@
-.PHONY: test report hypothesis-stats clean-reports
+COMPOSE_FILE ?= docker-compose.dev.yml
+
+.PHONY: test report hypothesis-stats clean-reports destroy clean-images up rebuild
 
 test:
 	pytest
@@ -17,3 +19,15 @@ hypothesis-stats:
 
 clean-reports:
 	rm -rf reports/
+
+destroy:
+	docker compose -f $(COMPOSE_FILE) down -v --remove-orphans
+
+clean-images:
+	docker compose -f $(COMPOSE_FILE) down --rmi all -v --remove-orphans
+
+up:
+	docker compose -f $(COMPOSE_FILE) up -d
+
+rebuild:
+	docker compose -f $(COMPOSE_FILE) up -d --build
