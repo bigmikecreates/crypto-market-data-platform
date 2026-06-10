@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Local-first cryptocurrency market data ingestion, validation, storage, and query platform.">
+        <meta name="description" content="Cryptocurrency market data ingestion, validation, storage, and query platform. Supports local and cloud deployments.">
       
       
       
@@ -1150,7 +1150,7 @@
 
 
 <h1 id="crmd-platform">CrMD Platform<a class="headerlink" href="#crmd-platform" title="Permanent link">&para;</a></h1>
-<p>A local-first pipeline for ingesting, validating, storing, and querying cryptocurrency market data. Exchange API responses are mapped to <code>Candle</code> and <code>FundingRate</code> records, validated at explicit system boundaries, persisted as partitioned Parquet files, and exposed through a Typer CLI and a FastAPI REST server.</p>
+<p>A pipeline for ingesting, validating, storing, and querying cryptocurrency market data across local and cloud environments. Exchange API responses are mapped to <code>Candle</code> and <code>FundingRate</code> records, validated at explicit system boundaries, persisted as partitioned Parquet files, and exposed through a Typer CLI and a FastAPI REST server.</p>
 <h2 id="system-overview">System overview<a class="headerlink" href="#system-overview" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph TD
     classDef provider fill:#e8f5e9,stroke:#2e7d32;

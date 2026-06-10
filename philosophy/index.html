@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Local-first cryptocurrency market data ingestion, validation, storage, and query platform.">
+        <meta name="description" content="Cryptocurrency market data ingestion, validation, storage, and query platform. Supports local and cloud deployments.">
       
       
       
@@ -731,10 +731,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#local-first-cloud-portable" class="md-nav__link">
+  <a href="#dual-mode-deployment-local-and-cloud" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Local-first, cloud-portable
+        Dual-mode deployment: local and cloud
       
     </span>
   </a>
@@ -1099,10 +1099,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#local-first-cloud-portable" class="md-nav__link">
+  <a href="#dual-mode-deployment-local-and-cloud" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Local-first, cloud-portable
+        Dual-mode deployment: local and cloud
       
     </span>
   </a>
@@ -1198,11 +1198,12 @@
 <h1 id="philosophy">Philosophy<a class="headerlink" href="#philosophy" title="Permanent link">&para;</a></h1>
 <p>This project treats market data infrastructure as a systems engineering
 problem. The following principles govern every architectural decision.</p>
-<h2 id="local-first-cloud-portable">Local-first, cloud-portable<a class="headerlink" href="#local-first-cloud-portable" title="Permanent link">&para;</a></h2>
-<p>The default deployment is deliberately minimal: no external database, no server daemon, no cloud dependency. Data lives in Parquet files on local disk. DuckDB queries them in place via <code>read_parquet</code>. The whole pipeline — fetch, validate, store, query — runs on a single machine with no moving parts.</p>
-<p><strong>Why local-first?</strong> Market data ingestion is fundamentally a batch operation, not an OLTP workload. Introducing a database server before the pipeline proves its value adds operational cost without benefit. Parquet files are already a sufficient queryable format via DuckDB. Local-first means zero infrastructure to deploy, maintain, or pay for during development, benchmarking, or small-scale production use. Cloud storage becomes an upgrade path, not a prerequisite.</p>
+<h2 id="dual-mode-deployment-local-and-cloud">Dual-mode deployment: local and cloud<a class="headerlink" href="#dual-mode-deployment-local-and-cloud" title="Permanent link">&para;</a></h2>
+<p>The pipeline runs identically against local disk and cloud blob storage. No code changes are needed to switch between them — only the storage root differs.</p>
+<p><strong>Local mode:</strong> Data lives in Parquet files on local disk. DuckDB queries them in place via <code>read_parquet</code>. The whole pipeline — fetch, validate, store, query — runs on a single machine with no external dependencies. This is the default, deliberately minimal deployment for development, benchmarking, and small-scale use.</p>
+<p><strong>Cloud mode:</strong> The same pipeline runs against Azure Blob Storage by changing the <code>--output</code> and <code>--path</code> flags to an <code>az://container/prefix</code> URI. The <code>DuckDBQueryService</code> loads the <code>azure</code> DuckDB extension for reads; the writer uses <code>adlfs</code> and Azure Blob leases to make concurrent writes safe. No new infrastructure is required.</p>
 <p>This is a deliberate inversion of the typical "write to a database, then read from it" pattern. Parquet files are the interchange format: portable, version-controllable, and readable by any Parquet-compatible tool without an import step.</p>
-<p>The same pipeline runs against Azure Blob Storage by changing the <code>--output</code> and <code>--path</code> flags to an <code>az://container/prefix</code> URI. No new infrastructure is required. The <code>DuckDBQueryService</code> loads the <code>azure</code> DuckDB extension for reads; the writer uses <code>adlfs</code> and Azure Blob leases to make concurrent writes safe. Local and cloud deployments share an identical code path — only the storage root differs.</p>
+<p>Local and cloud deployments share an identical code path — only the storage root differs. The SDK and CLI abstract this choice, letting consumers target either environment with a single parameter change.</p>
 <h2 id="strings-first">Strings-first<a class="headerlink" href="#strings-first" title="Permanent link">&para;</a></h2>
 <p>All numeric fields in <code>Candle</code> and <code>FundingRate</code> models are stored as
 <code>str</code>, not <code>Decimal</code> or <code>float</code>. Type coercion is deferred to the write path,
