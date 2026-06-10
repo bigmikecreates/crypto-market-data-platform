@@ -1749,7 +1749,7 @@ Funding rate rules: <code>EMPTY_FIELD</code>, <code>INVALID_DECIMAL</code>, <cod
 <h3 id="write-path_1">Write path<a class="headerlink" href="#write-path_1" title="Permanent link">&para;</a></h3>
 <p><code>write_candles()</code> and <code>write_funding_rates()</code> use the <code>StorageBackend</code> abstraction to write Parquet files. Each backend handles cloud-specific concerns:</p>
 <ul>
-<li><strong>Azure Blob</strong> — Uses <code>adlfs.AzureBlobFileSystem</code> and implements lease-based concurrency control via <code>azure_lease_write()</code>, which serializes concurrent writers at the partition level via 30-second Azure Blob leases.</li>
+<li><strong>Azure Blob</strong> — Uses <code>adlfs.AzureBlobFileSystem</code> and implements lease-based concurrency control via <code>AzureBlobBackend.write_parquet_with_lease()</code>, which serializes concurrent writers at the partition level via 30-second Azure Blob leases.</li>
 <li><strong>S3</strong> — Uses <code>s3fs.S3FileSystem</code> with a read-merge-write pattern. For production use with high concurrency, consider using S3's conditional PUT with ETags or DynamoDB locking.</li>
 <li><strong>GCS</strong> — Uses <code>gcsfs.GCSFileSystem</code> with a read-merge-write pattern. For production use with high concurrency, consider using GCS's conditional operations or Cloud Storage locking.</li>
 </ul>

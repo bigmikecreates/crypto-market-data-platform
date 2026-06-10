@@ -1659,7 +1659,7 @@ The storage boundary is the single authority on Parquet type decisions. Changing
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>az://mycontainer/data/{exchange}/{symbol}/{timeframe}/{YYYY-MM-DD}.parquet
 </code></pre></div>
 <p><strong>Stage 5 (cloud) — Lease-protected upsert</strong></p>
-<p>The merge is wrapped in <code>azure_lease_write()</code>, which serialises concurrent writers at the blob level using Azure Blob Storage leases.</p>
+<p>The merge is wrapped in <code>AzureBlobBackend.write_parquet_with_lease()</code>, which serialises concurrent writers at the blob level using Azure Blob Storage leases.</p>
 <pre class="mermaid"><code>sequenceDiagram
     participant W as Worker
     participant Azure as Azure Blob Storage
@@ -1714,7 +1714,7 @@ The storage boundary is the single authority on Parquet type decisions. Changing
     WB-&gt;&gt;Azure: upload_blob(merged) → blob = 100 rows
     Note over Azure: A's 6 rows silently lost
     Azure--&gt;&gt;WB: 200 OK</code></pre>
-<p><strong>What happens with <code>azure_lease_write</code>:</strong></p>
+<p><strong>What happens with <code>AzureBlobBackend.write_parquet_with_lease</code>:</strong></p>
 <pre class="mermaid"><code>sequenceDiagram
     participant WA as Worker A
     participant WB as Worker B
