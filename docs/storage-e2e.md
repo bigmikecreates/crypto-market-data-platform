@@ -172,7 +172,7 @@ az://mycontainer/data/{exchange}/{symbol}/{timeframe}/{YYYY-MM-DD}.parquet
 
 **Stage 5 (cloud) — Lease-protected upsert**
 
-The merge is wrapped in `azure_lease_write()`, which serialises concurrent writers at the blob level using Azure Blob Storage leases.
+The merge is wrapped in `AzureBlobBackend.write_parquet_with_lease()`, which serialises concurrent writers at the blob level using Azure Blob Storage leases.
 
 ```mermaid
 sequenceDiagram
@@ -243,7 +243,7 @@ sequenceDiagram
     Azure-->>WB: 200 OK
 ```
 
-**What happens with `azure_lease_write`:**
+**What happens with `AzureBlobBackend.write_parquet_with_lease`:**
 
 ```mermaid
 sequenceDiagram

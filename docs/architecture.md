@@ -104,7 +104,7 @@ The `base_path` parameter is deprecated. Use the `backend` parameter with an exp
 
 `write_candles()` and `write_funding_rates()` use the `StorageBackend` abstraction to write Parquet files. Each backend handles cloud-specific concerns:
 
-- **Azure Blob** — Uses `adlfs.AzureBlobFileSystem` and implements lease-based concurrency control via `azure_lease_write()`, which serializes concurrent writers at the partition level via 30-second Azure Blob leases.
+- **Azure Blob** — Uses `adlfs.AzureBlobFileSystem` and implements lease-based concurrency control via `AzureBlobBackend.write_parquet_with_lease()`, which serializes concurrent writers at the partition level via 30-second Azure Blob leases.
 - **S3** — Uses `s3fs.S3FileSystem` with a read-merge-write pattern. For production use with high concurrency, consider using S3's conditional PUT with ETags or DynamoDB locking.
 - **GCS** — Uses `gcsfs.GCSFileSystem` with a read-merge-write pattern. For production use with high concurrency, consider using GCS's conditional operations or Cloud Storage locking.
 
