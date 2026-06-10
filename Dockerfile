@@ -1,21 +1,37 @@
+FROM python:3.12-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /build
+COPY pyproject.toml ./
+COPY src/ src/
+RUN pip install --no-cache-dir --user .[server]
+
+
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app/src
 
-WORKDIR /app
+RUN groupadd --system --gid 1001 crmd && \
+    useradd --system --uid 1001 --gid crmd --create-home --shell /bin/bash crmd
 
-RUN useradd --create-home --shell /bin/bash appuser
+COPY --from=builder /root/.local /home/crmd/.local
 
-COPY requirements.txt .
+RUN chown -R crmd:crmd /home/crmd/.local
 
-RUN pip install --no-cache-dir -r requirements.txt
+WORKDIR /home/crmd
 
-COPY /src /app/src
+ENV PATH=/home/crmd/.local/bin:$PATH
+ENV CRMD_API_KEY=""
+ENV CRMD_DATA_DIR="/data"
 
-USER appuser
+RUN mkdir /data && chown crmd:crmd /data
+VOLUME /data
+
+USER crmd
 
 EXPOSE 8050
 
-CMD ["uvicorn", "crmd_platform.server.app:create_app", "--factory", "--host", "0.0.0.0", "--port", "8050"]
+CMD exec crmd serve --host 0.0.0.0 --api-key "$CRMD_API_KEY" --path "$CRMD_DATA_DIR"
