@@ -29,13 +29,17 @@ class TestCreateBackend:
             with pytest.raises(ImportError, match="adlfs"):
                 create_backend("az://container/path")
 
-    def test_s3_uri_raises_not_implemented(self):
-        with pytest.raises(NotImplementedError, match="S3 backend"):
-            create_backend("s3://bucket/path")
+    def test_s3_uri_raises_import_error_when_s3fs_missing(self):
+        """Test that S3Backend raises ImportError when s3fs is not installed."""
+        with patch.dict("sys.modules", {"s3fs": None}):
+            with pytest.raises(ImportError, match="s3fs"):
+                create_backend("s3://bucket/path")
 
-    def test_gcs_uri_raises_not_implemented(self):
-        with pytest.raises(NotImplementedError, match="GCS backend"):
-            create_backend("gs://bucket/path")
+    def test_gcs_uri_raises_import_error_when_gcsfs_missing(self):
+        """Test that GCSBackend raises ImportError when gcsfs is not installed."""
+        with patch.dict("sys.modules", {"gcsfs": None}):
+            with pytest.raises(ImportError, match="gcsfs"):
+                create_backend("gs://bucket/path")
 
 
 class TestLocalStorageBackend:

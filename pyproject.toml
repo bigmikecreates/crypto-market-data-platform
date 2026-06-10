@@ -45,12 +45,20 @@ docs = [
 azure = [
     "adlfs>=2024.7.0",
 ]
+s3 = [
+    "s3fs>=2024.7.0",
+]
+gcs = [
+    "gcsfs>=2024.7.0",
+]
 all = [
     "crmd-platform[local]",
     "crmd-platform[remote]",
     "crmd-platform[server]",
     "crmd-platform[cli]",
     "crmd-platform[azure]",
+    "crmd-platform[s3]",
+    "crmd-platform[gcs]",
 ]
 
 [tool.pytest.ini_options]

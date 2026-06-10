@@ -85,7 +85,9 @@ Each provider implements the `OHLCVProvider` or `FundingRateProvider` ABC. Addin
 
 ## Cloud storage
 
-The pipeline runs against Azure Blob Storage by changing one flag:
+The pipeline supports multiple cloud storage backends through a unified `StorageBackend` abstraction. Switch between local, Azure, S3, or GCS by changing one flag:
+
+### Azure Blob Storage
 
 ```bash
 # Write to Azure
@@ -108,7 +110,51 @@ export AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountNa
 
 Concurrent workers writing to the same partition are safe: each write acquires a 30-second Azure Blob lease, so racing writers queue rather than overwrite each other. Workers writing to different partitions — the common case when parallelising by symbol — are unaffected by locking.
 
-→ [Storage: Write Path](https://bigmikecreates.github.io/crypto-market-data-platform/storage-e2e/) for the full Azure pipeline and concurrency model.
+### AWS S3
+
+```bash
+# Write to S3
+crmd fetch --provider kucoin --symbol BTC-USDT --timeframe 1h \
+           --start 2026-01-01 --end 2026-01-08 \
+           --output s3://mybucket/crypto-data
+
+# Read from S3
+crmd query ohlcv --path s3://mybucket/crypto-data --symbol BTC-USDT
+crmd serve       --path s3://mybucket/crypto-data --port 8050
+```
+
+Install the S3 extra and set credentials:
+
+```bash
+pip install -e ".[s3]"
+export AWS_ACCESS_KEY_ID="your-access-key"
+export AWS_SECRET_ACCESS_KEY="your-secret-key"
+export AWS_DEFAULT_REGION="us-east-1"
+# or use IAM roles / AWS_PROFILE
+```
+
+### Google Cloud Storage
+
+```bash
+# Write to GCS
+crmd fetch --provider kucoin --symbol BTC-USDT --timeframe 1h \
+           --start 2026-01-01 --end 2026-01-08 \
+           --output gs://mybucket/crypto-data
+
+# Read from GCS
+crmd query ohlcv --path gs://mybucket/crypto-data --symbol BTC-USDT
+crmd serve       --path gs://mybucket/crypto-data --port 8050
+```
+
+Install the GCS extra and set credentials:
+
+```bash
+pip install -e ".[gcs]"
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"
+# or use gcloud auth application-default login
+```
+
+→ [Storage: Write Path](https://bigmikecreates.github.io/crypto-market-data-platform/storage-e2e/) for the full pipeline and concurrency model.
 
 ---
 

@@ -2,7 +2,9 @@
 
 from crmd_platform.storage.backend import (
     AzureBlobBackend,
+    GCSBackend,
     LocalStorageBackend,
+    S3Backend,
     StorageBackend,
     create_backend,
 )
@@ -21,6 +23,8 @@ __all__ = [
     "StorageBackend",
     "LocalStorageBackend",
     "AzureBlobBackend",
+    "S3Backend",
+    "GCSBackend",
     "create_backend",
     # Writer functions
     "write_candles",

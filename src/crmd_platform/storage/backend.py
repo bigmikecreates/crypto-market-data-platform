@@ -294,6 +294,172 @@ class AzureBlobBackend(StorageBackend):
         return path
 
 
+class S3Backend(StorageBackend):
+    """AWS S3 storage backend using s3fs."""
+
+    def __init__(
+        self,
+        aws_access_key_id: str | None = None,
+        aws_secret_access_key: str | None = None,
+        region_name: str | None = None,
+    ):
+        """Initialize S3 backend.
+
+        Args:
+            aws_access_key_id: AWS access key ID. If None, reads from AWS_ACCESS_KEY_ID env var.
+            aws_secret_access_key: AWS secret access key. If None, reads from AWS_SECRET_ACCESS_KEY env var.
+            region_name: AWS region. If None, reads from AWS_DEFAULT_REGION env var or uses default.
+        """
+        try:
+            import s3fs
+        except ImportError:
+            raise ImportError(
+                "S3 storage requires s3fs. "
+                "Install with: pip install 'crmd-platform[s3]'"
+            )
+
+        self._access_key = aws_access_key_id or os.environ.get("AWS_ACCESS_KEY_ID")
+        self._secret_key = aws_secret_access_key or os.environ.get(
+            "AWS_SECRET_ACCESS_KEY"
+        )
+        self._region = region_name or os.environ.get("AWS_DEFAULT_REGION")
+
+        # s3fs will use IAM roles or env vars if credentials not provided
+        self._fs = s3fs.S3FileSystem(
+            key=self._access_key,
+            secret=self._secret_key,
+            client_kwargs={"region_name": self._region} if self._region else None,
+        )
+
+    def exists(self, path: str) -> bool:
+        return self._fs.exists(path)
+
+    def read_parquet(self, path: str) -> pa.Table:
+        return pq.read_table(path, filesystem=self._fs)
+
+    def write_parquet(self, path: str, table: pa.Table) -> None:
+        pq.write_table(table, path, filesystem=self._fs)
+
+    def write_parquet_with_lease(
+        self,
+        path: str,
+        table: pa.Table,
+        merge_fn: Callable[[pa.Table], pa.Table],
+    ) -> None:
+        """Write with read-merge-write pattern for S3.
+
+        S3 doesn't have Azure-style leases, but we can use conditional PUT
+        operations. For simplicity, we use a read-merge-write pattern similar
+        to local storage. For production use with high concurrency, consider
+        using S3's conditional PUT with ETags or DynamoDB locking.
+        """
+        if self._fs.exists(path):
+            existing = pq.read_table(path, filesystem=self._fs)
+            table = merge_fn(existing)
+
+        pq.write_table(table, path, filesystem=self._fs)
+
+    def glob(self, pattern: str) -> list[str]:
+        """Find files matching a glob pattern in S3.
+
+        Uses s3fs glob which supports ** wildcards.
+        """
+        return sorted(self._fs.glob(pattern))
+
+    def join_path(self, *parts: str) -> str:
+        """Join path components without pathlib normalization.
+
+        S3 URIs like s3://bucket/path must not be normalized to s3:/bucket/path
+        """
+        return "/".join(p.rstrip("/") for p in parts if p)
+
+    def ensure_dir(self, path: str) -> None:
+        """No-op for S3 (directories don't exist)."""
+        pass
+
+    def wrap_path(self, path: str) -> str:
+        """Return path as string for cloud storage (paths may be URIs)."""
+        return path
+
+
+class GCSBackend(StorageBackend):
+    """Google Cloud Storage backend using gcsfs."""
+
+    def __init__(
+        self,
+        project: str | None = None,
+        token: str | None = None,
+    ):
+        """Initialize GCS backend.
+
+        Args:
+            project: GCP project ID. If None, reads from GOOGLE_CLOUD_PROJECT env var.
+            token: Authentication token. If None, uses default credentials.
+        """
+        try:
+            import gcsfs
+        except ImportError:
+            raise ImportError(
+                "GCS storage requires gcsfs. "
+                "Install with: pip install 'crmd-platform[gcs]'"
+            )
+
+        self._project = project or os.environ.get("GOOGLE_CLOUD_PROJECT")
+        self._token = token  # gcsfs will use default credentials if None
+
+        self._fs = gcsfs.GCSFileSystem(project=self._project, token=self._token)
+
+    def exists(self, path: str) -> bool:
+        return self._fs.exists(path)
+
+    def read_parquet(self, path: str) -> pa.Table:
+        return pq.read_table(path, filesystem=self._fs)
+
+    def write_parquet(self, path: str, table: pa.Table) -> None:
+        pq.write_table(table, path, filesystem=self._fs)
+
+    def write_parquet_with_lease(
+        self,
+        path: str,
+        table: pa.Table,
+        merge_fn: Callable[[pa.Table], pa.Table],
+    ) -> None:
+        """Write with read-merge-write pattern for GCS.
+
+        GCS supports object versioning and conditional operations, but for
+        simplicity we use a read-merge-write pattern similar to local storage.
+        For production use with high concurrency, consider using GCS's
+        conditional operations or Cloud Storage locking.
+        """
+        if self._fs.exists(path):
+            existing = pq.read_table(path, filesystem=self._fs)
+            table = merge_fn(existing)
+
+        pq.write_table(table, path, filesystem=self._fs)
+
+    def glob(self, pattern: str) -> list[str]:
+        """Find files matching a glob pattern in GCS.
+
+        Uses gcsfs glob which supports ** wildcards.
+        """
+        return sorted(self._fs.glob(pattern))
+
+    def join_path(self, *parts: str) -> str:
+        """Join path components without pathlib normalization.
+
+        GCS URIs like gs://bucket/path must not be normalized to gs:/bucket/path
+        """
+        return "/".join(p.rstrip("/") for p in parts if p)
+
+    def ensure_dir(self, path: str) -> None:
+        """No-op for GCS (directories don't exist)."""
+        pass
+
+    def wrap_path(self, path: str) -> str:
+        """Return path as string for cloud storage (paths may be URIs)."""
+        return path
+
+
 def create_backend(base_path: str) -> StorageBackend:
     """Factory function to create appropriate storage backend.
 
@@ -306,19 +472,14 @@ def create_backend(base_path: str) -> StorageBackend:
     Examples:
         >>> backend = create_backend("data")  # Local
         >>> backend = create_backend("az://container/path")  # Azure
-        >>> backend = create_backend("s3://bucket/path")  # S3 (future)
+        >>> backend = create_backend("s3://bucket/path")  # S3
+        >>> backend = create_backend("gs://bucket/path")  # GCS
     """
     if base_path.startswith(("az://", "abfs://")):
         return AzureBlobBackend()
     elif base_path.startswith("s3://"):
-        raise NotImplementedError(
-            "S3 backend not yet implemented. "
-            "See https://github.com/bigmikecreates/crypto-market-data-platform/issues/33"
-        )
+        return S3Backend()
     elif base_path.startswith("gs://"):
-        raise NotImplementedError(
-            "GCS backend not yet implemented. "
-            "See https://github.com/bigmikecreates/crypto-market-data-platform/issues/33"
-        )
+        return GCSBackend()
     else:
         return LocalStorageBackend()

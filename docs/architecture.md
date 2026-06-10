@@ -53,23 +53,57 @@ The `QueryService` ABC has five methods: `list_datasets`, `get_candles`, `get_fu
 
 `create_app()` returns a FastAPI application configured with `CORSMiddleware` and a global exception handler that returns JSON error responses. The application holds a `ServerConfig` with an injected `QueryService` instance (default: `DuckDBQueryService`). All query logic runs through the injected service — the API layer contains no query implementation.
 
-## Cloud storage (Azure Blob)
+## Cloud storage
 
-Passing an `az://container/prefix` or `abfs://container/prefix` URI as `base_path` switches both the write and read paths to Azure Blob Storage. No other code changes are required.
+The platform supports multiple cloud storage backends through a unified `StorageBackend` abstraction. Passing a cloud URI as `base_path` switches both the write and read paths to the appropriate cloud storage. No other code changes are required.
 
-**Read path** — `DuckDBQueryService` detects the URI scheme and loads the `azure` DuckDB extension before executing queries. File discovery uses DuckDB's `glob()` function over the blob namespace rather than `Path.rglob()`. All `read_parquet()` queries work transparently once the extension is loaded.
+### Supported backends
 
-**Write path** — `write_candles()` and `write_funding_rates()` detect the Azure scheme and use `adlfs.AzureBlobFileSystem` (optional dep `crmd-platform[azure]`) as the PyArrow filesystem. The upsert merge is wrapped in `azure_lease_write()`, which serialises concurrent writers at the partition level via Azure Blob leases.
+| Backend | URI scheme | Optional dependency |
+|---------|------------|---------------------|
+| Local filesystem | (any path without scheme) | None |
+| Azure Blob Storage | `az://`, `abfs://` | `crmd-platform[azure]` |
+| AWS S3 | `s3://` | `crmd-platform[s3]` |
+| Google Cloud Storage | `gs://` | `crmd-platform[gcs]` |
 
-**Credentials** — loaded from standard Azure environment variables in priority order:
+### StorageBackend abstraction
 
-| Variable | When used |
-|---|---|
-| `AZURE_STORAGE_CONNECTION_STRING` | Connection string (dev/test) |
-| `AZURE_STORAGE_ACCOUNT` + `AZURE_STORAGE_KEY` | Explicit account and key |
-| `AZURE_STORAGE_ACCOUNT` only | Managed identity / `DefaultAzureCredential` |
+The `StorageBackend` ABC (`storage/backend.py`) provides a unified interface for reading, writing, and managing Parquet files across different storage systems. Each backend implements:
 
-→ See [Storage: Write Path](storage-e2e.md) for the full write pipeline including the lease-based concurrency model.
+- `exists(path)` — check if a file exists
+- `read_parquet(path)` — read a Parquet file into a PyArrow table
+- `write_parquet(path, table)` — write a PyArrow table to a Parquet file
+- `write_parquet_with_lease(path, table, merge_fn)` — write with concurrency control
+- `glob(pattern)` — find files matching a glob pattern
+- `join_path(*parts)` — join path components safely for the backend
+- `ensure_dir(path)` — ensure the directory for a file path exists
+- `wrap_path(path)` — wrap a path string in the appropriate type for the backend
+
+The `create_backend(base_path)` factory function automatically selects the appropriate backend based on the URI scheme.
+
+### Read path
+
+`DuckDBQueryService` detects the URI scheme and loads the appropriate DuckDB extension (`azure`, `httpfs` for S3/GCS) before executing queries. File discovery uses DuckDB's `glob()` function over the cloud namespace rather than `Path.rglob()`. All `read_parquet()` queries work transparently once the extension is loaded.
+
+### Write path
+
+`write_candles()` and `write_funding_rates()` use the `StorageBackend` abstraction to write Parquet files. Each backend handles cloud-specific concerns:
+
+- **Azure Blob** — Uses `adlfs.AzureBlobFileSystem` and implements lease-based concurrency control via `azure_lease_write()`, which serializes concurrent writers at the partition level via 30-second Azure Blob leases.
+- **S3** — Uses `s3fs.S3FileSystem` with a read-merge-write pattern. For production use with high concurrency, consider using S3's conditional PUT with ETags or DynamoDB locking.
+- **GCS** — Uses `gcsfs.GCSFileSystem` with a read-merge-write pattern. For production use with high concurrency, consider using GCS's conditional operations or Cloud Storage locking.
+
+### Credentials
+
+Credentials are loaded from standard environment variables:
+
+| Backend | Environment variables |
+|---------|----------------------|
+| Azure | `AZURE_STORAGE_CONNECTION_STRING`, or `AZURE_STORAGE_ACCOUNT` + `AZURE_STORAGE_KEY`, or managed identity |
+| S3 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, or IAM roles |
+| GCS | `GOOGLE_APPLICATION_CREDENTIALS`, or `gcloud auth application-default login` |
+
+→ See [Storage: Write Path](storage-e2e.md) for the full write pipeline including the concurrency model.
 
 ## Key design decisions
 
@@ -90,7 +124,8 @@ DuckDB in-process connections are cheap to open and close. Connection-per-query 
 | Boundary | ABC | Concrete implementations |
 |---|---|---|
 | Provider | `OHLCVProvider`, `FundingRateProvider` | `FakeProvider`, `BitfinexProvider`, `KuCoinProvider`, … |
+| Storage | `StorageBackend` | `LocalStorageBackend`, `AzureBlobBackend`, `S3Backend`, `GCSBackend` |
 | Query | `QueryService` | `DuckDBQueryService` |
 | Server | `QueryService` (injected via `ServerConfig`) | FastAPI wraps the ABC |
 
-Adding a provider means implementing the ABC. Adding a query engine means implementing `QueryService`. No consumer code changes.
+Adding a provider means implementing the ABC. Adding a storage backend means implementing `StorageBackend`. Adding a query engine means implementing `QueryService`. No consumer code changes.
