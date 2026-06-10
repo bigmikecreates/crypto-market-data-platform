@@ -1,10 +1,7 @@
 import logging
-import os
-import random
-import time
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Sequence
 
 import duckdb
 import pyarrow as pa
@@ -22,97 +19,6 @@ DECIMAL128_TYPE = pa.decimal128(38, 10)
 ROW_MERGE_THRESHOLD = 50_000
 CANDLE_KEY_COLS = ["exchange", "symbol", "timeframe", "source", "timestamp"]
 FUNDING_RATE_KEY_COLS = ["exchange", "symbol", "source", "timestamp"]
-
-# Azure-specific constants and helpers (kept for backward compatibility)
-AZURE_SCHEMES = ("az://", "abfs://")
-
-
-def is_azure(base_path: str) -> bool:
-    """Check if base_path is an Azure Blob Storage URI."""
-    return base_path.startswith(AZURE_SCHEMES)
-
-
-def strip_azure_scheme(uri: str) -> str:
-    """Remove az:// or abfs:// prefix from URI."""
-    for scheme in AZURE_SCHEMES:
-        if uri.startswith(scheme):
-            return uri[len(scheme) :]
-    return uri
-
-
-def uri_for_candle(c: Candle, base: str) -> str:
-    """Build URI for candle data (kept for backward compatibility)."""
-    date_str = c.timestamp[:10]
-    return "/".join(
-        [base.rstrip("/"), c.exchange, c.symbol, c.timeframe, f"{date_str}.parquet"]
-    )
-
-
-def uri_for_funding_rate(r: FundingRate, base: str) -> str:
-    """Build URI for funding rate data (kept for backward compatibility)."""
-    date_str = r.timestamp[:10]
-    return "/".join(
-        [base.rstrip("/"), r.exchange, r.symbol, "funding_rate", f"{date_str}.parquet"]
-    )
-
-
-def serialize_table(table: pa.Table) -> bytes:
-    """Serialize PyArrow table to Parquet bytes."""
-    sink = pa.BufferOutputStream()
-    pq.write_table(table, sink)
-    return sink.getvalue().to_pybytes()
-
-
-def backoff(attempt: int) -> None:
-    """Exponential backoff with jitter."""
-    time.sleep(min(0.5 * (2**attempt), 8.0) + random.uniform(0, 0.5))
-
-
-def path_for_candle(c: Candle, base_path: Path | str) -> Path:
-    """Build local path for candle data (kept for backward compatibility)."""
-    date_str = c.timestamp[:10]
-    return Path(base_path) / c.exchange / c.symbol / c.timeframe / f"{date_str}.parquet"
-
-
-def path_for_funding_rate(r: FundingRate, base_path: Path | str) -> Path:
-    """Build local path for funding rate data (kept for backward compatibility)."""
-    date_str = r.timestamp[:10]
-    return (
-        Path(base_path) / r.exchange / r.symbol / "funding_rate" / f"{date_str}.parquet"
-    )
-
-
-def azure_filesystem() -> Any:
-    """Build an adlfs filesystem from standard Azure env vars.
-
-    Priority: connection string → account+key → managed identity.
-    """
-    try:
-        import adlfs
-    except ImportError:
-        raise ImportError(
-            "Azure Blob Storage writes require adlfs. "
-            "Install with: pip install 'crmd-platform[azure]'"
-        )
-    conn_str = os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
-    if conn_str:
-        return adlfs.AzureBlobFileSystem(connection_string=conn_str)
-    account = os.environ.get("AZURE_STORAGE_ACCOUNT")
-    key = os.environ.get("AZURE_STORAGE_KEY")
-    # key=None triggers managed-identity / DefaultAzureCredential fallback in adlfs
-    return adlfs.AzureBlobFileSystem(account_name=account, account_key=key)
-
-
-def azure_blob_client(fs: Any, blob_path: str) -> Any:
-    """Return a BlobClient for blob_path from an adlfs filesystem."""
-    service_client = getattr(fs, "service_client", None)
-    if service_client is None:
-        raise RuntimeError(
-            "Cannot perform Azure Blob lease operations: the filesystem object "
-            "does not expose 'service_client'. Ensure adlfs>=2024.7.0 is installed."
-        )
-    container, _, blob = blob_path.partition("/")
-    return service_client.get_blob_client(container=container, blob=blob)
 
 
 def _row_key(table: pa.Table, i: int, key_cols: list[str]) -> tuple:
@@ -390,18 +296,13 @@ def write_candles(
         table = candle_to_table(candles_for_path, ts_config)
         backend.ensure_dir(path)
 
-        def merge_fn(existing: pa.Table) -> pa.Table:
+        def merge_fn(existing: pa.Table, table=table) -> pa.Table:
             if existing.schema != table.schema:
                 existing = existing.cast(table.schema)
             return merge_tables(existing, table, CANDLE_KEY_COLS, strategy=merge_strategy)
 
         backend.write_parquet_with_lease(path, table, merge_fn)
-        # Return Path objects for local storage, strings for cloud storage
-        from crmd_platform.storage.backend import LocalStorageBackend
-        if isinstance(backend, LocalStorageBackend):
-            written.append(Path(path))
-        else:
-            written.append(path)
+        written.append(backend.wrap_path(path))
 
     return written
 
@@ -448,7 +349,7 @@ def write_funding_rates(
         table = funding_rate_to_table(rates_for_path, ts_config)
         backend.ensure_dir(path)
 
-        def merge_fn(existing: pa.Table) -> pa.Table:
+        def merge_fn(existing: pa.Table, table=table) -> pa.Table:
             if existing.schema != table.schema:
                 existing = existing.cast(table.schema)
             return merge_tables(
@@ -456,11 +357,6 @@ def write_funding_rates(
             )
 
         backend.write_parquet_with_lease(path, table, merge_fn)
-        # Return Path objects for local storage, strings for cloud storage
-        from crmd_platform.storage.backend import LocalStorageBackend
-        if isinstance(backend, LocalStorageBackend):
-            written.append(Path(path))
-        else:
-            written.append(path)
+        written.append(backend.wrap_path(path))
 
     return written
