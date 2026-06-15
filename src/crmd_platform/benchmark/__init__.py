@@ -12,6 +12,7 @@ from crmd_platform.benchmark.runners import (
     CandlePipelineRunner,
     ProviderCandlePipelineRunner,
 )
+from crmd_platform.benchmark.tracking import TrackingStore
 
 RUNNERS: dict[str, type[PipelineRunner]] = {
     "candle": CandlePipelineRunner,
@@ -27,5 +28,6 @@ __all__ = [
     "ProviderCandlePipelineRunner",
     "RUNNERS",
     "StageMetrics",
+    "TrackingStore",
     "evaluate_rules",
 ]

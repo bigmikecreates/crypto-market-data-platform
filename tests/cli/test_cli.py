@@ -52,7 +52,7 @@ class TestFetchCommand:
                 "--end",
                 "2026-05-28",
                 "--provider",
-                "kraken",
+                "unknown_exchange",
             ],
         )
         assert result.exit_code == 1

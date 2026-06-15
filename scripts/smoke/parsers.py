@@ -51,6 +51,53 @@ def parse_via_provider(provider: str, raw: str) -> str | None:
                 return f"expected non-empty list, got {type(data).__name__}"
             _parse_row(data[-1], "mexc", "BTC/USDT", TIMEFRAME, "smoke")
 
+        elif provider == "coinbase":
+            from crmd_platform.providers.coinbase import _parse_row
+
+            if not isinstance(data, list) or not data:
+                return f"expected non-empty list, got {type(data).__name__}"
+            _parse_row(data[-1], "coinbase", "BTC/USD", TIMEFRAME, "smoke")
+
+        elif provider == "okx":
+            from crmd_platform.providers.okx import _parse_row
+
+            inner = data.get("data", [])
+            if not inner:
+                code = data.get("code", "?")
+                return f"no data (code={code})"
+            _parse_row(inner[-1], "okx", "BTC/USDT", TIMEFRAME, "smoke")
+
+        elif provider == "gemini":
+            from crmd_platform.providers.gemini import _parse_row
+
+            if not isinstance(data, list) or not data:
+                return f"expected non-empty list, got {type(data).__name__}"
+            _parse_row(data[-1], "gemini", "BTC/USD", TIMEFRAME, "smoke")
+
+        elif provider == "htx":
+            from crmd_platform.providers.htx import _parse_row
+
+            klines = data.get("data", [])
+            if not klines:
+                status = data.get("status", "?")
+                return f"no data (status={status})"
+            _parse_row(klines[-1], "htx", "BTC/USDT", TIMEFRAME, "smoke")
+
+        elif provider == "kraken":
+            from crmd_platform.providers.kraken import _parse_row
+
+            result = data.get("result", {})
+            rows: list = []
+            for key, value in result.items():
+                if key != "last":
+                    if isinstance(value, list):
+                        rows = value
+                    break
+            if not rows:
+                errs = data.get("error", [])
+                return f"no data; errors={errs}, keys={list(result.keys())}"
+            _parse_row(rows[-1], "kraken", "XBT/USD", TIMEFRAME, "smoke")
+
         else:
             return f"unknown provider: {provider}"
 

@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        provider: [bitfinex, bitstamp, bybit, kucoin, mexc]
+        provider: [bitfinex, bitstamp, bybit, kucoin, mexc, coinbase, okx, gemini, htx, kraken]
 
     steps:
       - uses: actions/checkout@v6

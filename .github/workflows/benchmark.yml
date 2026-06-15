@@ -1,0 +1,47 @@
+name: Benchmark
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -e ".[test]"
+
+      - name: Restore benchmark cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.crmd/benchmarks
+          key: benchmark-candle-${{
+            hashFiles(
+              'src/crmd_platform/benchmark/**',
+              'src/crmd_platform/storage/parquet_writer.py',
+              'src/crmd_platform/models/candle.py'
+            ) }}
+          restore-keys: |
+            benchmark-candle-
+
+      - name: Run benchmark and check regressions
+        run: |
+          export CRMD_BENCHMARK_DIR=~/.crmd/benchmarks
+          mkdir -p "$CRMD_BENCHMARK_DIR"
+
+          python scripts/benchmark_pipeline.py run \
+            --count 10000 --iterations 5 --track
+
+          python scripts/benchmark_pipeline.py compare

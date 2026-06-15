@@ -6,6 +6,11 @@ SYMBOLS: dict[str, list[str]] = {
     "bybit": ["BTC/USDT", "ETH/USDT", "BTC/USD", "ETH/USD"],
     "kucoin": ["BTC/USDT", "ETH/USDT", "BTC/USD", "ETH/USD"],
     "mexc": ["BTC/USDT", "ETH/USDT", "BTC/USD", "ETH/USD"],
+    "coinbase": ["BTC/USD", "ETH/USD", "BTC/USDT", "ETH/USDT"],
+    "okx": ["BTC/USDT", "ETH/USDT", "BTC/USD", "ETH/USD"],
+    "gemini": ["BTC/USD", "ETH/USD", "BTC/USDT", "ETH/USDT"],
+    "htx": ["BTC/USDT", "ETH/USDT"],
+    "kraken": ["XBT/USD", "ETH/USD"],
 }
 
 API_VERSIONS: dict[str, str] = {
@@ -14,6 +19,11 @@ API_VERSIONS: dict[str, str] = {
     "bybit": "v5",
     "kucoin": "v1",
     "mexc": "v3",
+    "coinbase": "v3",
+    "okx": "v5",
+    "gemini": "v2",
+    "htx": "v1",
+    "kraken": "0",
 }
 
 TIMEFRAME = "1h"
@@ -71,10 +81,54 @@ def _endpoint_mexc(symbol: str, start: datetime, end: datetime) -> str:
     )
 
 
+def _endpoint_coinbase(symbol: str, start: datetime, end: datetime) -> str:
+    cb_sym = symbol.replace("/", "-").upper()
+    start_iso = start.strftime("%Y-%m-%dT%H:%M:%SZ")
+    end_iso = end.strftime("%Y-%m-%dT%H:%M:%SZ")
+    return (
+        f"https://api.exchange.coinbase.com/products/{cb_sym}/candles"
+        f"?granularity=3600&start={start_iso}&end={end_iso}"
+    )
+
+
+def _endpoint_okx(symbol: str, start: datetime, end: datetime) -> str:
+    okx_sym = symbol.replace("/", "-").upper()
+    return (
+        f"https://www.okx.com/api/v5/market/candles"
+        f"?instId={okx_sym}&bar=1H&limit=10"
+    )
+
+
+def _endpoint_gemini(symbol: str, start: datetime, end: datetime) -> str:
+    gmi_sym = symbol.replace("/", "").upper()
+    return f"https://api.gemini.com/v2/candles/{gmi_sym}/1h"
+
+
+def _endpoint_htx(symbol: str, start: datetime, end: datetime) -> str:
+    htx_sym = symbol.replace("/", "").lower()
+    return (
+        f"https://api.huobi.pro/market/history/kline"
+        f"?symbol={htx_sym}&period=60min&size=10"
+    )
+
+
+def _endpoint_kraken(symbol: str, start: datetime, end: datetime) -> str:
+    kr_sym = symbol.replace("/", "").upper().replace("BTC", "XBT")
+    return (
+        f"https://api.kraken.com/0/public/OHLC"
+        f"?pair={kr_sym}&interval=60"
+    )
+
+
 ENDPOINTS = {
     "bitfinex": _endpoint_bitfinex,
     "bitstamp": _endpoint_bitstamp,
     "bybit": _endpoint_bybit,
     "kucoin": _endpoint_kucoin,
     "mexc": _endpoint_mexc,
+    "coinbase": _endpoint_coinbase,
+    "okx": _endpoint_okx,
+    "gemini": _endpoint_gemini,
+    "htx": _endpoint_htx,
+    "kraken": _endpoint_kraken,
 }
