@@ -10,6 +10,7 @@ from crmd_platform.config import CLOUD_SCHEMES
 from crmd_platform.models.candle import Candle
 from crmd_platform.models.funding_rate import FundingRate
 from crmd_platform.query.service import QueryService
+from crmd_platform.storage.backend import StorageBackend
 
 # Blocked DuckDB functions that could read arbitrary filesystem files.
 # read_parquet is intentionally allowed — the whole point of raw_sql is to query Parquet data.
@@ -130,15 +131,34 @@ def _discover_files_cloud(base_path: str) -> dict[str, dict[str, list[str]]]:
     return result
 
 
-def _discover_files(base_path: str) -> dict[str, dict[str, list[str]]]:
+def _discover_files(base_path: str, backend: StorageBackend | None = None) -> dict[str, dict[str, list[str]]]:
+    if backend is not None:
+        pattern = f"{base_path.rstrip('/')}/**/*.parquet"
+        uris = backend.glob(pattern)
+        candles: dict[str, list[str]] = {}
+        funding: dict[str, list[str]] = {}
+        for uri in sorted(uris):
+            _parse_into_buckets(uri, base_path, candles, funding)
+        result: dict[str, dict[str, list[str]]] = {}
+        if candles:
+            result["candle"] = candles
+        if funding:
+            result["funding_rate"] = funding
+        return result
     if _is_cloud(base_path):
         return _discover_files_cloud(base_path)
     return discover_files_local(base_path)
 
 
 class DuckDBQueryService(QueryService):
+    def __init__(self, backend: StorageBackend | None = None):
+        self._backend = backend
+
+    def _discover(self, base_path: str) -> dict[str, dict[str, list[str]]]:
+        return _discover_files(base_path, backend=self._backend)
+
     def list_datasets(self, base_path: str = "data") -> dict[str, list[str]]:
-        files = _discover_files(base_path)
+        files = self._discover(base_path)
         result = {}
         for k, v in files.items():
             filtered = [key for key in v if not key.startswith("fake/")]
@@ -194,7 +214,7 @@ class DuckDBQueryService(QueryService):
             con.close()
 
     def get_summary(self, base_path: str = "data") -> list[dict[str, Any]]:
-        tables = _discover_files(base_path)
+        tables = self._discover(base_path)
         rows: list[dict[str, Any]] = []
         for type_name, datasets in tables.items():
             for dataset_key, files in datasets.items():
@@ -265,7 +285,7 @@ class DuckDBQueryService(QueryService):
         symbol: str | None = None,
         timeframe: str | None = None,
     ) -> list[str]:
-        tables = _discover_files(base_path)
+        tables = self._discover(base_path)
         datasets = tables.get(data_type, {})
         candidates: list[str] = list(datasets.keys())
 

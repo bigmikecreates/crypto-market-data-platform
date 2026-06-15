@@ -3,7 +3,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from crmd_platform.query import DuckDBQueryService
 
 from crmd_platform.models.candle import Candle
 from crmd_platform.models.funding_rate import FundingRate
@@ -90,17 +93,21 @@ class _LocalClient(Client):
                 "Install: pip install crmd-platform[local]"
             ) from None
         self._data_dir = data_dir
+        from crmd_platform.storage.backend import create_backend
 
-    def list_datasets(self) -> dict[str, list[str]]:
+        self._backend = create_backend(data_dir)
+
+    def _query_svc(self) -> DuckDBQueryService:
         from crmd_platform.query import DuckDBQueryService
 
-        svc = DuckDBQueryService()
+        return DuckDBQueryService(backend=self._backend)
+
+    def list_datasets(self) -> dict[str, list[str]]:
+        svc = self._query_svc()
         return svc.list_datasets(base_path=self._data_dir)
 
     def get_summary(self) -> list[dict[str, Any]]:
-        from crmd_platform.query import DuckDBQueryService
-
-        svc = DuckDBQueryService()
+        svc = self._query_svc()
         return svc.get_summary(base_path=self._data_dir)
 
     def query_candles(
@@ -113,9 +120,7 @@ class _LocalClient(Client):
         limit: int = 100,
         order: str = "DESC",
     ) -> list[Candle]:
-        from crmd_platform.query import DuckDBQueryService
-
-        svc = DuckDBQueryService()
+        svc = self._query_svc()
         return svc.get_candles(
             base_path=self._data_dir,
             exchange=exchange,
@@ -136,9 +141,7 @@ class _LocalClient(Client):
         limit: int = 100,
         order: str = "DESC",
     ) -> list[FundingRate]:
-        from crmd_platform.query import DuckDBQueryService
-
-        svc = DuckDBQueryService()
+        svc = self._query_svc()
         return svc.get_funding_rates(
             base_path=self._data_dir,
             exchange=exchange,
@@ -150,9 +153,7 @@ class _LocalClient(Client):
         )
 
     def query_sql(self, sql: str, limit: int = 100) -> list[dict[str, Any]]:
-        from crmd_platform.query import DuckDBQueryService
-
-        svc = DuckDBQueryService()
+        svc = self._query_svc()
         rows = svc.raw_sql(sql, base_path=self._data_dir)
         if limit:
             rows = rows[:limit]

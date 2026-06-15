@@ -438,13 +438,18 @@ def serve(
     """Start the FastAPI REST server."""
     import uvicorn
 
+    from crmd_platform.query import DuckDBQueryService
     from crmd_platform.server import create_app
     from crmd_platform.server.config import ServerConfig
+    from crmd_platform.storage.backend import create_backend
 
+    backend = create_backend(path)
     config = ServerConfig(
         host=host,
         port=port,
         base_path=path,
+        query_service=DuckDBQueryService(backend=backend),
+        storage_backend=backend,
         api_key=api_key,
         cors_origins=[o.strip() for o in cors_origins.split(",") if o.strip()],
     )
