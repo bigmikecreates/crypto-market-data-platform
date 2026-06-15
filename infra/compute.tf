@@ -45,8 +45,8 @@ resource "azurerm_container_app" "backend" {
       ]
 
       env {
-        name  = "AZURE_STORAGE_CONNECTION_STRING"
-        value = azurerm_storage_account.cmpd.primary_connection_string
+        name  = "AZURE_STORAGE_ACCOUNT"
+        value = azurerm_storage_account.cmpd.name
       }
 
       env {
@@ -117,8 +117,8 @@ resource "azurerm_container_app_job" "fetcher" {
       ], var.fetcher_extra_args)
 
       env {
-        name  = "AZURE_STORAGE_CONNECTION_STRING"
-        value = azurerm_storage_account.cmpd.primary_connection_string
+        name  = "AZURE_STORAGE_ACCOUNT"
+        value = azurerm_storage_account.cmpd.name
       }
 
       env {

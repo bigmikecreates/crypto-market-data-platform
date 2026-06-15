@@ -49,6 +49,17 @@ variable "container_name" {
   default     = "market-data"
 }
 
+variable "key_vault_sku" {
+  description = "SKU for the Key Vault (standard or premium)."
+  type        = string
+  default     = "standard"
+
+  validation {
+    condition     = contains(["standard", "premium"], var.key_vault_sku)
+    error_message = "key_vault_sku must be 'standard' or 'premium'."
+  }
+}
+
 # ── Container image ───────────────────────────────────────────────
 
 variable "image_name" {

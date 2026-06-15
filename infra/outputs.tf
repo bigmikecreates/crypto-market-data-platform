@@ -64,3 +64,13 @@ output "fetcher_job_name" {
   description = "Name of the fetcher Container App Job (for az CLI monitoring)."
   value       = azurerm_container_app_job.fetcher.name
 }
+
+output "key_vault_name" {
+  description = "Name of the Key Vault."
+  value       = azurerm_key_vault.cmpd.name
+}
+
+output "key_vault_uri" {
+  description = "URI of the Key Vault, for use with Azure CLI or SDK."
+  value       = azurerm_key_vault.cmpd.vault_uri
+}
