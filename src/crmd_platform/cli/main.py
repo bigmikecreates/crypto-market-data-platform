@@ -8,6 +8,7 @@ import typer
 from crmd_platform.client import Client
 from crmd_platform.models.candle import Candle
 from crmd_platform.models.funding_rate import FundingRate
+from typer.models import CommandInfo
 
 app = typer.Typer(name="crmd")
 
@@ -487,6 +488,38 @@ def inspect(
         typer.echo(f"Error: {e}", err=True)
         raise typer.Exit(code=1)
 
+
+# ── command aliases ───────────────────────────────────────────────
+
+
+def _resolve_cmd_name(ci):
+    return ci.name or ci.callback.__name__
+
+
+_ALIASES = {
+    "f": "fetch",
+    "ds": "datasets",
+    "s": "serve",
+    "i": "inspect",
+}
+_registered = {_resolve_cmd_name(ci): ci for ci in app.registered_commands}
+for _alias, _target in _ALIASES.items():
+    if _target in _registered:
+        app.registered_commands.append(
+            CommandInfo(name=_alias, callback=_registered[_target].callback)
+        )
+
+# Query group alias: crmd q
+app.add_typer(_query_app, name="q")
+
+# Query sub-command aliases: o -> ohlcv, fr -> funding-rate
+_Q_ALIASES = {"o": "ohlcv", "fr": "funding-rate"}
+_q_registered = {_resolve_cmd_name(ci): ci for ci in _query_app.registered_commands}
+for _alias, _target in _Q_ALIASES.items():
+    if _target in _q_registered:
+        _query_app.registered_commands.append(
+            CommandInfo(name=_alias, callback=_q_registered[_target].callback)
+        )
 
 # ── helpers ──────────────────────────────────────────────────────
 
