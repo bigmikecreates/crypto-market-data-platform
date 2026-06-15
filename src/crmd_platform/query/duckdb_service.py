@@ -60,12 +60,19 @@ def _is_cloud(path: str) -> bool:
     return path.startswith(CLOUD_SCHEMES)
 
 
-def _configure_connection(con: duckdb.DuckDBPyConnection, base_path: str) -> None:
+def _configure_connection(
+    con: duckdb.DuckDBPyConnection,
+    base_path: str,
+    backend: StorageBackend | None = None,
+) -> None:
     """Load the DuckDB extension appropriate for the storage scheme."""
     if base_path.startswith(("s3://", "gs://")):
         con.execute("INSTALL httpfs; LOAD httpfs;")
     elif base_path.startswith(("az://", "abfs://")):
         con.execute("INSTALL azure; LOAD azure;")
+        if backend is not None and hasattr(backend, "duckdb_setup_sql"):
+            for stmt in backend.duckdb_setup_sql():
+                con.execute(stmt)
 
 
 def _relative_parts(uri: str, base: str) -> tuple[str, ...]:
@@ -183,7 +190,7 @@ class DuckDBQueryService(QueryService):
         sql = self._build_query(files, start, end, limit, order)
         con = duckdb.connect()
         try:
-            _configure_connection(con, base_path)
+            _configure_connection(con, base_path, self._backend)
             result = con.sql(sql)
             dicts = _rows_to_dicts(result)
             return [Candle(**d) for d in dicts]
@@ -206,7 +213,7 @@ class DuckDBQueryService(QueryService):
         sql = self._build_query(files, start, end, limit, order)
         con = duckdb.connect()
         try:
-            _configure_connection(con, base_path)
+            _configure_connection(con, base_path, self._backend)
             result = con.sql(sql)
             dicts = _rows_to_dicts(result)
             return [FundingRate(**d) for d in dicts]
@@ -222,7 +229,7 @@ class DuckDBQueryService(QueryService):
                 # dataset cannot abort the transaction and silently truncate the rest.
                 con = duckdb.connect()
                 try:
-                    _configure_connection(con, base_path)
+                    _configure_connection(con, base_path, self._backend)
                     paths = ", ".join(f"'{f}'" for f in files)
                     sql = f"SELECT COUNT(*) AS cnt FROM read_parquet([{paths}])"
                     result = con.sql(sql)
@@ -271,7 +278,7 @@ class DuckDBQueryService(QueryService):
             )
         con = duckdb.connect()
         try:
-            _configure_connection(con, base_path)
+            _configure_connection(con, base_path, self._backend)
             result = con.sql(sql)
             return _rows_to_dicts(result)
         finally:

@@ -157,38 +157,94 @@ class LocalStorageBackend(StorageBackend):
 
 
 class AzureBlobBackend(StorageBackend):
-    """Azure Blob Storage backend using adlfs."""
+    """Azure Blob Storage backend using adlfs.
+
+    Supports three authentication methods (checked in order):
+    1. Connection string — via ``connection_string`` param or ``AZURE_STORAGE_CONNECTION_STRING`` env
+    2. Account name + access key — via ``AZURE_STORAGE_ACCOUNT`` + ``AZURE_STORAGE_KEY`` env vars
+    3. Managed identity — via ``AZURE_STORAGE_ACCOUNT`` env var only (uses ``DefaultAzureCredential``)
+    """
 
     def __init__(self, connection_string: str | None = None):
         """Initialize Azure Blob backend.
 
         Args:
             connection_string: Azure Storage connection string.
-                             If None, reads from AZURE_STORAGE_CONNECTION_STRING env var.
+                             If None, reads from AZURE_STORAGE_CONNECTION_STRING env var,
+                             then falls back to AZURE_STORAGE_ACCOUNT + AZURE_STORAGE_KEY,
+                             then AZURE_STORAGE_ACCOUNT (managed identity).
         """
         try:
             import adlfs
+            from azure.identity import DefaultAzureCredential
             from azure.storage.blob import BlobServiceClient
         except ImportError:
             raise ImportError(
-                "Azure Blob Storage requires adlfs. "
+                "Azure Blob Storage requires adlfs and azure-identity. "
                 "Install with: pip install 'crmd-platform[azure]'"
             )
 
         self._connection_string = connection_string or os.environ.get(
             "AZURE_STORAGE_CONNECTION_STRING"
         )
-        if not self._connection_string:
-            raise ValueError(
-                "Azure connection string required. "
-                "Set AZURE_STORAGE_CONNECTION_STRING environment variable or pass connection_string parameter."
-            )
+        self._account_name: str | None = None
+        self._account_key: str | None = None
+        self._use_managed_identity = False
 
-        self._fs = adlfs.AzureBlobFileSystem(connection_string=self._connection_string)
-        # Cache the service client to avoid recreating it on every blob operation
-        self._service_client = BlobServiceClient.from_connection_string(
-            self._connection_string
-        )
+        if self._connection_string:
+            self._auth_method = "connection_string"
+            self._fs = adlfs.AzureBlobFileSystem(
+                connection_string=self._connection_string
+            )
+            self._service_client = BlobServiceClient.from_connection_string(
+                self._connection_string
+            )
+        else:
+            self._account_name = os.environ.get("AZURE_STORAGE_ACCOUNT")
+            if not self._account_name:
+                raise ValueError(
+                    "Azure credentials required. "
+                    "Set AZURE_STORAGE_CONNECTION_STRING, or "
+                    "AZURE_STORAGE_ACCOUNT + AZURE_STORAGE_KEY, or "
+                    "AZURE_STORAGE_ACCOUNT (for managed identity)."
+                )
+
+            self._account_key = os.environ.get("AZURE_STORAGE_KEY")
+            account_url = f"https://{self._account_name}.blob.core.windows.net"
+
+            if self._account_key:
+                self._auth_method = "account_key"
+                self._fs = adlfs.AzureBlobFileSystem(
+                    account_name=self._account_name,
+                    account_key=self._account_key,
+                )
+                self._service_client = BlobServiceClient(
+                    account_url=account_url,
+                    credential=self._account_key,
+                )
+            else:
+                self._auth_method = "managed_identity"
+                self._use_managed_identity = True
+                self._fs = adlfs.AzureBlobFileSystem(
+                    account_name=self._account_name,
+                )
+                self._service_client = BlobServiceClient(
+                    account_url=account_url,
+                    credential=DefaultAzureCredential(),
+                )
+
+    def duckdb_setup_sql(self) -> list[str]:
+        """Return SQL statements to configure DuckDB's azure extension."""
+        if self._auth_method == "connection_string":
+            return [
+                f"SET azure_storage_connection_string = '{self._connection_string}';"
+            ]
+        if self._auth_method == "account_key":
+            return [
+                f"SET azure_storage_account_name = '{self._account_name}';",
+                f"SET azure_storage_account_key = '{self._account_key}';",
+            ]
+        return []
 
     def _get_blob_client(self, blob_path: str):
         """Get Azure Blob client for a path."""
