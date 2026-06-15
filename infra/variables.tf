@@ -132,6 +132,40 @@ variable "crmd_cors_origins" {
   default     = "http://localhost:3000,http://127.0.0.1:3000"
 }
 
+# ── Networking ────────────────────────────────────────────────────
+
+variable "use_vnet" {
+  description = "Enable VNet integration for the Container App Environment. Requires recreation when toggled on."
+  type        = bool
+  default     = false
+}
+
+variable "vnet_address_space" {
+  description = "CIDR block for the virtual network."
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "ace_subnet_prefix" {
+  description = "CIDR prefix for the ACA-delegated subnet."
+  type        = string
+  default     = "10.0.0.0/23"
+}
+
+variable "dns_domain" {
+  description = "Custom domain name for a public DNS zone (optional). A CNAME record is created pointing to the backend FQDN."
+  type        = string
+  default     = ""
+}
+
+# ── Monitoring ────────────────────────────────────────────────────
+
+variable "alert_email" {
+  description = "Email address for alert notifications. When empty, no action group or alerts are created."
+  type        = string
+  default     = ""
+}
+
 # ── Fetcher (Container App Job) ───────────────────────────────────
 
 variable "fetcher_cpu" {

@@ -18,6 +18,7 @@ resource "azurerm_container_app_environment" "cmpd" {
   location                   = azurerm_resource_group.cmpd.location
   resource_group_name        = azurerm_resource_group.cmpd.name
   log_analytics_workspace_id = azurerm_log_analytics_workspace.cmpd.id
+  infrastructure_subnet_id   = var.use_vnet ? azurerm_subnet.ace[0].id : null
 
   tags = local.tags
 }
@@ -47,6 +48,11 @@ resource "azurerm_container_app" "backend" {
       env {
         name  = "AZURE_STORAGE_ACCOUNT"
         value = azurerm_storage_account.cmpd.name
+      }
+
+      env {
+        name  = "APPLICATIONINSIGHTS_CONNECTION_STRING"
+        value = azurerm_application_insights.cmpd.connection_string
       }
 
       env {

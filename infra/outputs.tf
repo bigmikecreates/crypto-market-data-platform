@@ -74,3 +74,19 @@ output "key_vault_uri" {
   description = "URI of the Key Vault, for use with Azure CLI or SDK."
   value       = azurerm_key_vault.cmpd.vault_uri
 }
+
+output "app_insights_connection_string" {
+  description = "Connection string for Application Insights, to configure additional monitoring."
+  value       = azurerm_application_insights.cmpd.connection_string
+  sensitive   = true
+}
+
+output "dns_zone_name" {
+  description = "DNS zone name (if configured)."
+  value       = var.dns_domain != "" ? azurerm_dns_zone.cmpd[0].name : ""
+}
+
+output "backend_fqdn" {
+  description = "Fully qualified domain name of the backend Container App."
+  value       = azurerm_container_app.backend.latest_revision_fqdn
+}
