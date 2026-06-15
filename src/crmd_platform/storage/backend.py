@@ -396,24 +396,63 @@ class S3Backend(StorageBackend):
     def write_parquet(self, path: str, table: pa.Table) -> None:
         pq.write_table(table, path, filesystem=self._fs)
 
+    def _serialize_table(self, table: pa.Table) -> bytes:
+        sink = pa.BufferOutputStream()
+        pq.write_table(table, sink)
+        return sink.getvalue().to_pybytes()
+
     def write_parquet_with_lease(
         self,
         path: str,
         table: pa.Table,
         merge_fn: Callable[[pa.Table], pa.Table],
     ) -> None:
-        """Write with read-merge-write pattern for S3.
+        """Write with S3 ETag-based conditional PUT for concurrency control.
 
-        S3 doesn't have Azure-style leases, but we can use conditional PUT
-        operations. For simplicity, we use a read-merge-write pattern similar
-        to local storage. For production use with high concurrency, consider
-        using S3's conditional PUT with ETags or DynamoDB locking.
+        Uses If-Match header with the existing object's ETag to detect
+        concurrent modifications. Retries up to 6 times with exponential backoff
+        on 412 Precondition Failed.
         """
-        if self._fs.exists(path):
-            existing = pq.read_table(path, filesystem=self._fs)
-            table = merge_fn(existing)
+        import botocore.exceptions
 
-        pq.write_table(table, path, filesystem=self._fs)
+        def backoff(attempt: int) -> None:
+            time.sleep(min(0.5 * (2**attempt), 8.0) + random.uniform(0, 0.5))
+
+        max_attempts = 6
+        for attempt in range(max_attempts):
+            if not self._fs.exists(path):
+                try:
+                    self._fs.pipe(path, self._serialize_table(table))
+                    return
+                except botocore.exceptions.ClientError as e:
+                    if e.response["Error"]["Code"] != "412":
+                        raise
+            else:
+                try:
+                    info = self._fs.info(path)
+                    etag = info.get("ETag")
+                except Exception:
+                    backoff(attempt)
+                    continue
+
+                existing = pq.read_table(path, filesystem=self._fs)
+                merged = merge_fn(existing)
+
+                try:
+                    self._fs.pipe(
+                        path, self._serialize_table(merged), IfMatch=etag
+                    )
+                    return
+                except botocore.exceptions.ClientError as e:
+                    if e.response["Error"]["Code"] != "412":
+                        raise
+
+            backoff(attempt)
+
+        raise RuntimeError(
+            f"Could not write to '{path}' after {max_attempts} attempts — "
+            "S3 ETag mismatch or transient error"
+        )
 
     def glob(self, pattern: str) -> list[str]:
         """Find files matching a glob pattern in S3.
@@ -474,24 +513,62 @@ class GCSBackend(StorageBackend):
     def write_parquet(self, path: str, table: pa.Table) -> None:
         pq.write_table(table, path, filesystem=self._fs)
 
+    def _serialize_table(self, table: pa.Table) -> bytes:
+        sink = pa.BufferOutputStream()
+        pq.write_table(table, sink)
+        return sink.getvalue().to_pybytes()
+
     def write_parquet_with_lease(
         self,
         path: str,
         table: pa.Table,
         merge_fn: Callable[[pa.Table], pa.Table],
     ) -> None:
-        """Write with read-merge-write pattern for GCS.
+        """Write with GCS generation-number-based concurrency control.
 
-        GCS supports object versioning and conditional operations, but for
-        simplicity we use a read-merge-write pattern similar to local storage.
-        For production use with high concurrency, consider using GCS's
-        conditional operations or Cloud Storage locking.
+        Uses if_generation_match to detect concurrent modifications.
+        Retries up to 6 times with exponential backoff on 412 Precondition Failed.
         """
-        if self._fs.exists(path):
-            existing = pq.read_table(path, filesystem=self._fs)
-            table = merge_fn(existing)
+        def backoff(attempt: int) -> None:
+            time.sleep(min(0.5 * (2**attempt), 8.0) + random.uniform(0, 0.5))
 
-        pq.write_table(table, path, filesystem=self._fs)
+        max_attempts = 6
+        for attempt in range(max_attempts):
+            if not self._fs.exists(path):
+                try:
+                    self._fs.pipe(path, self._serialize_table(table))
+                    return
+                except Exception as e:
+                    if not (hasattr(e, "code") and e.code == 412):
+                        raise
+            else:
+                try:
+                    info = self._fs.info(path)
+                    generation = info.get("generation")
+                except Exception:
+                    backoff(attempt)
+                    continue
+
+                existing = pq.read_table(path, filesystem=self._fs)
+                merged = merge_fn(existing)
+
+                try:
+                    self._fs.pipe(
+                        path,
+                        self._serialize_table(merged),
+                        if_generation_match=generation,
+                    )
+                    return
+                except Exception as e:
+                    if not (hasattr(e, "code") and e.code == 412):
+                        raise
+
+            backoff(attempt)
+
+        raise RuntimeError(
+            f"Could not write to '{path}' after {max_attempts} attempts — "
+            "GCS generation mismatch or transient error"
+        )
 
     def glob(self, pattern: str) -> list[str]:
         """Find files matching a glob pattern in GCS.
