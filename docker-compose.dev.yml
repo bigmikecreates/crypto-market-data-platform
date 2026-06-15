@@ -10,6 +10,29 @@ services:
       - ./data:/app/data
     environment:
       - CRMD_DATA_DIR=/app/data
+      - CRMD_API_KEY=${CRMD_API_KEY:-}
+      - CRMD_CORS_ORIGINS=${CRMD_CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
+
+  fetcher:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: >
+      crmd fetch --mdt ohlcv
+                 --symbol ${CRMD_FETCH_SYMBOL:-BTC/USDT}
+                 --timeframe ${CRMD_FETCH_TIMEFRAME:-1h}
+                 --provider ${CRMD_FETCH_PROVIDER:-bitfinex}
+                 ${CRMD_FETCH_SINCE_LAST:+--since-last}
+                 ${CRMD_FETCH_FOLLOW:+--follow ${CRMD_FETCH_FOLLOW}}
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+    environment:
+      - CRMD_DATA_DIR=/app/data
+      - CRMD_API_URL=http://backend:8050
+    depends_on:
+      - backend
+    restart: unless-stopped
 
   frontend:
     build:
@@ -24,5 +47,3 @@ services:
       - NEXT_PUBLIC_API_BASE_URL=http://localhost:8050
     depends_on:
       - backend
-
-# data is bind-mounted from ./data on the host

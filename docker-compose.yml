@@ -17,12 +17,17 @@ services:
       context: .
       dockerfile: Dockerfile
     command: >
-      crmd fetch --mdt ohlcv --symbol BTC/USDT --timeframe 1h
-                 --provider bitfinex --since-last --follow 3600
+      crmd fetch --mdt ohlcv
+                 --symbol ${CRMD_FETCH_SYMBOL:-BTC/USDT}
+                 --timeframe ${CRMD_FETCH_TIMEFRAME:-1h}
+                 --provider ${CRMD_FETCH_PROVIDER:-bitfinex}
+                 ${CRMD_FETCH_SINCE_LAST:+--since-last}
+                 ${CRMD_FETCH_FOLLOW:+--follow ${CRMD_FETCH_FOLLOW}}
     volumes:
       - data:/data
     environment:
       - CRMD_DATA_DIR=/data
+      - CRMD_API_URL=http://backend:8050
     depends_on:
       - backend
     restart: unless-stopped
