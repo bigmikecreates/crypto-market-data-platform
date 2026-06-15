@@ -72,5 +72,25 @@ services:
           memory: 512M
           cpus: "1.0"
 
+  reverse-proxy:
+    build:
+      context: ./nginx
+    profiles:
+      - reverse-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ${CRMD_CERT_DIR:-./certs}:/etc/nginx/certs:ro
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+          cpus: "0.25"
+
 volumes:
   data:
