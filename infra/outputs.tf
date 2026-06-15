@@ -44,3 +44,23 @@ output "managed_identity_id" {
   description = "Full resource ID of the managed identity, for assignment to compute resources."
   value       = azurerm_user_assigned_identity.cmpd.id
 }
+
+output "backend_url" {
+  description = "HTTPS URL of the backend Container App."
+  value       = "https://${azurerm_container_app.backend.latest_revision_fqdn}"
+}
+
+output "container_app_environment_id" {
+  description = "Resource ID of the Container App Environment."
+  value       = azurerm_container_app_environment.cmpd.id
+}
+
+output "log_analytics_workspace_id" {
+  description = "Resource ID of the Log Analytics workspace."
+  value       = azurerm_log_analytics_workspace.cmpd.id
+}
+
+output "fetcher_job_name" {
+  description = "Name of the fetcher Container App Job (for az CLI monitoring)."
+  value       = azurerm_container_app_job.fetcher.name
+}

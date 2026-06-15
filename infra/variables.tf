@@ -48,3 +48,107 @@ variable "container_name" {
   type        = string
   default     = "market-data"
 }
+
+# ── Container image ───────────────────────────────────────────────
+
+variable "image_name" {
+  description = "Container image name (without tag)."
+  type        = string
+  default     = "ghcr.io/bigmikecreates/crypto-market-data-platform"
+}
+
+variable "image_tag" {
+  description = "Container image tag."
+  type        = string
+  default     = "latest"
+}
+
+variable "registry_server" {
+  description = "Container registry server (e.g. ghcr.io)."
+  type        = string
+  default     = "ghcr.io"
+}
+
+variable "registry_username" {
+  description = "Container registry username for image pulls."
+  type        = string
+  default     = ""
+}
+
+variable "registry_password" {
+  description = "Container registry password/token for image pulls."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+# ── Backend (Container App) ───────────────────────────────────────
+
+variable "backend_cpu" {
+  description = "CPU cores for the backend container app."
+  type        = string
+  default     = "0.5"
+}
+
+variable "backend_memory" {
+  description = "Memory for the backend container app (e.g. '1.0Gi')."
+  type        = string
+  default     = "1.0Gi"
+}
+
+variable "backend_min_replicas" {
+  description = "Minimum number of backend replicas."
+  type        = number
+  default     = 1
+}
+
+variable "backend_max_replicas" {
+  description = "Maximum number of backend replicas (scale-to-zero not used when min_replicas >= 1)."
+  type        = number
+  default     = 3
+}
+
+variable "crmd_api_key" {
+  description = "API key for the FastAPI server. Generate with: python -c 'import secrets; print(secrets.token_hex(32))'"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "crmd_cors_origins" {
+  description = "Comma-separated CORS origins for the FastAPI server."
+  type        = string
+  default     = "http://localhost:3000,http://127.0.0.1:3000"
+}
+
+# ── Fetcher (Container App Job) ───────────────────────────────────
+
+variable "fetcher_cpu" {
+  description = "CPU cores for the fetcher job."
+  type        = string
+  default     = "0.25"
+}
+
+variable "fetcher_memory" {
+  description = "Memory for the fetcher job."
+  type        = string
+  default     = "0.5Gi"
+}
+
+variable "fetcher_schedule" {
+  description = "Cron expression for the fetcher job schedule."
+  type        = string
+  default     = "0 */6 * * *"
+}
+
+variable "fetcher_retries" {
+  description = "Maximum retry count for failed fetcher executions."
+  type        = number
+  default     = 3
+}
+
+variable "fetcher_extra_args" {
+  description = "Additional CLI args passed to crmd fetch (symbol, timeframe, provider, etc.)."
+  type        = list(string)
+  default     = ["--symbol", "BTC/USDT", "--timeframe", "1h", "--provider", "bitfinex"]
+}
