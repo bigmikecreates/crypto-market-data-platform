@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import { createChart, ColorType, type IChartApi, type ISeriesApi, type LineData, type Time } from "lightweight-charts";
 import type { FundingRate } from "@/lib/types";
+import ErrorBoundary from "./ErrorBoundary";
+import { SkeletonChart } from "./Skeleton";
 
 interface Props {
   rates: FundingRate[];
@@ -101,10 +103,18 @@ export default function FundingRateChart({ rates, loading }: Props) {
     <div className="relative">
       <div ref={containerRef} className="w-full" />
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 rounded">
-          <span className="text-gray-400 text-sm">Loading chart...</span>
+        <div className="absolute inset-0 rounded">
+          <SkeletonChart />
         </div>
       )}
     </div>
+  );
+}
+
+export function WrappedFundingRateChart(props: { rates: FundingRate[]; loading?: boolean }) {
+  return (
+    <ErrorBoundary name="FundingRateChart">
+      <FundingRateChart {...props} />
+    </ErrorBoundary>
   );
 }

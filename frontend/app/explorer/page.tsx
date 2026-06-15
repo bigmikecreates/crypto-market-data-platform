@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchCandles, fetchData, fetchDatasets, fetchFundingRates, fetchLastFetch } from "@/lib/api";
-import CandlestickChart from "@/components/CandlestickChart";
+import { WrappedCandlestickChart as CandlestickChart } from "@/components/CandlestickChart";
 import CandleTable from "@/components/CandleTable";
-import FundingRateChart from "@/components/FundingRateChart";
+import { WrappedFundingRateChart as FundingRateChart } from "@/components/FundingRateChart";
 import FundingRateTable from "@/components/FundingRateTable";
+import { SkeletonBox, SkeletonText } from "@/components/Skeleton";
 import type { CandlesQuery, FetchResponse, FundingRatesQuery } from "@/lib/types";
 
 const DATA_TYPES = [
@@ -376,7 +377,22 @@ export default function ExplorerPage() {
       <h1 className="text-2xl font-bold">Market Data Explorer</h1>
 
       {dataTypeEntries === "loading" && (
-        <p className="text-gray-500 text-sm">Loading datasets...</p>
+        <div className="space-y-4">
+          <div className="flex gap-2">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <SkeletonBox key={i} className="h-8 w-24 rounded" />
+            ))}
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="space-y-1">
+                <SkeletonBox className="h-3 w-12 rounded" />
+                <SkeletonBox className="h-9 w-full rounded" />
+              </div>
+            ))}
+          </div>
+          <SkeletonText lines={2} />
+        </div>
       )}
 
       {dataTypeEntries === 0 && !datasetsLoading && (

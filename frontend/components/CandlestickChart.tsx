@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef } from "react";
 import { createChart, ColorType, CrosshairMode, type IChartApi, type ISeriesApi, type CandlestickData, type HistogramData, type Time, type MouseEventParams } from "lightweight-charts";
 import type { Candle } from "@/lib/types";
+import ErrorBoundary from "./ErrorBoundary";
+import { SkeletonChart } from "./Skeleton";
 
 interface Props {
   candles: Candle[];
@@ -233,10 +235,18 @@ export default function CandlestickChart({ candles, loading }: Props) {
         style={{ minWidth: 140 }}
       />
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 rounded pointer-events-none">
-          <span className="text-gray-400 text-sm">Loading chart...</span>
+        <div className="absolute inset-0 rounded pointer-events-none">
+          <SkeletonChart />
         </div>
       )}
     </div>
+  );
+}
+
+export function WrappedCandlestickChart(props: { candles: Candle[]; loading?: boolean }) {
+  return (
+    <ErrorBoundary name="CandlestickChart">
+      <CandlestickChart {...props} />
+    </ErrorBoundary>
   );
 }

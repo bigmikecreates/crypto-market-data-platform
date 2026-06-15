@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { fetchDatasets } from "@/lib/api";
+import { SkeletonBox, SkeletonText } from "@/components/Skeleton";
 
 export default function DatasetsPage() {
   const { data, isLoading, error } = useQuery({
@@ -14,7 +15,16 @@ export default function DatasetsPage() {
     <div className="min-h-screen bg-gray-950 text-gray-100 p-4 sm:p-6 space-y-6">
       <h1 className="text-2xl font-bold">Available Datasets</h1>
 
-      {isLoading && <p className="text-gray-400 text-sm">Loading datasets...</p>}
+      {isLoading && (
+        <div className="space-y-4">
+          <SkeletonText lines={1} className="w-48" />
+          <div className="space-y-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonBox key={i} className="h-10 w-full rounded" />
+            ))}
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="rounded bg-red-900/50 border border-red-700 p-3 text-sm text-red-200">
