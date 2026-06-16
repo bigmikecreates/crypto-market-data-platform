@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../lessons-from-bitfinex-integration/">
+        <link rel="prev" href="../troubleshooting/">
       
       
-        <link rel="next" href="../deploy/self-hosted/">
+        <link rel="next" href="../upgrading/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>KuCoin Integration - CrMD Platform</title>
+        <title>Performance - CrMD Platform</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#lessons-from-the-kucoin-provider-integration" class="md-skip">
+        <a href="#performance-tuning" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              KuCoin Integration
+              Performance
             
           </span>
         </div>
@@ -405,12 +405,10 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
+      <li class="md-tabs__item">
         <a href="../lessons-from-bitfinex-integration/" class="md-tabs__link">
           
   
@@ -447,10 +445,12 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../troubleshooting/" class="md-tabs__link">
           
   
@@ -808,31 +808,26 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
         
           
-          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
             
   
   
@@ -850,7 +845,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_11">
             <span class="md-nav__icon md-icon"></span>
             
@@ -893,37 +888,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    KuCoin Integration
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../lessons-from-kucoin-integration/" class="md-nav__link">
         
   
   
@@ -939,181 +907,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#architecture-validation-what-worked-as-designed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architecture Validation — What Worked as Designed
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Architecture Validation — What Worked as Designed">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. The provider adapter pattern absorbed KuCoin's differences cleanly
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-pre-emptive-user-agent-header-avoids-waf-issues" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Pre-emptive User-Agent header avoids WAF issues
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-validation-rules-remain-at-zero-false-positives" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Validation rules remain at zero false positives
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-seconds-timestamps-are-handled-transparently" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Seconds timestamps are handled transparently
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-standard-field-order-reduces-adapter-risk" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Standard field order reduces adapter risk
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#lessons-learned-what-the-implementation-revealed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Lessons Learned — What the Implementation Revealed
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Lessons Learned — What the Implementation Revealed">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-the-turnover-field-is-present-but-can-be-safely-ignored" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. The turnover field is present but can be safely ignored
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-no-partial-candle-on-the-current-period" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. No partial candle on the current period
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-pagination-not-exercised-at-typical-ranges" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Pagination not exercised at typical ranges
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-error-code-checking-is-different-from-bitfinex" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Error code checking is different from Bitfinex
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-kucoins-response-envelope-is-always-an-object" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. KuCoin's response envelope is always an object
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-1500-limit-batch-is-visible-in-the-request-url" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. 1500-limit batch is visible in the request URL
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1245,26 +1038,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" checked>
         
           
-          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="">
             
   
   
@@ -1282,7 +1080,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1325,10 +1123,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../performance/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1344,6 +1169,198 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ingestion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ingestion
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ingestion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parallel-fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel fetch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#time-range-chunking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Time range chunking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Storage I/O
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#time-range-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Time range filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limit-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limit results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-service-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query service configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#column-pruning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Column pruning
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource limits
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource limits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker Compose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud-azure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cloud (Azure)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmarking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmarking
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1526,22 +1543,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#architecture-validation-what-worked-as-designed" class="md-nav__link">
+  <a href="#ingestion" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture Validation — What Worked as Designed
+        Ingestion
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Architecture Validation — What Worked as Designed">
+    <nav class="md-nav" aria-label="Ingestion">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly" class="md-nav__link">
+  <a href="#parallel-fetch" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. The provider adapter pattern absorbed KuCoin's differences cleanly
+        Parallel fetch
       
     </span>
   </a>
@@ -1549,10 +1566,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-pre-emptive-user-agent-header-avoids-waf-issues" class="md-nav__link">
+  <a href="#time-range-chunking" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Pre-emptive User-Agent header avoids WAF issues
+        Time range chunking
       
     </span>
   </a>
@@ -1560,32 +1577,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-validation-rules-remain-at-zero-false-positives" class="md-nav__link">
+  <a href="#storage-io" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Validation rules remain at zero false positives
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-seconds-timestamps-are-handled-transparently" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Seconds timestamps are handled transparently
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-standard-field-order-reduces-adapter-risk" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Standard field order reduces adapter risk
+        Storage I/O
       
     </span>
   </a>
@@ -1598,22 +1593,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lessons-learned-what-the-implementation-revealed" class="md-nav__link">
+  <a href="#query-performance" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lessons Learned — What the Implementation Revealed
+        Query performance
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Lessons Learned — What the Implementation Revealed">
+    <nav class="md-nav" aria-label="Query performance">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-the-turnover-field-is-present-but-can-be-safely-ignored" class="md-nav__link">
+  <a href="#time-range-filtering" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. The turnover field is present but can be safely ignored
+        Time range filtering
       
     </span>
   </a>
@@ -1621,10 +1616,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-no-partial-candle-on-the-current-period" class="md-nav__link">
+  <a href="#limit-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. No partial candle on the current period
+        Limit results
       
     </span>
   </a>
@@ -1632,10 +1627,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-pagination-not-exercised-at-typical-ranges" class="md-nav__link">
+  <a href="#query-service-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Pagination not exercised at typical ranges
+        Query service configuration
       
     </span>
   </a>
@@ -1643,32 +1638,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-error-code-checking-is-different-from-bitfinex" class="md-nav__link">
+  <a href="#column-pruning" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Error code checking is different from Bitfinex
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-kucoins-response-envelope-is-always-an-object" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. KuCoin's response envelope is always an object
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-1500-limit-batch-is-visible-in-the-request-url" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. 1500-limit batch is visible in the request URL
+        Column pruning
       
     </span>
   </a>
@@ -1677,6 +1650,67 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource limits
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource limits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker Compose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud-azure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cloud (Azure)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmarking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmarking
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1700,94 +1734,138 @@
   
 
 
-<h1 id="lessons-from-the-kucoin-provider-integration">Lessons from the KuCoin Provider Integration<a class="headerlink" href="#lessons-from-the-kucoin-provider-integration" title="Permanent link">&para;</a></h1>
-<h2 id="architecture-validation-what-worked-as-designed">Architecture Validation — What Worked as Designed<a class="headerlink" href="#architecture-validation-what-worked-as-designed" title="Permanent link">&para;</a></h2>
-<p>These confirm that the architecture decisions made during the planning
-phase held up under real-world data.</p>
-<h3 id="1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly">1. The provider adapter pattern absorbed KuCoin's differences cleanly<a class="headerlink" href="#1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly" title="Permanent link">&para;</a></h3>
-<p>KuCoin differed from the Bitfinex model in API response envelope,
-timestamp precision, batch size, and naming conventions. Every difference
-was handled inside <code>providers/kucoin.py</code>. No changes were needed to
-<code>Candle</code>, validation, or the writer. This confirms that the provider
-boundary design generalises beyond a single exchange.</p>
-<p>→ See <a href="/crypto-market-data-platform/reference/#/python-api">Python API Reference</a> for the exact
-KuCoin API endpoint, field order, symbol format, and limit.</p>
-<h3 id="2-pre-emptive-user-agent-header-avoids-waf-issues">2. Pre-emptive User-Agent header avoids WAF issues<a class="headerlink" href="#2-pre-emptive-user-agent-header-avoids-waf-issues" title="Permanent link">&para;</a></h3>
-<p>Based on the Bitfinex lesson, the same <code>Mozilla/5.0...</code> User-Agent
-string was included from the first commit. The live test passed on
-the first attempt — no Cloudflare block.</p>
-<p><strong>Takeaway:</strong> The User-Agent fix from Bitfinex is a portable solution.
-Future providers should include the same header preemptively rather
-than discovering the issue at test time.</p>
-<h3 id="3-validation-rules-remain-at-zero-false-positives">3. Validation rules remain at zero false positives<a class="headerlink" href="#3-validation-rules-remain-at-zero-false-positives" title="Permanent link">&para;</a></h3>
-<p>48 real 1h candles from KuCoin passed with 0 issues. No rule adjustment
-was needed for this provider either — the same 5 provider-independent
-rules (EMPTY_FIELD, INVALID_DECIMAL, INVALID_TIMESTAMP, OHLC_INVARIANT,
-DUPLICATE_TIMESTAMP) work correctly across two different exchanges.</p>
-<h3 id="4-seconds-timestamps-are-handled-transparently">4. Seconds timestamps are handled transparently<a class="headerlink" href="#4-seconds-timestamps-are-handled-transparently" title="Permanent link">&para;</a></h3>
-<p>KuCoin returns unix timestamps in seconds (<code>int(row[0])</code>), not
-milliseconds like Bitfinex (<code>int(row[0]) / 1000</code>). Both convert to the
-same ISO-8601 string format via <code>datetime.fromtimestamp(...)</code>. The
-<code>Candle.timestamp</code> string field absorbs this difference — no schema
-change needed.</p>
-<h3 id="5-standard-field-order-reduces-adapter-risk">5. Standard field order reduces adapter risk<a class="headerlink" href="#5-standard-field-order-reduces-adapter-risk" title="Permanent link">&para;</a></h3>
-<p>KuCoin's response order <code>[time, open, close, high, low, volume, turnover]</code>
-matches the industry standard, unlike Bitfinex's non-standard
-<code>[MTS, OPEN, CLOSE, HIGH, LOW, VOLUME]</code>. The adapter was simpler to
-write and required less cross-referencing with the docs. This confirms
-that Bitfinex was the right first choice (hardest case first).</p>
-<hr />
-<h2 id="lessons-learned-what-the-implementation-revealed">Lessons Learned — What the Implementation Revealed<a class="headerlink" href="#lessons-learned-what-the-implementation-revealed" title="Permanent link">&para;</a></h2>
-<h3 id="1-the-turnover-field-is-present-but-can-be-safely-ignored">1. The turnover field is present but can be safely ignored<a class="headerlink" href="#1-the-turnover-field-is-present-but-can-be-safely-ignored" title="Permanent link">&para;</a></h3>
-<p>KuCoin returns a 7th field (<code>turnover</code>, in quote currency) that is not
-part of the <code>Candle</code> model. The adapter simply ignores it (row indexing
-stops at <code>volume=row[5]</code>). This is fine — no need to extend the model
-for provider-specific extra fields.</p>
-<p><em>Action for future providers:</em> Expect extra trailing fields in some
-responses. They can be silently ignored as long as the required fields
-are present at known indices.</p>
-<h3 id="2-no-partial-candle-on-the-current-period">2. No partial candle on the current period<a class="headerlink" href="#2-no-partial-candle-on-the-current-period" title="Permanent link">&para;</a></h3>
-<p>Like Bitfinex (and unlike Kraken), KuCoin returns only fully-closed
-candles. The 48 candles from a 2-day window are exactly <code>2 * 24 = 48</code>,
-confirming no partial candle is included. No stripping logic needed.</p>
-<p><em>Action for future providers:</em> Verify partial-candle behaviour
-empirically. Do not assume either behaviour from documentation alone.</p>
-<h3 id="3-pagination-not-exercised-at-typical-ranges">3. Pagination not exercised at typical ranges<a class="headerlink" href="#3-pagination-not-exercised-at-typical-ranges" title="Permanent link">&para;</a></h3>
-<p>With <code>limit=1500</code>, a 2-day window at 1h granularity (48 candles)
-fits comfortably in one page. Pagination would only activate at fine
-granularity (e.g., multiple days of 1m data producing 1440+ candles).
-The untiled code path is exercised only in edge cases.</p>
-<p><strong>Takeaway:</strong> Same behaviour as Bitfinex (10000 limit) — pagination
-exists for robustness, not daily use. Test explicitly with a wide
-date range at 1m granularity if pagination confidence is needed.</p>
-<h3 id="4-error-code-checking-is-different-from-bitfinex">4. Error code checking is different from Bitfinex<a class="headerlink" href="#4-error-code-checking-is-different-from-bitfinex" title="Permanent link">&para;</a></h3>
-<p>KuCoin returns HTTP 200 with a <code>code</code> field inside the JSON body
-(e.g., <code>"400001"</code> for invalid symbol), while Bitfinex returns actual
-HTTP 4xx/5xx status codes. The error-handling pattern was copied from
-Bitfinex but had to be adapted to check <code>data.get("code") != "200000"</code>
-on every response instead of catching HTTPError exceptions.</p>
-<p><em>Action for future providers:</em> Verify the error-reporting mechanism
-for each provider during implementation. Do not assume HTTP status
-codes are reliable — some providers return 200 with embedded errors.</p>
-<h3 id="5-kucoins-response-envelope-is-always-an-object">5. KuCoin's response envelope is always an object<a class="headerlink" href="#5-kucoins-response-envelope-is-always-an-object" title="Permanent link">&para;</a></h3>
-<p>Unlike Bitfinex (which returns a bare array <code>[[...], [...]]</code>), KuCoin
-always wraps data in <code>{"code": "200000", "data": [...]}</code>. The adapter
-must decode the JSON object and extract <code>data["data"]</code> rather than
-returning the raw parsed JSON directly.</p>
-<p><strong>Takeaway:</strong> Response envelope differences are handled inside the
-provider adapter. No general-purpose response parsing layer is needed
-— each provider's <code>_fetch_ohlcv_page</code> method owns the full HTTP-to-data
-transformation.</p>
-<h3 id="6-1500-limit-batch-is-visible-in-the-request-url">6. 1500-limit batch is visible in the request URL<a class="headerlink" href="#6-1500-limit-batch-is-visible-in-the-request-url" title="Permanent link">&para;</a></h3>
-<p>KuCoin does not accept a <code>limit</code> parameter — the 1500-candle maximum
-is enforced server-side. The adapter simply requests all available
-data within the time window and relies on <code>len(rows) &lt; 1500</code> to detect
-the last page. This is simpler than Bitfinex's explicit <code>limit=10000</code>
-parameter approach.</p>
-<p><em>Action for future providers:</em> Document whether the max batch size
-is parameterised (like Bitfinex's <code>limit=10000</code>) or server-enforced
-(like KuCoin's implicit 1500). This affects how the adapter detects
-the final page.</p>
+<h1 id="performance-tuning">Performance tuning<a class="headerlink" href="#performance-tuning" title="Permanent link">&para;</a></h1>
+<p>Guidelines for optimising ingestion throughput and query response times.</p>
+<h2 id="ingestion">Ingestion<a class="headerlink" href="#ingestion" title="Permanent link">&para;</a></h2>
+<h3 id="parallel-fetch">Parallel fetch<a class="headerlink" href="#parallel-fetch" title="Permanent link">&para;</a></h3>
+<p>The CLI <code>--workers</code> flag controls concurrent symbol fetching. Each worker fetches one symbol at a time in a separate thread:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>crmd<span class="w"> </span>fetch<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC/USDT&quot;</span><span class="w"> </span>--symbol<span class="w"> </span><span class="s2">&quot;ETH/USDT&quot;</span><span class="w"> </span>--symbol<span class="w"> </span><span class="s2">&quot;SOL/USDT&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>--timeframe<span class="w"> </span>1h<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>--start<span class="w"> </span><span class="m">2026</span>-01-01<span class="w"> </span>--end<span class="w"> </span><span class="m">2026</span>-01-08<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span>--provider<span class="w"> </span>bitfinex<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span>--workers<span class="w"> </span><span class="m">3</span>
+</code></pre></div>
+<p>Choose the worker count based on:</p>
+<ul>
+<li><strong>Exchange rate limits</strong> — start with <code>2-4</code> workers for most exchanges; increase if the API does not rate-limit</li>
+<li><strong>Network latency</strong> — higher latency benefits from more workers (pipelining)</li>
+<li><strong>CPU cores</strong> — avoid exceeding available cores; each worker does JSON parsing + validation</li>
+</ul>
+<h3 id="time-range-chunking">Time range chunking<a class="headerlink" href="#time-range-chunking" title="Permanent link">&para;</a></h3>
+<p>The fetcher splits the requested time range into daily chunks. Each chunk produces a single Parquet partition. This is automatic — no configuration needed.</p>
+<p>To reduce API pressure per symbol, use shorter ranges:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># One week per invocation</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>crmd<span class="w"> </span>fetch<span class="w"> </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC/USDT&quot;</span><span class="w"> </span>--start<span class="w"> </span><span class="m">2026</span>-01-01<span class="w"> </span>--end<span class="w"> </span><span class="m">2026</span>-01-08
+</code></pre></div>
+<h3 id="storage-io">Storage I/O<a class="headerlink" href="#storage-io" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Local disk</strong>: Use SSDs for Parquet storage. HDDs bottleneck merge operations on large partitions.</li>
+<li><strong>Azure Blob</strong>: Transfer speed depends on the Blob Storage tier. Standard tier is sufficient for moderate throughput; Premium tier improves concurrent access.</li>
+<li><strong>S3/GCS</strong>: Network latency dominates. Use <code>--workers</code> to pipeline requests.</li>
+</ul>
+<h2 id="query-performance">Query performance<a class="headerlink" href="#query-performance" title="Permanent link">&para;</a></h2>
+<h3 id="time-range-filtering">Time range filtering<a class="headerlink" href="#time-range-filtering" title="Permanent link">&para;</a></h3>
+<p>Always include <code>--start</code> and <code>--end</code> when querying. DuckDB can skip partitions outside the range, reducing I/O:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Fast — reads one partition</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>crmd<span class="w"> </span>query<span class="w"> </span>ohlcv<span class="w"> </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC/USDT&quot;</span><span class="w"> </span>--start<span class="w"> </span><span class="m">2026</span>-01-01<span class="w"> </span>--end<span class="w"> </span><span class="m">2026</span>-01-02
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Slow — scans all partitions</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>crmd<span class="w"> </span>query<span class="w"> </span>ohlcv<span class="w"> </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC/USDT&quot;</span>
+</code></pre></div>
+<h3 id="limit-results">Limit results<a class="headerlink" href="#limit-results" title="Permanent link">&para;</a></h3>
+<p>Use <code>--limit</code> to cap the number of returned rows when you only need a sample:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>crmd<span class="w"> </span>query<span class="w"> </span>ohlcv<span class="w"> </span>--symbol<span class="w"> </span><span class="s2">&quot;BTC/USDT&quot;</span><span class="w"> </span>--limit<span class="w"> </span><span class="m">100</span>
+</code></pre></div>
+<h3 id="query-service-configuration">Query service configuration<a class="headerlink" href="#query-service-configuration" title="Permanent link">&para;</a></h3>
+<p>The query service creates a new DuckDB in-memory connection per request. Key settings:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Tuning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>memory_limit</code></td>
+<td>4 GB</td>
+<td>Increase for large aggregations</td>
+</tr>
+<tr>
+<td><code>threads</code></td>
+<td>CPU count</td>
+<td>Reduce to limit concurrency</td>
+</tr>
+<tr>
+<td><code>enable_progress_bar</code></td>
+<td>off</td>
+<td>Disable for non-interactive use</td>
+</tr>
+</tbody>
+</table>
+<p>Set these via <code>crmd serve</code> with DuckDB configuration:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>crmd<span class="w"> </span>serve<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>--path<span class="w"> </span>data/<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>--port<span class="w"> </span><span class="m">8050</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span>--duckdb-memory-limit<span class="w"> </span>8GB<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span>--duckdb-threads<span class="w"> </span><span class="m">4</span>
+</code></pre></div>
+<h3 id="column-pruning">Column pruning<a class="headerlink" href="#column-pruning" title="Permanent link">&para;</a></h3>
+<p>Parquet is a columnar format. Queries that only read a subset of columns are faster:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a># SELECT timestamp, close — reads only 2 columns
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a># vs SELECT * — reads all 9 columns
+</code></pre></div>
+<p>The CLI and API always request all columns. Custom applications using DuckDB directly can prune.</p>
+<h2 id="resource-limits">Resource limits<a class="headerlink" href="#resource-limits" title="Permanent link">&para;</a></h2>
+<h3 id="docker-compose">Docker Compose<a class="headerlink" href="#docker-compose" title="Permanent link">&para;</a></h3>
+<p>Resource limits in <code>docker-compose.yml</code> prevent the stack from starving the host:</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Memory</th>
+<th>CPU</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backend</code></td>
+<td>512 MB</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td><code>fetcher</code></td>
+<td>256 MB</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td><code>frontend</code></td>
+<td>512 MB</td>
+<td>1.0</td>
+</tr>
+</tbody>
+</table>
+<p>Adjust these based on your workload — large parallel fetches benefit from more CPU.</p>
+<h3 id="cloud-azure">Cloud (Azure)<a class="headerlink" href="#cloud-azure" title="Permanent link">&para;</a></h3>
+<p>Terraform configures autoscaling for the backend Container App:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="na">min_replicas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="na">max_replicas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span>
+</code></pre></div>
+<p>Scales based on HTTP traffic and CPU/memory metrics. The fetcher is a scheduled job — it runs, ingests, and exits, so it incurs no ongoing cost.</p>
+<h2 id="benchmarking">Benchmarking<a class="headerlink" href="#benchmarking" title="Permanent link">&para;</a></h2>
+<p>For systematic performance measurement, see <a href="../benchmark-design/">Benchmark Design</a>. The pipeline includes two measurement modes:</p>
+<ul>
+<li><strong>Default</strong> — realistic performance under normal load</li>
+<li><strong><code>--isolated</code></strong> — dedicated core, high priority, revealing inherent cost</li>
+</ul>
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../benchmark-design/">Benchmark Design</a> — methodology and interpretation</li>
+<li><a href="../benchmarks/design-rationale/">Design Rationale</a> — data-driven decisions</li>
+<li><a href="../troubleshooting/">Troubleshooting</a> — common performance issues</li>
+</ul>
 
 
 

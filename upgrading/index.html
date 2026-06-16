@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../lessons-from-bitfinex-integration/">
+        <link rel="prev" href="../performance/">
       
       
-        <link rel="next" href="../deploy/self-hosted/">
+        <link rel="next" href="../benchmarks/provider-selection/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>KuCoin Integration - CrMD Platform</title>
+        <title>Upgrading - CrMD Platform</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#lessons-from-the-kucoin-provider-integration" class="md-skip">
+        <a href="#upgrading" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              KuCoin Integration
+              Upgrading
             
           </span>
         </div>
@@ -405,12 +405,10 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
+      <li class="md-tabs__item">
         <a href="../lessons-from-bitfinex-integration/" class="md-tabs__link">
           
   
@@ -447,10 +445,12 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../troubleshooting/" class="md-tabs__link">
           
   
@@ -808,31 +808,26 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
         
           
-          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
             
   
   
@@ -850,7 +845,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_11">
             <span class="md-nav__icon md-icon"></span>
             
@@ -893,37 +888,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    KuCoin Integration
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../lessons-from-kucoin-integration/" class="md-nav__link">
         
   
   
@@ -939,181 +907,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#architecture-validation-what-worked-as-designed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architecture Validation — What Worked as Designed
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Architecture Validation — What Worked as Designed">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. The provider adapter pattern absorbed KuCoin's differences cleanly
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-pre-emptive-user-agent-header-avoids-waf-issues" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Pre-emptive User-Agent header avoids WAF issues
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-validation-rules-remain-at-zero-false-positives" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Validation rules remain at zero false positives
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-seconds-timestamps-are-handled-transparently" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Seconds timestamps are handled transparently
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-standard-field-order-reduces-adapter-risk" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Standard field order reduces adapter risk
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#lessons-learned-what-the-implementation-revealed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Lessons Learned — What the Implementation Revealed
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Lessons Learned — What the Implementation Revealed">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-the-turnover-field-is-present-but-can-be-safely-ignored" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. The turnover field is present but can be safely ignored
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-no-partial-candle-on-the-current-period" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. No partial candle on the current period
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-pagination-not-exercised-at-typical-ranges" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Pagination not exercised at typical ranges
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-error-code-checking-is-different-from-bitfinex" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Error code checking is different from Bitfinex
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-kucoins-response-envelope-is-always-an-object" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. KuCoin's response envelope is always an object
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-1500-limit-batch-is-visible-in-the-request-url" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. 1500-limit batch is visible in the request URL
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1245,26 +1038,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" checked>
         
           
-          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="">
             
   
   
@@ -1282,7 +1080,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1353,10 +1151,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../upgrading/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upgrading
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1372,6 +1197,120 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#version-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version history
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to upgrade
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to upgrade">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local installation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker Compose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-terraform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure (Terraform)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-format-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data format compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-the-changelog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking the changelog
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1526,22 +1465,33 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#architecture-validation-what-worked-as-designed" class="md-nav__link">
+  <a href="#version-history" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture Validation — What Worked as Designed
+        Version history
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Architecture Validation — What Worked as Designed">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to upgrade
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to upgrade">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly" class="md-nav__link">
+  <a href="#local-installation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. The provider adapter pattern absorbed KuCoin's differences cleanly
+        Local installation
       
     </span>
   </a>
@@ -1549,10 +1499,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-pre-emptive-user-agent-header-avoids-waf-issues" class="md-nav__link">
+  <a href="#docker-compose" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Pre-emptive User-Agent header avoids WAF issues
+        Docker Compose
       
     </span>
   </a>
@@ -1560,32 +1510,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-validation-rules-remain-at-zero-false-positives" class="md-nav__link">
+  <a href="#azure-terraform" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Validation rules remain at zero false positives
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-seconds-timestamps-are-handled-transparently" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Seconds timestamps are handled transparently
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-standard-field-order-reduces-adapter-risk" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Standard field order reduces adapter risk
+        Azure (Terraform)
       
     </span>
   </a>
@@ -1598,85 +1526,35 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lessons-learned-what-the-implementation-revealed" class="md-nav__link">
+  <a href="#data-format-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lessons Learned — What the Implementation Revealed
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Lessons Learned — What the Implementation Revealed">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-the-turnover-field-is-present-but-can-be-safely-ignored" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. The turnover field is present but can be safely ignored
+        Data format compatibility
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#2-no-partial-candle-on-the-current-period" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#checking-the-changelog" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. No partial candle on the current period
+        Checking the changelog
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#3-pagination-not-exercised-at-typical-ranges" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Pagination not exercised at typical ranges
+        See also
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-error-code-checking-is-different-from-bitfinex" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Error code checking is different from Bitfinex
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-kucoins-response-envelope-is-always-an-object" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. KuCoin's response envelope is always an object
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-1500-limit-batch-is-visible-in-the-request-url" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. 1500-limit batch is visible in the request URL
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1700,94 +1578,59 @@
   
 
 
-<h1 id="lessons-from-the-kucoin-provider-integration">Lessons from the KuCoin Provider Integration<a class="headerlink" href="#lessons-from-the-kucoin-provider-integration" title="Permanent link">&para;</a></h1>
-<h2 id="architecture-validation-what-worked-as-designed">Architecture Validation — What Worked as Designed<a class="headerlink" href="#architecture-validation-what-worked-as-designed" title="Permanent link">&para;</a></h2>
-<p>These confirm that the architecture decisions made during the planning
-phase held up under real-world data.</p>
-<h3 id="1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly">1. The provider adapter pattern absorbed KuCoin's differences cleanly<a class="headerlink" href="#1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly" title="Permanent link">&para;</a></h3>
-<p>KuCoin differed from the Bitfinex model in API response envelope,
-timestamp precision, batch size, and naming conventions. Every difference
-was handled inside <code>providers/kucoin.py</code>. No changes were needed to
-<code>Candle</code>, validation, or the writer. This confirms that the provider
-boundary design generalises beyond a single exchange.</p>
-<p>→ See <a href="/crypto-market-data-platform/reference/#/python-api">Python API Reference</a> for the exact
-KuCoin API endpoint, field order, symbol format, and limit.</p>
-<h3 id="2-pre-emptive-user-agent-header-avoids-waf-issues">2. Pre-emptive User-Agent header avoids WAF issues<a class="headerlink" href="#2-pre-emptive-user-agent-header-avoids-waf-issues" title="Permanent link">&para;</a></h3>
-<p>Based on the Bitfinex lesson, the same <code>Mozilla/5.0...</code> User-Agent
-string was included from the first commit. The live test passed on
-the first attempt — no Cloudflare block.</p>
-<p><strong>Takeaway:</strong> The User-Agent fix from Bitfinex is a portable solution.
-Future providers should include the same header preemptively rather
-than discovering the issue at test time.</p>
-<h3 id="3-validation-rules-remain-at-zero-false-positives">3. Validation rules remain at zero false positives<a class="headerlink" href="#3-validation-rules-remain-at-zero-false-positives" title="Permanent link">&para;</a></h3>
-<p>48 real 1h candles from KuCoin passed with 0 issues. No rule adjustment
-was needed for this provider either — the same 5 provider-independent
-rules (EMPTY_FIELD, INVALID_DECIMAL, INVALID_TIMESTAMP, OHLC_INVARIANT,
-DUPLICATE_TIMESTAMP) work correctly across two different exchanges.</p>
-<h3 id="4-seconds-timestamps-are-handled-transparently">4. Seconds timestamps are handled transparently<a class="headerlink" href="#4-seconds-timestamps-are-handled-transparently" title="Permanent link">&para;</a></h3>
-<p>KuCoin returns unix timestamps in seconds (<code>int(row[0])</code>), not
-milliseconds like Bitfinex (<code>int(row[0]) / 1000</code>). Both convert to the
-same ISO-8601 string format via <code>datetime.fromtimestamp(...)</code>. The
-<code>Candle.timestamp</code> string field absorbs this difference — no schema
-change needed.</p>
-<h3 id="5-standard-field-order-reduces-adapter-risk">5. Standard field order reduces adapter risk<a class="headerlink" href="#5-standard-field-order-reduces-adapter-risk" title="Permanent link">&para;</a></h3>
-<p>KuCoin's response order <code>[time, open, close, high, low, volume, turnover]</code>
-matches the industry standard, unlike Bitfinex's non-standard
-<code>[MTS, OPEN, CLOSE, HIGH, LOW, VOLUME]</code>. The adapter was simpler to
-write and required less cross-referencing with the docs. This confirms
-that Bitfinex was the right first choice (hardest case first).</p>
-<hr />
-<h2 id="lessons-learned-what-the-implementation-revealed">Lessons Learned — What the Implementation Revealed<a class="headerlink" href="#lessons-learned-what-the-implementation-revealed" title="Permanent link">&para;</a></h2>
-<h3 id="1-the-turnover-field-is-present-but-can-be-safely-ignored">1. The turnover field is present but can be safely ignored<a class="headerlink" href="#1-the-turnover-field-is-present-but-can-be-safely-ignored" title="Permanent link">&para;</a></h3>
-<p>KuCoin returns a 7th field (<code>turnover</code>, in quote currency) that is not
-part of the <code>Candle</code> model. The adapter simply ignores it (row indexing
-stops at <code>volume=row[5]</code>). This is fine — no need to extend the model
-for provider-specific extra fields.</p>
-<p><em>Action for future providers:</em> Expect extra trailing fields in some
-responses. They can be silently ignored as long as the required fields
-are present at known indices.</p>
-<h3 id="2-no-partial-candle-on-the-current-period">2. No partial candle on the current period<a class="headerlink" href="#2-no-partial-candle-on-the-current-period" title="Permanent link">&para;</a></h3>
-<p>Like Bitfinex (and unlike Kraken), KuCoin returns only fully-closed
-candles. The 48 candles from a 2-day window are exactly <code>2 * 24 = 48</code>,
-confirming no partial candle is included. No stripping logic needed.</p>
-<p><em>Action for future providers:</em> Verify partial-candle behaviour
-empirically. Do not assume either behaviour from documentation alone.</p>
-<h3 id="3-pagination-not-exercised-at-typical-ranges">3. Pagination not exercised at typical ranges<a class="headerlink" href="#3-pagination-not-exercised-at-typical-ranges" title="Permanent link">&para;</a></h3>
-<p>With <code>limit=1500</code>, a 2-day window at 1h granularity (48 candles)
-fits comfortably in one page. Pagination would only activate at fine
-granularity (e.g., multiple days of 1m data producing 1440+ candles).
-The untiled code path is exercised only in edge cases.</p>
-<p><strong>Takeaway:</strong> Same behaviour as Bitfinex (10000 limit) — pagination
-exists for robustness, not daily use. Test explicitly with a wide
-date range at 1m granularity if pagination confidence is needed.</p>
-<h3 id="4-error-code-checking-is-different-from-bitfinex">4. Error code checking is different from Bitfinex<a class="headerlink" href="#4-error-code-checking-is-different-from-bitfinex" title="Permanent link">&para;</a></h3>
-<p>KuCoin returns HTTP 200 with a <code>code</code> field inside the JSON body
-(e.g., <code>"400001"</code> for invalid symbol), while Bitfinex returns actual
-HTTP 4xx/5xx status codes. The error-handling pattern was copied from
-Bitfinex but had to be adapted to check <code>data.get("code") != "200000"</code>
-on every response instead of catching HTTPError exceptions.</p>
-<p><em>Action for future providers:</em> Verify the error-reporting mechanism
-for each provider during implementation. Do not assume HTTP status
-codes are reliable — some providers return 200 with embedded errors.</p>
-<h3 id="5-kucoins-response-envelope-is-always-an-object">5. KuCoin's response envelope is always an object<a class="headerlink" href="#5-kucoins-response-envelope-is-always-an-object" title="Permanent link">&para;</a></h3>
-<p>Unlike Bitfinex (which returns a bare array <code>[[...], [...]]</code>), KuCoin
-always wraps data in <code>{"code": "200000", "data": [...]}</code>. The adapter
-must decode the JSON object and extract <code>data["data"]</code> rather than
-returning the raw parsed JSON directly.</p>
-<p><strong>Takeaway:</strong> Response envelope differences are handled inside the
-provider adapter. No general-purpose response parsing layer is needed
-— each provider's <code>_fetch_ohlcv_page</code> method owns the full HTTP-to-data
-transformation.</p>
-<h3 id="6-1500-limit-batch-is-visible-in-the-request-url">6. 1500-limit batch is visible in the request URL<a class="headerlink" href="#6-1500-limit-batch-is-visible-in-the-request-url" title="Permanent link">&para;</a></h3>
-<p>KuCoin does not accept a <code>limit</code> parameter — the 1500-candle maximum
-is enforced server-side. The adapter simply requests all available
-data within the time window and relies on <code>len(rows) &lt; 1500</code> to detect
-the last page. This is simpler than Bitfinex's explicit <code>limit=10000</code>
-parameter approach.</p>
-<p><em>Action for future providers:</em> Document whether the max batch size
-is parameterised (like Bitfinex's <code>limit=10000</code>) or server-enforced
-(like KuCoin's implicit 1500). This affects how the adapter detects
-the final page.</p>
+<h1 id="upgrading">Upgrading<a class="headerlink" href="#upgrading" title="Permanent link">&para;</a></h1>
+<p>Instructions for moving between versions of the CrMD Platform.</p>
+<h2 id="version-history">Version history<a class="headerlink" href="#version-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Notable changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.1.0</td>
+<td>—</td>
+<td>Initial release.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-to-upgrade">How to upgrade<a class="headerlink" href="#how-to-upgrade" title="Permanent link">&para;</a></h2>
+<h3 id="local-installation">Local installation<a class="headerlink" href="#local-installation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>main
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</code></pre></div>
+<p>If you use extras (Azure, S3, GCS), reinstall with the same extras:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[azure,s3,gcs]&quot;</span>
+</code></pre></div>
+<h3 id="docker-compose">Docker Compose<a class="headerlink" href="#docker-compose" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>pull
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<p>The backend and fetcher images are tagged with <code>:latest</code>. Pin to a specific version in <code>docker-compose.yml</code> if needed.</p>
+<h3 id="azure-terraform">Azure (Terraform)<a class="headerlink" href="#azure-terraform" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">cd</span><span class="w"> </span>infra
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>terraform<span class="w"> </span>init<span class="w"> </span>-upgrade
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>terraform<span class="w"> </span>apply
+</code></pre></div>
+<p>Terraform updates the Container App images to the latest <code>:latest</code> tag. To pin a version, set the image tag explicitly in <code>terraform.tfvars</code>.</p>
+<h2 id="data-format-compatibility">Data format compatibility<a class="headerlink" href="#data-format-compatibility" title="Permanent link">&para;</a></h2>
+<p>Parquet files written by the current version are forward-compatible with future versions. The schema (<code>exchange</code>, <code>symbol</code>, <code>timeframe</code>, <code>timestamp</code>, numeric fields as <code>decimal128(38,10)</code>) is stable.</p>
+<p>If a future version changes the schema:</p>
+<ol>
+<li>A migration flag or command will be provided.</li>
+<li>Old Parquet files remain readable — the reader ignores unknown columns.</li>
+</ol>
+<h2 id="checking-the-changelog">Checking the changelog<a class="headerlink" href="#checking-the-changelog" title="Permanent link">&para;</a></h2>
+<p>Release notes are published on the <a href="https://github.com/bigmikecreates/crypto-market-data-platform/releases">GitHub releases page</a>. Subscribe to get notified of new versions.</p>
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../deploy/self-hosted/">Self-hosted deployment</a></li>
+<li><a href="../deploy/cloud/">Cloud deployment</a></li>
+<li><a href="../troubleshooting/">Troubleshooting</a></li>
+</ul>
 
 
 

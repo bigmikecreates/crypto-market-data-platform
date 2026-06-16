@@ -11,28 +11,28 @@
       
       
       
-        <link rel="prev" href="../lessons-from-bitfinex-integration/">
+        <link rel="prev" href="../self-hosted/">
       
       
-        <link rel="next" href="../deploy/self-hosted/">
+        <link rel="next" href="../../troubleshooting/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>KuCoin Integration - CrMD Platform</title>
+        <title>Cloud (Azure) - CrMD Platform</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,7 +51,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#lessons-from-the-kucoin-provider-integration" class="md-skip">
+        <a href="#cloud-deployment-azure" class="md-skip">
           Skip to content
         </a>
       
@@ -92,7 +92,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="CrMD Platform" class="md-header__button md-logo" aria-label="CrMD Platform" data-md-component="logo">
+    <a href="../.." title="CrMD Platform" class="md-header__button md-logo" aria-label="CrMD Platform" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              KuCoin Integration
+              Cloud (Azure)
             
           </span>
         </div>
@@ -217,7 +217,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -236,7 +236,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../getting-started/" class="md-tabs__link">
+      <a href="../../getting-started/" class="md-tabs__link">
         
   
   
@@ -255,7 +255,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../architecture/" class="md-tabs__link">
+      <a href="../../architecture/" class="md-tabs__link">
         
   
   
@@ -274,7 +274,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../data-model/" class="md-tabs__link">
+      <a href="../../data-model/" class="md-tabs__link">
         
   
   
@@ -293,7 +293,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../providers/" class="md-tabs__link">
+      <a href="../../providers/" class="md-tabs__link">
         
   
   
@@ -312,7 +312,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../validation-strategy/" class="md-tabs__link">
+      <a href="../../validation-strategy/" class="md-tabs__link">
         
   
   
@@ -331,7 +331,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../storage-e2e/" class="md-tabs__link">
+      <a href="../../storage-e2e/" class="md-tabs__link">
         
   
   
@@ -350,7 +350,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../philosophy/" class="md-tabs__link">
+      <a href="../../philosophy/" class="md-tabs__link">
         
   
   
@@ -369,7 +369,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../benchmark-design/" class="md-tabs__link">
+      <a href="../../benchmark-design/" class="md-tabs__link">
         
   
   
@@ -388,7 +388,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../smoke-testing/" class="md-tabs__link">
+      <a href="../../smoke-testing/" class="md-tabs__link">
         
   
   
@@ -405,13 +405,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../lessons-from-bitfinex-integration/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../lessons-from-bitfinex-integration/" class="md-tabs__link">
           
   
   
@@ -427,11 +425,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../deploy/self-hosted/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../self-hosted/" class="md-tabs__link">
           
   
   
@@ -451,7 +451,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../troubleshooting/" class="md-tabs__link">
+        <a href="../../troubleshooting/" class="md-tabs__link">
           
   
   
@@ -471,7 +471,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../benchmarks/provider-selection/" class="md-tabs__link">
+        <a href="../../benchmarks/provider-selection/" class="md-tabs__link">
           
   
   
@@ -511,7 +511,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="CrMD Platform" class="md-nav__button md-logo" aria-label="CrMD Platform" data-md-component="logo">
+    <a href="../.." title="CrMD Platform" class="md-nav__button md-logo" aria-label="CrMD Platform" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -541,7 +541,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -568,7 +568,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting-started/" class="md-nav__link">
+      <a href="../../getting-started/" class="md-nav__link">
         
   
   
@@ -595,7 +595,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
+      <a href="../../architecture/" class="md-nav__link">
         
   
   
@@ -622,7 +622,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../data-model/" class="md-nav__link">
+      <a href="../../data-model/" class="md-nav__link">
         
   
   
@@ -649,7 +649,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../providers/" class="md-nav__link">
+      <a href="../../providers/" class="md-nav__link">
         
   
   
@@ -676,7 +676,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../validation-strategy/" class="md-nav__link">
+      <a href="../../validation-strategy/" class="md-nav__link">
         
   
   
@@ -703,7 +703,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../storage-e2e/" class="md-nav__link">
+      <a href="../../storage-e2e/" class="md-nav__link">
         
   
   
@@ -730,7 +730,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../philosophy/" class="md-nav__link">
+      <a href="../../philosophy/" class="md-nav__link">
         
   
   
@@ -757,7 +757,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../benchmark-design/" class="md-nav__link">
+      <a href="../../benchmark-design/" class="md-nav__link">
         
   
   
@@ -784,7 +784,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../smoke-testing/" class="md-nav__link">
+      <a href="../../smoke-testing/" class="md-nav__link">
         
   
   
@@ -800,6 +800,121 @@
   
 
       </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lessons Learned
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lessons Learned
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lessons-from-bitfinex-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bitfinex Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lessons-from-kucoin-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KuCoin Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -829,17 +944,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
         
           
-          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Lessons Learned
+    Deployment
   
 
     
@@ -850,12 +965,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_11">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Lessons Learned
+    Deployment
   
 
           </label>
@@ -868,14 +983,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../lessons-from-bitfinex-integration/" class="md-nav__link">
+      <a href="../self-hosted/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Bitfinex Integration
+    Self-hosted
   
 
     
@@ -912,7 +1027,7 @@
   <span class="md-ellipsis">
     
   
-    KuCoin Integration
+    Cloud (Azure)
   
 
     
@@ -930,7 +1045,7 @@
   <span class="md-ellipsis">
     
   
-    KuCoin Integration
+    Cloud (Azure)
   
 
     
@@ -956,22 +1071,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#architecture-validation-what-worked-as-designed" class="md-nav__link">
+  <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture Validation — What Worked as Designed
+        Quick start
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Architecture Validation — What Worked as Designed">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-the-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing the backend
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly" class="md-nav__link">
+  <a href="#required-variables" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. The provider adapter pattern absorbed KuCoin's differences cleanly
+        Required variables
       
     </span>
   </a>
@@ -979,10 +1116,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-pre-emptive-user-agent-header-avoids-waf-issues" class="md-nav__link">
+  <a href="#optional-variables" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Pre-emptive User-Agent header avoids WAF issues
+        Optional variables
       
     </span>
   </a>
@@ -990,10 +1127,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-validation-rules-remain-at-zero-false-positives" class="md-nav__link">
+  <a href="#vnet-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Validation rules remain at zero false positives
+        VNet integration
       
     </span>
   </a>
@@ -1001,21 +1138,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-seconds-timestamps-are-handled-transparently" class="md-nav__link">
+  <a href="#custom-domain" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Seconds timestamps are handled transparently
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-standard-field-order-reduces-adapter-risk" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Standard field order reduces adapter risk
+        Custom domain
       
     </span>
   </a>
@@ -1028,85 +1154,46 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lessons-learned-what-the-implementation-revealed" class="md-nav__link">
+  <a href="#monitoring-alerts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lessons Learned — What the Implementation Revealed
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Lessons Learned — What the Implementation Revealed">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-the-turnover-field-is-present-but-can-be-safely-ignored" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. The turnover field is present but can be safely ignored
+        Monitoring alerts
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#2-no-partial-candle-on-the-current-period" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. No partial candle on the current period
+        Authentication
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#3-pagination-not-exercised-at-typical-ranges" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#cleanup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Pagination not exercised at typical ranges
+        Cleanup
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#4-error-code-checking-is-different-from-bitfinex" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Error code checking is different from Bitfinex
+        See also
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-kucoins-response-envelope-is-always-an-object" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. KuCoin's response envelope is always an object
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-1500-limit-batch-is-visible-in-the-request-url" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. 1500-limit batch is visible in the request URL
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1114,121 +1201,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
-        
-          
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployment
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Deployment
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../deploy/self-hosted/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Self-hosted
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../deploy/cloud/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Cloud (Azure)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1300,7 +1272,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../troubleshooting/" class="md-nav__link">
+      <a href="../../troubleshooting/" class="md-nav__link">
         
   
   
@@ -1328,7 +1300,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../performance/" class="md-nav__link">
+      <a href="../../performance/" class="md-nav__link">
         
   
   
@@ -1356,7 +1328,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../upgrading/" class="md-nav__link">
+      <a href="../../upgrading/" class="md-nav__link">
         
   
   
@@ -1443,7 +1415,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../benchmarks/provider-selection/" class="md-nav__link">
+      <a href="../../benchmarks/provider-selection/" class="md-nav__link">
         
   
   
@@ -1471,7 +1443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../benchmarks/design-rationale/" class="md-nav__link">
+      <a href="../../benchmarks/design-rationale/" class="md-nav__link">
         
   
   
@@ -1526,22 +1498,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#architecture-validation-what-worked-as-designed" class="md-nav__link">
+  <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture Validation — What Worked as Designed
+        Quick start
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Architecture Validation — What Worked as Designed">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-the-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing the backend
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly" class="md-nav__link">
+  <a href="#required-variables" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. The provider adapter pattern absorbed KuCoin's differences cleanly
+        Required variables
       
     </span>
   </a>
@@ -1549,10 +1543,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-pre-emptive-user-agent-header-avoids-waf-issues" class="md-nav__link">
+  <a href="#optional-variables" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Pre-emptive User-Agent header avoids WAF issues
+        Optional variables
       
     </span>
   </a>
@@ -1560,10 +1554,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-validation-rules-remain-at-zero-false-positives" class="md-nav__link">
+  <a href="#vnet-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Validation rules remain at zero false positives
+        VNet integration
       
     </span>
   </a>
@@ -1571,21 +1565,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-seconds-timestamps-are-handled-transparently" class="md-nav__link">
+  <a href="#custom-domain" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Seconds timestamps are handled transparently
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-standard-field-order-reduces-adapter-risk" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Standard field order reduces adapter risk
+        Custom domain
       
     </span>
   </a>
@@ -1598,85 +1581,46 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lessons-learned-what-the-implementation-revealed" class="md-nav__link">
+  <a href="#monitoring-alerts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lessons Learned — What the Implementation Revealed
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Lessons Learned — What the Implementation Revealed">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-the-turnover-field-is-present-but-can-be-safely-ignored" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. The turnover field is present but can be safely ignored
+        Monitoring alerts
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#2-no-partial-candle-on-the-current-period" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. No partial candle on the current period
+        Authentication
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#3-pagination-not-exercised-at-typical-ranges" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#cleanup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Pagination not exercised at typical ranges
+        Cleanup
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#4-error-code-checking-is-different-from-bitfinex" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Error code checking is different from Bitfinex
+        See also
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-kucoins-response-envelope-is-always-an-object" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. KuCoin's response envelope is always an object
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-1500-limit-batch-is-visible-in-the-request-url" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. 1500-limit batch is visible in the request URL
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1700,94 +1644,191 @@
   
 
 
-<h1 id="lessons-from-the-kucoin-provider-integration">Lessons from the KuCoin Provider Integration<a class="headerlink" href="#lessons-from-the-kucoin-provider-integration" title="Permanent link">&para;</a></h1>
-<h2 id="architecture-validation-what-worked-as-designed">Architecture Validation — What Worked as Designed<a class="headerlink" href="#architecture-validation-what-worked-as-designed" title="Permanent link">&para;</a></h2>
-<p>These confirm that the architecture decisions made during the planning
-phase held up under real-world data.</p>
-<h3 id="1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly">1. The provider adapter pattern absorbed KuCoin's differences cleanly<a class="headerlink" href="#1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly" title="Permanent link">&para;</a></h3>
-<p>KuCoin differed from the Bitfinex model in API response envelope,
-timestamp precision, batch size, and naming conventions. Every difference
-was handled inside <code>providers/kucoin.py</code>. No changes were needed to
-<code>Candle</code>, validation, or the writer. This confirms that the provider
-boundary design generalises beyond a single exchange.</p>
-<p>→ See <a href="/crypto-market-data-platform/reference/#/python-api">Python API Reference</a> for the exact
-KuCoin API endpoint, field order, symbol format, and limit.</p>
-<h3 id="2-pre-emptive-user-agent-header-avoids-waf-issues">2. Pre-emptive User-Agent header avoids WAF issues<a class="headerlink" href="#2-pre-emptive-user-agent-header-avoids-waf-issues" title="Permanent link">&para;</a></h3>
-<p>Based on the Bitfinex lesson, the same <code>Mozilla/5.0...</code> User-Agent
-string was included from the first commit. The live test passed on
-the first attempt — no Cloudflare block.</p>
-<p><strong>Takeaway:</strong> The User-Agent fix from Bitfinex is a portable solution.
-Future providers should include the same header preemptively rather
-than discovering the issue at test time.</p>
-<h3 id="3-validation-rules-remain-at-zero-false-positives">3. Validation rules remain at zero false positives<a class="headerlink" href="#3-validation-rules-remain-at-zero-false-positives" title="Permanent link">&para;</a></h3>
-<p>48 real 1h candles from KuCoin passed with 0 issues. No rule adjustment
-was needed for this provider either — the same 5 provider-independent
-rules (EMPTY_FIELD, INVALID_DECIMAL, INVALID_TIMESTAMP, OHLC_INVARIANT,
-DUPLICATE_TIMESTAMP) work correctly across two different exchanges.</p>
-<h3 id="4-seconds-timestamps-are-handled-transparently">4. Seconds timestamps are handled transparently<a class="headerlink" href="#4-seconds-timestamps-are-handled-transparently" title="Permanent link">&para;</a></h3>
-<p>KuCoin returns unix timestamps in seconds (<code>int(row[0])</code>), not
-milliseconds like Bitfinex (<code>int(row[0]) / 1000</code>). Both convert to the
-same ISO-8601 string format via <code>datetime.fromtimestamp(...)</code>. The
-<code>Candle.timestamp</code> string field absorbs this difference — no schema
-change needed.</p>
-<h3 id="5-standard-field-order-reduces-adapter-risk">5. Standard field order reduces adapter risk<a class="headerlink" href="#5-standard-field-order-reduces-adapter-risk" title="Permanent link">&para;</a></h3>
-<p>KuCoin's response order <code>[time, open, close, high, low, volume, turnover]</code>
-matches the industry standard, unlike Bitfinex's non-standard
-<code>[MTS, OPEN, CLOSE, HIGH, LOW, VOLUME]</code>. The adapter was simpler to
-write and required less cross-referencing with the docs. This confirms
-that Bitfinex was the right first choice (hardest case first).</p>
-<hr />
-<h2 id="lessons-learned-what-the-implementation-revealed">Lessons Learned — What the Implementation Revealed<a class="headerlink" href="#lessons-learned-what-the-implementation-revealed" title="Permanent link">&para;</a></h2>
-<h3 id="1-the-turnover-field-is-present-but-can-be-safely-ignored">1. The turnover field is present but can be safely ignored<a class="headerlink" href="#1-the-turnover-field-is-present-but-can-be-safely-ignored" title="Permanent link">&para;</a></h3>
-<p>KuCoin returns a 7th field (<code>turnover</code>, in quote currency) that is not
-part of the <code>Candle</code> model. The adapter simply ignores it (row indexing
-stops at <code>volume=row[5]</code>). This is fine — no need to extend the model
-for provider-specific extra fields.</p>
-<p><em>Action for future providers:</em> Expect extra trailing fields in some
-responses. They can be silently ignored as long as the required fields
-are present at known indices.</p>
-<h3 id="2-no-partial-candle-on-the-current-period">2. No partial candle on the current period<a class="headerlink" href="#2-no-partial-candle-on-the-current-period" title="Permanent link">&para;</a></h3>
-<p>Like Bitfinex (and unlike Kraken), KuCoin returns only fully-closed
-candles. The 48 candles from a 2-day window are exactly <code>2 * 24 = 48</code>,
-confirming no partial candle is included. No stripping logic needed.</p>
-<p><em>Action for future providers:</em> Verify partial-candle behaviour
-empirically. Do not assume either behaviour from documentation alone.</p>
-<h3 id="3-pagination-not-exercised-at-typical-ranges">3. Pagination not exercised at typical ranges<a class="headerlink" href="#3-pagination-not-exercised-at-typical-ranges" title="Permanent link">&para;</a></h3>
-<p>With <code>limit=1500</code>, a 2-day window at 1h granularity (48 candles)
-fits comfortably in one page. Pagination would only activate at fine
-granularity (e.g., multiple days of 1m data producing 1440+ candles).
-The untiled code path is exercised only in edge cases.</p>
-<p><strong>Takeaway:</strong> Same behaviour as Bitfinex (10000 limit) — pagination
-exists for robustness, not daily use. Test explicitly with a wide
-date range at 1m granularity if pagination confidence is needed.</p>
-<h3 id="4-error-code-checking-is-different-from-bitfinex">4. Error code checking is different from Bitfinex<a class="headerlink" href="#4-error-code-checking-is-different-from-bitfinex" title="Permanent link">&para;</a></h3>
-<p>KuCoin returns HTTP 200 with a <code>code</code> field inside the JSON body
-(e.g., <code>"400001"</code> for invalid symbol), while Bitfinex returns actual
-HTTP 4xx/5xx status codes. The error-handling pattern was copied from
-Bitfinex but had to be adapted to check <code>data.get("code") != "200000"</code>
-on every response instead of catching HTTPError exceptions.</p>
-<p><em>Action for future providers:</em> Verify the error-reporting mechanism
-for each provider during implementation. Do not assume HTTP status
-codes are reliable — some providers return 200 with embedded errors.</p>
-<h3 id="5-kucoins-response-envelope-is-always-an-object">5. KuCoin's response envelope is always an object<a class="headerlink" href="#5-kucoins-response-envelope-is-always-an-object" title="Permanent link">&para;</a></h3>
-<p>Unlike Bitfinex (which returns a bare array <code>[[...], [...]]</code>), KuCoin
-always wraps data in <code>{"code": "200000", "data": [...]}</code>. The adapter
-must decode the JSON object and extract <code>data["data"]</code> rather than
-returning the raw parsed JSON directly.</p>
-<p><strong>Takeaway:</strong> Response envelope differences are handled inside the
-provider adapter. No general-purpose response parsing layer is needed
-— each provider's <code>_fetch_ohlcv_page</code> method owns the full HTTP-to-data
-transformation.</p>
-<h3 id="6-1500-limit-batch-is-visible-in-the-request-url">6. 1500-limit batch is visible in the request URL<a class="headerlink" href="#6-1500-limit-batch-is-visible-in-the-request-url" title="Permanent link">&para;</a></h3>
-<p>KuCoin does not accept a <code>limit</code> parameter — the 1500-candle maximum
-is enforced server-side. The adapter simply requests all available
-data within the time window and relies on <code>len(rows) &lt; 1500</code> to detect
-the last page. This is simpler than Bitfinex's explicit <code>limit=10000</code>
-parameter approach.</p>
-<p><em>Action for future providers:</em> Document whether the max batch size
-is parameterised (like Bitfinex's <code>limit=10000</code>) or server-enforced
-(like KuCoin's implicit 1500). This affects how the adapter detects
-the final page.</p>
+<h1 id="cloud-deployment-azure">Cloud deployment (Azure)<a class="headerlink" href="#cloud-deployment-azure" title="Permanent link">&para;</a></h1>
+<p>Deploy the full <code>crmd</code> stack to Azure Container Apps using Terraform. This provisions a managed, autoscaling backend API, a scheduled fetcher job, and monitoring infrastructure — suitable for production and team use.</p>
+<h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># 1. Login to Azure</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>az<span class="w"> </span>login
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># 2. Create a tfvars file</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>terraform.tfvars<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="s">prefix         = &quot;crmd&quot;</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="s">environment    = &quot;prod&quot;</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="s">location       = &quot;eastus&quot;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="s">crmd_api_key   = &quot;$(openssl rand -hex 32)&quot;</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="s">alert_email    = &quot;team@example.com&quot;</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="s">EOF</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1"># 3. Deploy</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="nb">cd</span><span class="w"> </span>infra
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>terraform<span class="w"> </span>init
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>terraform<span class="w"> </span>apply<span class="w"> </span>-auto-approve
+</code></pre></div>
+<p>The deployment creates:</p>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Container App Environment</td>
+<td>Managed Kubernetes with Log Analytics</td>
+</tr>
+<tr>
+<td>Backend Container App</td>
+<td>FastAPI server (<code>crmd serve</code>) on port 8050</td>
+</tr>
+<tr>
+<td>Fetcher Container App Job</td>
+<td>Scheduled cron ingestion (<code>crmd fetch --since-last</code>)</td>
+</tr>
+<tr>
+<td>Azure Blob Storage</td>
+<td>Parquet data lake</td>
+</tr>
+<tr>
+<td>Key Vault</td>
+<td>Secrets: storage connection string, API key, registry password</td>
+</tr>
+<tr>
+<td>Application Insights</td>
+<td>Request tracing, dependency monitoring</td>
+</tr>
+<tr>
+<td>Action group + alerts</td>
+<td>CPU, memory, HTTP 5xx, fetcher failure notifications</td>
+</tr>
+</tbody>
+</table>
+<h2 id="accessing-the-backend">Accessing the backend<a class="headerlink" href="#accessing-the-backend" title="Permanent link">&para;</a></h2>
+<p>After deployment, Terraform outputs the backend FQDN:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>terraform<span class="w"> </span>output<span class="w"> </span>backend_fqdn
+</code></pre></div>
+<p>Verify the deployment:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="k">$(</span>terraform<span class="w"> </span>output<span class="w"> </span>-raw<span class="w"> </span>crmd_api_key<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>https://&lt;backend-fqdn&gt;/health
+</code></pre></div>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<h3 id="required-variables">Required variables<a class="headerlink" href="#required-variables" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>prefix</code></td>
+<td>Resource name prefix (lowercase, 3-8 chars)</td>
+</tr>
+<tr>
+<td><code>environment</code></td>
+<td>Environment name (<code>dev</code>, <code>staging</code>, <code>prod</code>)</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td>Azure region (e.g. <code>eastus</code>, <code>westeurope</code>)</td>
+</tr>
+<tr>
+<td><code>crmd_api_key</code></td>
+<td>API key for backend authentication</td>
+</tr>
+</tbody>
+</table>
+<h3 id="optional-variables">Optional variables<a class="headerlink" href="#optional-variables" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>crmd_cors_origins</code></td>
+<td><code>http://localhost:3000</code></td>
+<td>Comma-separated CORS origins</td>
+</tr>
+<tr>
+<td><code>use_vnet</code></td>
+<td><code>false</code></td>
+<td>Deploy into a dedicated VNet (requires recreation)</td>
+</tr>
+<tr>
+<td><code>dns_domain</code></td>
+<td><code>""</code></td>
+<td>Custom domain for a public DNS zone + CNAME</td>
+</tr>
+<tr>
+<td><code>alert_email</code></td>
+<td><code>""</code></td>
+<td>Email address for monitoring alerts</td>
+</tr>
+<tr>
+<td><code>min_replicas</code></td>
+<td><code>1</code></td>
+<td>Minimum backend replicas</td>
+</tr>
+<tr>
+<td><code>max_replicas</code></td>
+<td><code>10</code></td>
+<td>Maximum backend replicas (scale threshold)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="vnet-integration">VNet integration<a class="headerlink" href="#vnet-integration" title="Permanent link">&para;</a></h3>
+<p>Set <code>use_vnet = true</code> to deploy the Container App Environment into a dedicated subnet with an NSG. This is required for private network access but forces recreation of the ACE — toggle before production data is stored.</p>
+<h3 id="custom-domain">Custom domain<a class="headerlink" href="#custom-domain" title="Permanent link">&para;</a></h3>
+<p>Set <code>dns_domain = "api.example.com"</code> to create a public DNS zone and CNAME record pointing to the backend FQDN.</p>
+<h2 id="monitoring-alerts">Monitoring alerts<a class="headerlink" href="#monitoring-alerts" title="Permanent link">&para;</a></h2>
+<p>When <code>alert_email</code> is set, the deployment creates:</p>
+<table>
+<thead>
+<tr>
+<th>Alert</th>
+<th>Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU &gt;80%</td>
+<td>Average CPU across replicas</td>
+</tr>
+<tr>
+<td>Memory &gt;80%</td>
+<td>Average memory across replicas</td>
+</tr>
+<tr>
+<td>Replica count</td>
+<td>Replicas below minimum</td>
+</tr>
+<tr>
+<td>HTTP 5xx errors</td>
+<td>Any 5xx response from the backend</td>
+</tr>
+<tr>
+<td>Fetcher job failure</td>
+<td>Scheduled cron job exits with error</td>
+</tr>
+</tbody>
+</table>
+<h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h2>
+<p>The backend uses <code>AZURE_STORAGE_ACCOUNT</code> with <code>DefaultAzureCredential</code> (automatic managed identity detection in ACA). No connection string is needed when deploying via Terraform — the managed identity on the Container App has <code>Storage Blob Data Contributor</code> access to the storage account.</p>
+<h2 id="cleanup">Cleanup<a class="headerlink" href="#cleanup" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>terraform<span class="w"> </span>destroy
+</code></pre></div>
+<p>This removes all Azure resources. Data in the storage account is deleted unless you add <code>prevent_destroy</code> to the storage account resource.</p>
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../self-hosted/">Self-hosted deployment</a> — Docker Compose on a single VM</li>
+<li><a href="../../architecture/">Architecture</a> — pipeline design overview</li>
+<li><a href="../../troubleshooting/">Troubleshooting</a> — common Azure deployment issues</li>
+</ul>
 
 
 
@@ -1845,10 +1886,10 @@ the final page.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.top", "content.code.copy", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.top", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

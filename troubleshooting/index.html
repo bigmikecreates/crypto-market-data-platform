@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../lessons-from-bitfinex-integration/">
+        <link rel="prev" href="../deploy/cloud/">
       
       
-        <link rel="next" href="../deploy/self-hosted/">
+        <link rel="next" href="../performance/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>KuCoin Integration - CrMD Platform</title>
+        <title>Troubleshooting - CrMD Platform</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#lessons-from-the-kucoin-provider-integration" class="md-skip">
+        <a href="#troubleshooting-faq" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              KuCoin Integration
+              Troubleshooting
             
           </span>
         </div>
@@ -405,12 +405,10 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
+      <li class="md-tabs__item">
         <a href="../lessons-from-bitfinex-integration/" class="md-tabs__link">
           
   
@@ -447,11 +445,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../troubleshooting/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -808,31 +808,26 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
         
           
-          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
             
   
   
@@ -850,7 +845,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_11">
             <span class="md-nav__icon md-icon"></span>
             
@@ -893,37 +888,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    KuCoin Integration
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../lessons-from-kucoin-integration/" class="md-nav__link">
         
   
   
@@ -939,181 +907,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#architecture-validation-what-worked-as-designed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architecture Validation — What Worked as Designed
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Architecture Validation — What Worked as Designed">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. The provider adapter pattern absorbed KuCoin's differences cleanly
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-pre-emptive-user-agent-header-avoids-waf-issues" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Pre-emptive User-Agent header avoids WAF issues
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-validation-rules-remain-at-zero-false-positives" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Validation rules remain at zero false positives
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-seconds-timestamps-are-handled-transparently" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Seconds timestamps are handled transparently
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-standard-field-order-reduces-adapter-risk" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Standard field order reduces adapter risk
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#lessons-learned-what-the-implementation-revealed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Lessons Learned — What the Implementation Revealed
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Lessons Learned — What the Implementation Revealed">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-the-turnover-field-is-present-but-can-be-safely-ignored" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. The turnover field is present but can be safely ignored
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-no-partial-candle-on-the-current-period" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. No partial candle on the current period
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-pagination-not-exercised-at-typical-ranges" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Pagination not exercised at typical ranges
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-error-code-checking-is-different-from-bitfinex" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Error code checking is different from Bitfinex
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-kucoins-response-envelope-is-always-an-object" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. KuCoin's response envelope is always an object
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-1500-limit-batch-is-visible-in-the-request-url" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. 1500-limit batch is visible in the request URL
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1245,26 +1038,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" checked>
         
           
-          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="">
             
   
   
@@ -1282,7 +1080,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1297,10 +1095,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../troubleshooting/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1316,6 +1141,287 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#connection-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connection issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connection-refused-when-querying-the-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "Connection refused" when querying the API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-key-errors-401-unauthorized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API key errors (401 Unauthorized)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cors-errors-in-the-frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CORS errors in the frontend
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-data-returned-from-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No data returned from queries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fetcher-produces-no-candles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fetcher produces no candles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#duplicate-or-missing-candles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Duplicate or missing candles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slow-fetches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slow fetches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slow-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slow queries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#high-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High memory usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-permission-denied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker: permission denied
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-port-already-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker: port already in use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-terraform-apply-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure: Terraform apply fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-managed-identity-not-authenticating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure: Managed identity not authenticating
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAQ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FAQ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#can-i-run-the-frontend-separately" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Can I run the frontend separately?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-do-i-reset-all-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How do I reset all data?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is-there-a-gui-for-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Is there a GUI for configuration?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1526,22 +1632,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#architecture-validation-what-worked-as-designed" class="md-nav__link">
+  <a href="#connection-issues" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture Validation — What Worked as Designed
+        Connection issues
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Architecture Validation — What Worked as Designed">
+    <nav class="md-nav" aria-label="Connection issues">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly" class="md-nav__link">
+  <a href="#connection-refused-when-querying-the-api" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. The provider adapter pattern absorbed KuCoin's differences cleanly
+        "Connection refused" when querying the API
       
     </span>
   </a>
@@ -1549,10 +1655,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-pre-emptive-user-agent-header-avoids-waf-issues" class="md-nav__link">
+  <a href="#api-key-errors-401-unauthorized" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Pre-emptive User-Agent header avoids WAF issues
+        API key errors (401 Unauthorized)
       
     </span>
   </a>
@@ -1560,32 +1666,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-validation-rules-remain-at-zero-false-positives" class="md-nav__link">
+  <a href="#cors-errors-in-the-frontend" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Validation rules remain at zero false positives
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-seconds-timestamps-are-handled-transparently" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Seconds timestamps are handled transparently
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-standard-field-order-reduces-adapter-risk" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Standard field order reduces adapter risk
+        CORS errors in the frontend
       
     </span>
   </a>
@@ -1598,22 +1682,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lessons-learned-what-the-implementation-revealed" class="md-nav__link">
+  <a href="#data-issues" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lessons Learned — What the Implementation Revealed
+        Data issues
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Lessons Learned — What the Implementation Revealed">
+    <nav class="md-nav" aria-label="Data issues">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-the-turnover-field-is-present-but-can-be-safely-ignored" class="md-nav__link">
+  <a href="#no-data-returned-from-queries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. The turnover field is present but can be safely ignored
+        No data returned from queries
       
     </span>
   </a>
@@ -1621,10 +1705,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-no-partial-candle-on-the-current-period" class="md-nav__link">
+  <a href="#fetcher-produces-no-candles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. No partial candle on the current period
+        Fetcher produces no candles
       
     </span>
   </a>
@@ -1632,10 +1716,38 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-pagination-not-exercised-at-typical-ranges" class="md-nav__link">
+  <a href="#duplicate-or-missing-candles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Pagination not exercised at typical ranges
+        Duplicate or missing candles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slow-fetches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slow fetches
       
     </span>
   </a>
@@ -1643,10 +1755,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-error-code-checking-is-different-from-bitfinex" class="md-nav__link">
+  <a href="#slow-queries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Error code checking is different from Bitfinex
+        Slow queries
       
     </span>
   </a>
@@ -1654,10 +1766,38 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-kucoins-response-envelope-is-always-an-object" class="md-nav__link">
+  <a href="#high-memory-usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. KuCoin's response envelope is always an object
+        High memory usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-permission-denied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker: permission denied
       
     </span>
   </a>
@@ -1665,10 +1805,82 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#6-1500-limit-batch-is-visible-in-the-request-url" class="md-nav__link">
+  <a href="#docker-port-already-in-use" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. 1500-limit batch is visible in the request URL
+        Docker: port already in use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-terraform-apply-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure: Terraform apply fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-managed-identity-not-authenticating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure: Managed identity not authenticating
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAQ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FAQ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#can-i-run-the-frontend-separately" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Can I run the frontend separately?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-do-i-reset-all-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How do I reset all data?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is-there-a-gui-for-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Is there a GUI for configuration?
       
     </span>
   </a>
@@ -1700,94 +1912,93 @@
   
 
 
-<h1 id="lessons-from-the-kucoin-provider-integration">Lessons from the KuCoin Provider Integration<a class="headerlink" href="#lessons-from-the-kucoin-provider-integration" title="Permanent link">&para;</a></h1>
-<h2 id="architecture-validation-what-worked-as-designed">Architecture Validation — What Worked as Designed<a class="headerlink" href="#architecture-validation-what-worked-as-designed" title="Permanent link">&para;</a></h2>
-<p>These confirm that the architecture decisions made during the planning
-phase held up under real-world data.</p>
-<h3 id="1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly">1. The provider adapter pattern absorbed KuCoin's differences cleanly<a class="headerlink" href="#1-the-provider-adapter-pattern-absorbed-kucoins-differences-cleanly" title="Permanent link">&para;</a></h3>
-<p>KuCoin differed from the Bitfinex model in API response envelope,
-timestamp precision, batch size, and naming conventions. Every difference
-was handled inside <code>providers/kucoin.py</code>. No changes were needed to
-<code>Candle</code>, validation, or the writer. This confirms that the provider
-boundary design generalises beyond a single exchange.</p>
-<p>→ See <a href="/crypto-market-data-platform/reference/#/python-api">Python API Reference</a> for the exact
-KuCoin API endpoint, field order, symbol format, and limit.</p>
-<h3 id="2-pre-emptive-user-agent-header-avoids-waf-issues">2. Pre-emptive User-Agent header avoids WAF issues<a class="headerlink" href="#2-pre-emptive-user-agent-header-avoids-waf-issues" title="Permanent link">&para;</a></h3>
-<p>Based on the Bitfinex lesson, the same <code>Mozilla/5.0...</code> User-Agent
-string was included from the first commit. The live test passed on
-the first attempt — no Cloudflare block.</p>
-<p><strong>Takeaway:</strong> The User-Agent fix from Bitfinex is a portable solution.
-Future providers should include the same header preemptively rather
-than discovering the issue at test time.</p>
-<h3 id="3-validation-rules-remain-at-zero-false-positives">3. Validation rules remain at zero false positives<a class="headerlink" href="#3-validation-rules-remain-at-zero-false-positives" title="Permanent link">&para;</a></h3>
-<p>48 real 1h candles from KuCoin passed with 0 issues. No rule adjustment
-was needed for this provider either — the same 5 provider-independent
-rules (EMPTY_FIELD, INVALID_DECIMAL, INVALID_TIMESTAMP, OHLC_INVARIANT,
-DUPLICATE_TIMESTAMP) work correctly across two different exchanges.</p>
-<h3 id="4-seconds-timestamps-are-handled-transparently">4. Seconds timestamps are handled transparently<a class="headerlink" href="#4-seconds-timestamps-are-handled-transparently" title="Permanent link">&para;</a></h3>
-<p>KuCoin returns unix timestamps in seconds (<code>int(row[0])</code>), not
-milliseconds like Bitfinex (<code>int(row[0]) / 1000</code>). Both convert to the
-same ISO-8601 string format via <code>datetime.fromtimestamp(...)</code>. The
-<code>Candle.timestamp</code> string field absorbs this difference — no schema
-change needed.</p>
-<h3 id="5-standard-field-order-reduces-adapter-risk">5. Standard field order reduces adapter risk<a class="headerlink" href="#5-standard-field-order-reduces-adapter-risk" title="Permanent link">&para;</a></h3>
-<p>KuCoin's response order <code>[time, open, close, high, low, volume, turnover]</code>
-matches the industry standard, unlike Bitfinex's non-standard
-<code>[MTS, OPEN, CLOSE, HIGH, LOW, VOLUME]</code>. The adapter was simpler to
-write and required less cross-referencing with the docs. This confirms
-that Bitfinex was the right first choice (hardest case first).</p>
-<hr />
-<h2 id="lessons-learned-what-the-implementation-revealed">Lessons Learned — What the Implementation Revealed<a class="headerlink" href="#lessons-learned-what-the-implementation-revealed" title="Permanent link">&para;</a></h2>
-<h3 id="1-the-turnover-field-is-present-but-can-be-safely-ignored">1. The turnover field is present but can be safely ignored<a class="headerlink" href="#1-the-turnover-field-is-present-but-can-be-safely-ignored" title="Permanent link">&para;</a></h3>
-<p>KuCoin returns a 7th field (<code>turnover</code>, in quote currency) that is not
-part of the <code>Candle</code> model. The adapter simply ignores it (row indexing
-stops at <code>volume=row[5]</code>). This is fine — no need to extend the model
-for provider-specific extra fields.</p>
-<p><em>Action for future providers:</em> Expect extra trailing fields in some
-responses. They can be silently ignored as long as the required fields
-are present at known indices.</p>
-<h3 id="2-no-partial-candle-on-the-current-period">2. No partial candle on the current period<a class="headerlink" href="#2-no-partial-candle-on-the-current-period" title="Permanent link">&para;</a></h3>
-<p>Like Bitfinex (and unlike Kraken), KuCoin returns only fully-closed
-candles. The 48 candles from a 2-day window are exactly <code>2 * 24 = 48</code>,
-confirming no partial candle is included. No stripping logic needed.</p>
-<p><em>Action for future providers:</em> Verify partial-candle behaviour
-empirically. Do not assume either behaviour from documentation alone.</p>
-<h3 id="3-pagination-not-exercised-at-typical-ranges">3. Pagination not exercised at typical ranges<a class="headerlink" href="#3-pagination-not-exercised-at-typical-ranges" title="Permanent link">&para;</a></h3>
-<p>With <code>limit=1500</code>, a 2-day window at 1h granularity (48 candles)
-fits comfortably in one page. Pagination would only activate at fine
-granularity (e.g., multiple days of 1m data producing 1440+ candles).
-The untiled code path is exercised only in edge cases.</p>
-<p><strong>Takeaway:</strong> Same behaviour as Bitfinex (10000 limit) — pagination
-exists for robustness, not daily use. Test explicitly with a wide
-date range at 1m granularity if pagination confidence is needed.</p>
-<h3 id="4-error-code-checking-is-different-from-bitfinex">4. Error code checking is different from Bitfinex<a class="headerlink" href="#4-error-code-checking-is-different-from-bitfinex" title="Permanent link">&para;</a></h3>
-<p>KuCoin returns HTTP 200 with a <code>code</code> field inside the JSON body
-(e.g., <code>"400001"</code> for invalid symbol), while Bitfinex returns actual
-HTTP 4xx/5xx status codes. The error-handling pattern was copied from
-Bitfinex but had to be adapted to check <code>data.get("code") != "200000"</code>
-on every response instead of catching HTTPError exceptions.</p>
-<p><em>Action for future providers:</em> Verify the error-reporting mechanism
-for each provider during implementation. Do not assume HTTP status
-codes are reliable — some providers return 200 with embedded errors.</p>
-<h3 id="5-kucoins-response-envelope-is-always-an-object">5. KuCoin's response envelope is always an object<a class="headerlink" href="#5-kucoins-response-envelope-is-always-an-object" title="Permanent link">&para;</a></h3>
-<p>Unlike Bitfinex (which returns a bare array <code>[[...], [...]]</code>), KuCoin
-always wraps data in <code>{"code": "200000", "data": [...]}</code>. The adapter
-must decode the JSON object and extract <code>data["data"]</code> rather than
-returning the raw parsed JSON directly.</p>
-<p><strong>Takeaway:</strong> Response envelope differences are handled inside the
-provider adapter. No general-purpose response parsing layer is needed
-— each provider's <code>_fetch_ohlcv_page</code> method owns the full HTTP-to-data
-transformation.</p>
-<h3 id="6-1500-limit-batch-is-visible-in-the-request-url">6. 1500-limit batch is visible in the request URL<a class="headerlink" href="#6-1500-limit-batch-is-visible-in-the-request-url" title="Permanent link">&para;</a></h3>
-<p>KuCoin does not accept a <code>limit</code> parameter — the 1500-candle maximum
-is enforced server-side. The adapter simply requests all available
-data within the time window and relies on <code>len(rows) &lt; 1500</code> to detect
-the last page. This is simpler than Bitfinex's explicit <code>limit=10000</code>
-parameter approach.</p>
-<p><em>Action for future providers:</em> Document whether the max batch size
-is parameterised (like Bitfinex's <code>limit=10000</code>) or server-enforced
-(like KuCoin's implicit 1500). This affects how the adapter detects
-the final page.</p>
+<h1 id="troubleshooting-faq">Troubleshooting &amp; FAQ<a class="headerlink" href="#troubleshooting-faq" title="Permanent link">&para;</a></h1>
+<p>Common issues, their causes, and solutions.</p>
+<h2 id="connection-issues">Connection issues<a class="headerlink" href="#connection-issues" title="Permanent link">&para;</a></h2>
+<h3 id="connection-refused-when-querying-the-api">"Connection refused" when querying the API<a class="headerlink" href="#connection-refused-when-querying-the-api" title="Permanent link">&para;</a></h3>
+<p>The backend is not running or not reachable.</p>
+<ul>
+<li><strong>Docker Compose</strong>: Run <code>docker compose ps</code> to verify all services are healthy. Check <code>docker compose logs backend</code> for errors.</li>
+<li><strong>Cloud (Azure)</strong>: Verify the backend FQDN resolves and is reachable. Check the Container App logs in the Azure Portal or Application Insights.</li>
+<li><strong>Port mismatch</strong>: The API runs on port 8050 by default. Verify your <code>curl</code> or frontend config matches.</li>
+</ul>
+<h3 id="api-key-errors-401-unauthorized">API key errors (401 Unauthorized)<a class="headerlink" href="#api-key-errors-401-unauthorized" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The backend requires <code>X-API-Key</code> header on all requests except <code>/health</code>.</li>
+<li>In the frontend, open <strong>Settings</strong> and enter the same key used by the backend.</li>
+<li>On Docker Compose, the key is set via <code>CRMD_API_KEY</code> in <code>.env</code>.</li>
+<li>On Azure, the key is stored in Key Vault and passed as an environment variable.</li>
+</ul>
+<h3 id="cors-errors-in-the-frontend">CORS errors in the frontend<a class="headerlink" href="#cors-errors-in-the-frontend" title="Permanent link">&para;</a></h3>
+<p>The backend must allow the frontend's origin:</p>
+<ul>
+<li><strong>Docker Compose</strong>: Set <code>CRMD_CORS_ORIGINS=http://localhost:3000</code> in <code>.env</code>.</li>
+<li><strong>Azure</strong>: Set <code>crmd_cors_origins</code> in <code>terraform.tfvars</code> to the frontend URL.</li>
+</ul>
+<h2 id="data-issues">Data issues<a class="headerlink" href="#data-issues" title="Permanent link">&para;</a></h2>
+<h3 id="no-data-returned-from-queries">No data returned from queries<a class="headerlink" href="#no-data-returned-from-queries" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The query date range may not overlap stored data. Use <code>crmd datasets</code> to see what's available.</li>
+<li>The fetcher may not be running. For Docker Compose, check <code>docker compose logs fetcher</code>.</li>
+<li>For cloud deployments, verify the Container App Job ran on schedule.</li>
+</ul>
+<h3 id="fetcher-produces-no-candles">Fetcher produces no candles<a class="headerlink" href="#fetcher-produces-no-candles" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The provider may not support the requested symbol/timeframe. Run the fetch with <code>--provider fake</code> first to verify the pipeline.</li>
+<li>The date range may be outside the exchange's available history.</li>
+<li>Check the provider's symbol format (see <a href="../providers/">Providers</a>).</li>
+</ul>
+<h3 id="duplicate-or-missing-candles">Duplicate or missing candles<a class="headerlink" href="#duplicate-or-missing-candles" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The writer deduplicates by <code>(exchange, symbol, timeframe, timestamp)</code> within each partition. Duplicates within a single fetch are blocked before writing.</li>
+<li>If rows appear with incorrect timestamps, verify the fetch start/end dates and timezone handling.</li>
+</ul>
+<h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
+<h3 id="slow-fetches">Slow fetches<a class="headerlink" href="#slow-fetches" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Increase parallelism with <code>--workers N</code> to fetch multiple symbols simultaneously.</li>
+<li>Reduce the date range — splits the fetch into smaller chunks.</li>
+<li>Check network latency to the exchange API. The <code>--timeout</code> flag controls per-request timeout.</li>
+</ul>
+<h3 id="slow-queries">Slow queries<a class="headerlink" href="#slow-queries" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Narrow the time range — DuckDB reads fewer Parquet files.</li>
+<li>Avoid querying without filters — full scans of large datasets are slow.</li>
+<li>See <a href="../performance/">Performance</a> for detailed tuning guidance.</li>
+</ul>
+<h3 id="high-memory-usage">High memory usage<a class="headerlink" href="#high-memory-usage" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Large date ranges load many Parquet rows into memory. Use <code>--limit</code> to cap results.</li>
+<li>The DuckDB query service opens a new connection per query — idle connections do not accumulate.</li>
+</ul>
+<h2 id="deployment">Deployment<a class="headerlink" href="#deployment" title="Permanent link">&para;</a></h2>
+<h3 id="docker-permission-denied">Docker: permission denied<a class="headerlink" href="#docker-permission-denied" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The <code>data</code> directory must be writable by the container user. Use <code>chown 1000:1000 /mnt/data</code> or run the container as root with <code>user: root</code>.</li>
+</ul>
+<h3 id="docker-port-already-in-use">Docker: port already in use<a class="headerlink" href="#docker-port-already-in-use" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Change the host port mapping: <code>ports: "8051:8050"</code> maps host port 8051 to container port 8050.</li>
+<li>Update the frontend's <code>NEXT_PUBLIC_API_BASE_URL</code> to match.</li>
+</ul>
+<h3 id="azure-terraform-apply-fails">Azure: Terraform apply fails<a class="headerlink" href="#azure-terraform-apply-fails" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Verify <code>az account show</code> returns the correct subscription.</li>
+<li>Some resources (Container App Environment with VNet) require recreation — use <code>terraform plan</code> first to see what changes.</li>
+<li>Check Azure quota limits for Container Apps, especially in new subscriptions.</li>
+</ul>
+<h3 id="azure-managed-identity-not-authenticating">Azure: Managed identity not authenticating<a class="headerlink" href="#azure-managed-identity-not-authenticating" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Managed identity auto-detection via <code>DefaultAzureCredential</code> requires the ACA identity to have <code>Storage Blob Data Contributor</code> on the storage account. The Terraform config assigns this role automatically.</li>
+<li>On your local machine, use <code>az login</code> or set <code>AZURE_STORAGE_CONNECTION_STRING</code>.</li>
+</ul>
+<h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h2>
+<h3 id="can-i-run-the-frontend-separately">Can I run the frontend separately?<a class="headerlink" href="#can-i-run-the-frontend-separately" title="Permanent link">&para;</a></h3>
+<p>Yes. The frontend is a standard Next.js app. Run <code>npm run dev</code> in <code>frontend/</code> and set <code>NEXT_PUBLIC_API_BASE_URL</code> to point to the backend.</p>
+<h3 id="how-do-i-reset-all-data">How do I reset all data?<a class="headerlink" href="#how-do-i-reset-all-data" title="Permanent link">&para;</a></h3>
+<p>Stop the services, delete the <code>data/</code> directory (or Docker volume), and restart. The fetcher re-fetches from the configured date range.</p>
+<h3 id="is-there-a-gui-for-configuration">Is there a GUI for configuration?<a class="headerlink" href="#is-there-a-gui-for-configuration" title="Permanent link">&para;</a></h3>
+<p>The frontend's <a href="/settings">Settings page</a> lets you configure the API base URL and API key through the browser. Storage paths, providers, and fetch schedules are configured via environment variables or the CLI.</p>
 
 
 
