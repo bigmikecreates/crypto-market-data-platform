@@ -2,6 +2,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from crmd_platform.config import TimestampConfig
+from crmd_platform.storage import create_backend
 from crmd_platform.storage.parquet_writer import (
     CANDLE_KEY_COLS,
     merge_tables,
@@ -193,12 +194,12 @@ class TestWriteCandlesMergeEndToEnd:
             _make_candle("2024-01-01T00:00:00"),
             _make_candle("2024-01-01T01:00:00"),
         ]
-        written = write_candles(candles, str(tmp_path))
+        written = write_candles(candles, str(tmp_path), backend=create_backend(str(tmp_path)))
         assert len(written) == 1
         table = pq.read_table(str(written[0]))
         assert table.num_rows == 2
 
-        written2 = write_candles(candles, str(tmp_path))
+        written2 = write_candles(candles, str(tmp_path), backend=create_backend(str(tmp_path)))
         assert len(written2) == 1
         table2 = pq.read_table(str(written2[0]))
         assert table2.num_rows == 2  # no duplicates from re-fetch
@@ -207,12 +208,12 @@ class TestWriteCandlesMergeEndToEnd:
         batch_1 = [
             _make_candle("2024-01-01T00:00:00", open_str="100.00"),
         ]
-        write_candles(batch_1, str(tmp_path))
+        write_candles(batch_1, str(tmp_path), backend=create_backend(str(tmp_path)))
 
         batch_2 = [
             _make_candle("2024-01-01T00:00:00", open_str="200.00"),
         ]
-        write_candles(batch_2, str(tmp_path))
+        write_candles(batch_2, str(tmp_path), backend=create_backend(str(tmp_path)))
 
         path = tmp_path / "fake" / "BTC-USD" / "1h" / "2024-01-01.parquet"
         table = pq.read_table(str(path))
@@ -222,11 +223,11 @@ class TestWriteCandlesMergeEndToEnd:
 
     def test_second_fetch_appends_new_rows(self, tmp_path) -> None:
         c1 = _make_candle("2024-01-01T00:00:00")
-        write_candles([c1], str(tmp_path))
+        write_candles([c1], str(tmp_path), backend=create_backend(str(tmp_path)))
 
         c2 = _make_candle("2024-01-01T01:00:00")
         c3 = _make_candle("2024-01-01T02:00:00")
-        write_candles([c2, c3], str(tmp_path))
+        write_candles([c2, c3], str(tmp_path), backend=create_backend(str(tmp_path)))
 
         path = tmp_path / "fake" / "BTC-USD" / "1h" / "2024-01-01.parquet"
         table = pq.read_table(str(path))

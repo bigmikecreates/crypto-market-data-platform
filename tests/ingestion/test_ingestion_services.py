@@ -7,6 +7,7 @@ from crmd_platform.ingestion import OHLCVService, FundingRateService
 from crmd_platform.models.candle import Candle
 from crmd_platform.models.funding_rate import FundingRate
 from crmd_platform.providers.fake import FakeProvider
+from crmd_platform.storage import create_backend
 
 
 _START = datetime(2026, 1, 1, tzinfo=timezone.utc)
@@ -21,7 +22,7 @@ class TestOhlcvService:
             timeframe="1h",
             start=_START,
             end=_END,
-            base_path=str(tmp_path),
+            base_path=str(tmp_path), backend=create_backend(str(tmp_path)),
         )
         assert count == 1
         files = list(tmp_path.rglob("*.parquet"))
@@ -54,7 +55,7 @@ class TestOhlcvService:
                 timeframe="1h",
                 start=_START,
                 end=_END,
-                base_path=str(tmp_path),
+                base_path=str(tmp_path), backend=create_backend(str(tmp_path)),
             )
         assert list(tmp_path.rglob("*.parquet")) == []
 
@@ -66,7 +67,7 @@ class TestFundingRateService:
             symbol="BTC/USDT",
             start=_START,
             end=_END,
-            base_path=str(tmp_path),
+            base_path=str(tmp_path), backend=create_backend(str(tmp_path)),
         )
         assert count == 1
         files = list(tmp_path.rglob("*.parquet"))
@@ -93,6 +94,6 @@ class TestFundingRateService:
                 symbol="BTC/USDT",
                 start=_START,
                 end=_END,
-                base_path=str(tmp_path),
+                base_path=str(tmp_path), backend=create_backend(str(tmp_path)),
             )
         assert list(tmp_path.rglob("*.parquet")) == []

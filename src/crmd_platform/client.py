@@ -201,6 +201,7 @@ class _LocalClient(Client):
             end=end_dt,
             base_path=self._data_dir,
             merge_strategy="auto",
+            backend=self._backend,
         )
         return FetchResult(
             count=count,
@@ -250,6 +251,7 @@ class _LocalClient(Client):
             end=end_dt,
             base_path=self._data_dir,
             merge_strategy="auto",
+            backend=self._backend,
         )
         return FetchResult(
             count=count,

@@ -103,6 +103,7 @@ class TestH2TimestampValidation:
     def test_get_candles_rejects_bad_start_when_data_present(self, tmp_path):
         """End-to-end: validation fires when files exist and the query would run."""
         from crmd_platform.models.candle import Candle
+        from crmd_platform.storage import create_backend
         from crmd_platform.storage.parquet_writer import write_candles
 
         c = Candle(
@@ -117,7 +118,7 @@ class TestH2TimestampValidation:
             volume="1",
             source="t",
         )
-        write_candles([c], base_path=str(tmp_path))
+        write_candles([c], base_path=str(tmp_path), backend=create_backend(str(tmp_path)))
         svc = DuckDBQueryService()
         with pytest.raises(ValueError, match="ISO-8601"):
             svc.get_candles(
@@ -247,6 +248,7 @@ class TestM1OrderValidation:
     """_build_query must reject anything other than 'ASC' or 'DESC'."""
 
     def test_desc_accepted(self, tmp_path):
+        from crmd_platform.storage import create_backend
         from crmd_platform.storage.parquet_writer import write_candles
         from crmd_platform.models.candle import Candle
 
@@ -262,12 +264,13 @@ class TestM1OrderValidation:
             volume="1",
             source="t",
         )
-        write_candles([c], base_path=str(tmp_path))
+        write_candles([c], base_path=str(tmp_path), backend=create_backend(str(tmp_path)))
         svc = DuckDBQueryService()
         rows = svc.get_candles(base_path=str(tmp_path), order="DESC")
         assert len(rows) == 1
 
     def test_asc_accepted(self, tmp_path):
+        from crmd_platform.storage import create_backend
         from crmd_platform.storage.parquet_writer import write_candles
         from crmd_platform.models.candle import Candle
 
@@ -283,7 +286,7 @@ class TestM1OrderValidation:
             volume="1",
             source="t",
         )
-        write_candles([c], base_path=str(tmp_path))
+        write_candles([c], base_path=str(tmp_path), backend=create_backend(str(tmp_path)))
         svc = DuckDBQueryService()
         rows = svc.get_candles(base_path=str(tmp_path), order="ASC")
         assert len(rows) == 1

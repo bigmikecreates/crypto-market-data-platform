@@ -1,6 +1,7 @@
 import pyarrow.parquet as pq
 
 from crmd_platform.config import TimestampConfig
+from crmd_platform.storage import create_backend
 from crmd_platform.storage.parquet_writer import (
     write_candles,
 )
@@ -14,7 +15,7 @@ class TestWriteCandlesPartitioning:
             _make_candle("2024-01-01T01:00:00"),
             _make_candle("2024-01-01T02:00:00"),
         ]
-        written = write_candles(candles, str(tmp_path))
+        written = write_candles(candles, str(tmp_path), backend=create_backend(str(tmp_path)))
         assert len(written) == 1
 
         table = pq.read_table(str(written[0]))
@@ -31,7 +32,7 @@ class TestWriteCandlesPartitioning:
             _make_candle("2024-01-02T00:00:00"),
             _make_candle("2024-01-02T01:00:00"),
         ]
-        written = write_candles(candles, str(tmp_path))
+        written = write_candles(candles, str(tmp_path), backend=create_backend(str(tmp_path)))
         assert len(written) == 2
 
         paths_by_date = {p.name: p for p in written}
@@ -54,7 +55,7 @@ class TestWriteCandlesPartitioning:
             _make_candle("2024-06-01T23:00:00"),
             _make_candle("2024-06-02T00:00:00"),
         ]
-        written = write_candles(candles, str(tmp_path))
+        written = write_candles(candles, str(tmp_path), backend=create_backend(str(tmp_path)))
         assert len(written) == 2
 
         paths_by_date = {p.name: p for p in written}
@@ -76,13 +77,13 @@ class TestWriteCandlesPartitioning:
             _make_candle("2024-03-01T00:00:00", open_str="100.00"),
             _make_candle("2024-03-01T01:00:00", open_str="101.00"),
         ]
-        write_candles(batch_1, str(tmp_path))
+        write_candles(batch_1, str(tmp_path), backend=create_backend(str(tmp_path)))
 
         batch_2 = [
             _make_candle("2024-03-01T02:00:00", open_str="102.00"),
             _make_candle("2024-03-02T00:00:00", open_str="200.00"),
         ]
-        write_candles(batch_2, str(tmp_path))
+        write_candles(batch_2, str(tmp_path), backend=create_backend(str(tmp_path)))
 
         path_d1 = str(tmp_path / "fake" / "BTC-USD" / "1h" / "2024-03-01.parquet")
         path_d2 = str(tmp_path / "fake" / "BTC-USD" / "1h" / "2024-03-02.parquet")
@@ -105,7 +106,7 @@ class TestWriteCandlesEdgeCases:
     def test_default_base_path(self, tmp_path) -> None:
         ts_config = TimestampConfig()
         candles = [_make_candle("2024-01-01T00:00:00")]
-        result = write_candles(candles, base_path=tmp_path, ts_config=ts_config)
+        result = write_candles(candles, base_path=tmp_path, backend=create_backend(str(tmp_path)), ts_config=ts_config)
         expected = tmp_path / "fake" / "BTC-USD" / "1h" / "2024-01-01.parquet"
         assert result[0] == expected
 
@@ -116,5 +117,5 @@ class TestWriteCandlesEdgeCases:
         c2 = _make_candle(
             "2024-01-01T00:00:00", exchange="b", symbol="Y", timeframe="1d"
         )
-        written = write_candles([c1, c2], str(tmp_path))
+        written = write_candles([c1, c2], str(tmp_path), backend=create_backend(str(tmp_path)))
         assert len(written) == 2

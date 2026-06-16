@@ -5,6 +5,7 @@ from crmd_platform.models.candle import Candle
 from crmd_platform.models.funding_rate import FundingRate
 from crmd_platform.server import create_app
 from crmd_platform.server.config import ServerConfig
+from crmd_platform.storage import create_backend
 from crmd_platform.storage.parquet_writer import (
     write_candles,
     write_funding_rates,
@@ -51,7 +52,7 @@ def _write_candle_fixtures(base: str) -> None:
             source="test",
         ),
     ]
-    write_candles(candles, base_path=base)
+    write_candles(candles, base_path=base, backend=create_backend(base))
 
 
 def _write_funding_fixtures(base: str) -> None:
@@ -66,7 +67,7 @@ def _write_funding_fixtures(base: str) -> None:
             source="test",
         ),
     ]
-    write_funding_rates(rates, base_path=base)
+    write_funding_rates(rates, base_path=base, backend=create_backend(base))
 
 
 class TestHealth:

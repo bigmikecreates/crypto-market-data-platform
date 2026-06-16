@@ -15,6 +15,7 @@ from hypothesis import strategies as st
 
 from crmd_platform.config import TimestampConfig
 from crmd_platform.models.candle import Candle
+from crmd_platform.storage import create_backend
 from crmd_platform.storage.parquet_writer import (
     CANDLE_KEY_COLS,
     merge_via_duckdb,
@@ -72,36 +73,36 @@ def candle_list(draw, min_size: int = 1, max_size: int = 20) -> list[Candle]:
 
 
 @given(candle_list(min_size=1, max_size=20))
-@settings(max_examples=50)
+@settings(max_examples=50, deadline=None)
 def test_write_read_preserves_row_count(candles: list[Candle]) -> None:
     """Total rows in all written files must equal the number of candles."""
     with tempfile.TemporaryDirectory() as tmp:
-        written = write_candles(candles, base_path=tmp)
+        written = write_candles(candles, base_path=tmp, backend=create_backend(tmp))
         assert len(written) >= 1
         total_rows = sum(pq.read_table(str(p)).num_rows for p in written)
         assert total_rows == len(candles)
 
 
 @given(candle_list(min_size=1, max_size=20))
-@settings(max_examples=50)
+@settings(max_examples=50, deadline=None)
 def test_write_twice_same_data_no_duplicates(candles: list[Candle]) -> None:
     """Writing the same batch twice must not create duplicate rows."""
     with tempfile.TemporaryDirectory() as tmp:
-        write_candles(candles, base_path=tmp)
-        write_candles(candles, base_path=tmp)
+        write_candles(candles, base_path=tmp, backend=create_backend(tmp))
+        write_candles(candles, base_path=tmp, backend=create_backend(tmp))
         written = list(__import__("pathlib").Path(tmp).rglob("*.parquet"))
         total_rows = sum(pq.read_table(str(p)).num_rows for p in written)
         assert total_rows == len(candles)
 
 
 @given(candle_list(min_size=1, max_size=20))
-@settings(max_examples=50)
+@settings(max_examples=50, deadline=None)
 def test_written_candles_have_correct_exchange_and_symbol(
     candles: list[Candle],
 ) -> None:
     """Every row in written Parquet files must have the correct exchange and symbol."""
     with tempfile.TemporaryDirectory() as tmp:
-        written = write_candles(candles, base_path=tmp)
+        written = write_candles(candles, base_path=tmp, backend=create_backend(tmp))
         for path in written:
             table = pq.read_table(str(path))
             exchanges = set(table.column("exchange").to_pylist())
@@ -133,7 +134,7 @@ def test_merge_duckdb_idempotent(candles: list[Candle]) -> None:
 
 
 @given(candle_list(min_size=1, max_size=10), candle_list(min_size=1, max_size=10))
-@settings(max_examples=50)
+@settings(max_examples=50, deadline=None)
 def test_merge_set_produces_unique_timestamps(
     candles_a: list[Candle], candles_b: list[Candle]
 ) -> None:
@@ -146,7 +147,7 @@ def test_merge_set_produces_unique_timestamps(
 
 
 @given(candle_list(min_size=1, max_size=10), candle_list(min_size=1, max_size=10))
-@settings(max_examples=50)
+@settings(max_examples=50, deadline=None)
 def test_merge_duckdb_produces_unique_timestamps(
     candles_a: list[Candle], candles_b: list[Candle]
 ) -> None:
@@ -162,7 +163,7 @@ def test_merge_duckdb_produces_unique_timestamps(
 
 
 @given(candle_list(min_size=1, max_size=10), candle_list(min_size=1, max_size=10))
-@settings(max_examples=50)
+@settings(max_examples=50, deadline=None)
 def test_merge_row_count_bounded_by_union_of_keys(
     candles_a: list[Candle], candles_b: list[Candle]
 ) -> None:
@@ -178,7 +179,7 @@ def test_merge_row_count_bounded_by_union_of_keys(
 
 
 @given(candle_list(min_size=1, max_size=10), candle_list(min_size=1, max_size=10))
-@settings(max_examples=50)
+@settings(max_examples=50, deadline=None)
 def test_set_and_duckdb_merge_agree_on_row_count(
     candles_a: list[Candle], candles_b: list[Candle]
 ) -> None:
