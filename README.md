@@ -160,20 +160,13 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"
 
 ## Key design decisions
 
-**Why strings for numeric fields?**
-You might wonder why we store prices like `"42250.0"` as strings instead of numbers. Three reasons: (1) Strings use ~68% less memory than Python `Decimal` objects — important when holding millions of candles in memory. (2) Providers can return prices as strings anyway, so we avoid parsing them into intermediate objects. (3) We can validate the format with regex before converting. The conversion to `decimal128(38,10)` happens once at write time, in a single vectorized C++ operation that's extremely fast.
-
-**What happens if I fetch the same date range twice?**
-Nothing bad. Each row is identified by a merge key (`exchange`, `symbol`, `timeframe`, `source`, `timestamp`). If you re-fetch overlapping data, the writer performs an upsert: identical rows are skipped, corrected rows replace the old ones, and new rows are appended. No duplicates, no data loss. For small partitions (<50k rows), we use a Python dict-based merge. For larger ones, we use a DuckDB SQL anti-join.
-
-**What if two workers try to write at the same time?**
-For local storage, this isn't a problem — each symbol maps to different partition files, so workers never collide. For cloud storage (Azure Blob, S3, GCS), we use blob leases to serialize writes to the same partition. If two workers race to update the same file, one acquires the lease and writes first; the other waits, reads the updated file, merges its changes, and writes second. No data is lost.
-
-**What does validation actually do?**
-Before writing any data, we run validation checks: Are all required fields present? Do numeric fields look like valid decimals? Are timestamps in the right format? Does `high >= open` and `high >= close`? Are there duplicate timestamps in the batch? If any check fails, the entire batch is rejected — no partial writes. This prevents invalid data from ever reaching storage.
-
-**Why use an ABC for the query service?**
-Both the CLI (`crmd query`) and the REST API (`GET /candles`) depend on a `QueryService` interface, not the DuckDB implementation directly. This means if we want to swap DuckDB for Postgres, InfluxDB, or something else, we just write a new class that implements the interface. The CLI and API code doesn't change.
+| # | Decision | Rationale |
+|---|---|---|
+| 1 | **Strings for numeric fields** — store `open`, `high`, `low`, `close`, `volume` as `str` in the model layer. | ~68% less memory than Python `Decimal`; avoids parse round-trip when providers return strings anyway; regex validation before conversion. The `decimal128(38,10)` cast is deferred to write time in a single vectorised C++ operation. |
+| 2 | **Idempotent fetch** — re-fetching the same date range is safe. | Each row is identified by a merge key (`exchange`, `symbol`, `timeframe`, `source`, `timestamp`). The writer upserts: identical rows are skipped, corrected rows replace old ones, new rows appended. Small partitions use a Python dict merge; larger ones use a DuckDB SQL anti-join. |
+| 3 | **Concurrent writes** — multiple workers writing at once are safe. | Local storage workers write to different partition files (one per symbol) and never collide. Cloud storage uses blob leases to serialise writes to the same partition: the second worker waits, reads the merged result, merges its changes, and writes again. No data loss. |
+| 4 | **Batch validation** — invalid data never reaches storage. | Before writing, every batch is checked: required fields present, valid decimals, correct timestamp format, OHLC invariants (`high >= open`, `high >= close`), and no duplicate timestamps. If any check fails, the entire batch is rejected — no partial writes. |
+| 5 | **ABC for query service** — both `crmd query` and `GET /candles` depend on a `QueryService` interface. | Swap DuckDB for Postgres, InfluxDB, or another engine by writing a new class that implements the interface. CLI and API code never changes.
 
 ---
 
@@ -305,10 +298,6 @@ Open `http://localhost:3000`. Both services run in production mode with optimise
 - **Zod** for response validation at the API boundary
 - **lightweight-charts** for candlestick visualisation
 - **Tailwind CSS 3** with `darkMode: "media"` (follows OS preference)
-
-### No backend changes needed
-
-The frontend calls the same FastAPI endpoints (`GET /candles`, `GET /datasets`, `GET /summary`, `GET /health`) that the CLI uses. No new backend endpoints were added.
 
 ---
 

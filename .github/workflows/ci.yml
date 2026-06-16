@@ -83,6 +83,19 @@ jobs:
       - name: Build
         run: npm run build
 
+  # ── Drift check (source changes vs doc changes in PRs) ───────────────────
+  drift-check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Check source-doc drift
+        run: python scripts/check_drift.py
+        env:
+          DRIFT_BASE_REF: ${{ github.event.pull_request.base.sha }}
+
   # ── Azure integration tests (Azurite emulator, no real Azure account) ────
   test-azure:
     runs-on: ubuntu-latest
