@@ -13,22 +13,34 @@ from typing import Dict, List
 # Mapping: source glob prefix -> expected doc file(s)
 # A source change should trigger a warning if none of the listed docs changed.
 SOURCE_DOC_MAP: Dict[str, List[str]] = {
-    "src/crmd_platform/cli/":           ["docs/reference/cli.md"],
-    "src/crmd_platform/server/":        ["docs/reference/http-api.md"],
-    "src/crmd_platform/models/":        ["docs/data-model.md", "docs/reference/parquet-schema.md"],
-    "src/crmd_platform/providers/":     ["docs/providers.md"],
-    "src/crmd_platform/validation/":    ["docs/validation-strategy.md", "docs/reference/validation-rules.md"],
-    "src/crmd_platform/storage/":       ["docs/storage-e2e.md", "docs/reference/parquet-schema.md"],
-    "src/crmd_platform/query/":         ["docs/reference/python-api.md"],
-    "src/crmd_platform/ingestion/":     ["docs/storage-e2e.md"],
-    "src/crmd_platform/benchmark/":     ["docs/benchmark-design.md"],
-    "src/crmd_platform/client.py":      ["docs/reference/python-api.md", "docs/getting-started.md"],
-    "frontend/lib/api.ts":              ["docs/reference/http-api.md"],
-    "frontend/app/explorer/":           ["docs/reference/http-api.md"],
-    "infra/":                           ["docs/deploy/cloud.md"],
-    "docker-compose.yml":               ["docs/deploy/self-hosted.md"],
-    "docker-compose.dev.yml":           ["docs/deploy/self-hosted.md"],
-    "Dockerfile":                       ["docs/deploy/self-hosted.md"],
+    "src/crmd_platform/cli/": ["docs/reference/cli.md"],
+    "src/crmd_platform/server/": ["docs/reference/http-api.md"],
+    "src/crmd_platform/models/": [
+        "docs/data-model.md",
+        "docs/reference/parquet-schema.md",
+    ],
+    "src/crmd_platform/providers/": ["docs/providers.md"],
+    "src/crmd_platform/validation/": [
+        "docs/validation-strategy.md",
+        "docs/reference/validation-rules.md",
+    ],
+    "src/crmd_platform/storage/": [
+        "docs/storage-e2e.md",
+        "docs/reference/parquet-schema.md",
+    ],
+    "src/crmd_platform/query/": ["docs/reference/python-api.md"],
+    "src/crmd_platform/ingestion/": ["docs/storage-e2e.md"],
+    "src/crmd_platform/benchmark/": ["docs/benchmark-design.md"],
+    "src/crmd_platform/client.py": [
+        "docs/reference/python-api.md",
+        "docs/getting-started.md",
+    ],
+    "frontend/lib/api.ts": ["docs/reference/http-api.md"],
+    "frontend/app/explorer/": ["docs/reference/http-api.md"],
+    "infra/": ["docs/deploy/cloud.md"],
+    "docker-compose.yml": ["docs/deploy/self-hosted.md"],
+    "docker-compose.dev.yml": ["docs/deploy/self-hosted.md"],
+    "Dockerfile": ["docs/deploy/self-hosted.md"],
 }
 
 EXEMPT_PATTERNS = [
@@ -42,7 +54,9 @@ EXEMPT_PATTERNS = [
 def get_changed_files(base_ref: str) -> List[str]:
     result = subprocess.run(
         ["git", "diff", "--name-only", base_ref, "--"],
-        capture_output=True, text=True, check=False,
+        capture_output=True,
+        text=True,
+        check=False,
     )
     if result.returncode != 0:
         print(f"::warning::Could not diff against {base_ref}: {result.stderr.strip()}")
@@ -56,7 +70,9 @@ def get_changed_files(base_ref: str) -> List[str]:
 def get_head_changed_files() -> List[str]:
     result = subprocess.run(
         ["git", "diff", "--name-only", "HEAD~1", "--"],
-        capture_output=True, text=True, check=False,
+        capture_output=True,
+        text=True,
+        check=False,
     )
     return [f.strip() for f in result.stdout.splitlines() if f.strip()]
 
@@ -99,7 +115,9 @@ def main() -> None:
             warnings.append(msg)
 
     if warnings:
-        print("::warning::Drift detected — source changes without matching doc updates:")
+        print(
+            "::warning::Drift detected — source changes without matching doc updates:"
+        )
         for w in warnings:
             print(f"::warning::{w}")
         print()
