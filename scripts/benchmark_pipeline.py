@@ -1202,7 +1202,6 @@ def trends(
             val_s = f"{val:.2f}"
         pct_s = f"{pct:+.1%}" if pct is not None else " — "
         warn = "  ⚠" if pct is not None and abs(pct) > 0.05 else ""
-        sha = td.get("git_sha", "")[:7]
         typer.echo(
             f"  {td['index']:>3}  {ts:>20}  {rn:<12}  {val_s:>12}"
             f"  {pct_s:>8}{warn}"
