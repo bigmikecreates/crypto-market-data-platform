@@ -59,11 +59,17 @@ nav:
   - Storage — Write Path: storage-e2e.md
   - Philosophy: philosophy.md
   - Benchmarking: benchmark-design.md
+  - Smoke Testing: smoke-testing.md
   - Lessons Learned:
     - Bitfinex Integration: lessons-from-bitfinex-integration.md
     - KuCoin Integration: lessons-from-kucoin-integration.md
   - Deployment:
     - Self-hosted: deploy/self-hosted.md
+    - Cloud (Azure): deploy/cloud.md
+  - Operations:
+    - Troubleshooting: troubleshooting.md
+    - Performance: performance.md
+    - Upgrading: upgrading.md
   - Deep Dives:
     - Provider Selection: benchmarks/provider-selection.md
     - Design Rationale: benchmarks/design-rationale.md

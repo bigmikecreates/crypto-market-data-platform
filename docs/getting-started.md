@@ -214,6 +214,8 @@ crmd fetch \
 crmd query funding-rate --symbol "BTC/USDT" --limit 5
 ```
 
+→ See [Cloud Deployment](deploy/cloud.md) for a full Terraform-based Azure deployment with managed identity, monitoring, and CI/CD.
+
 ## Step 9 — Write and read from Azure Blob Storage
 
 Install the Azure extra:
@@ -265,4 +267,6 @@ Concurrent workers writing to the same partition are safe: the writer holds a 30
 - [Architecture](architecture.md) — how the pipeline layers fit together
 - [CLI Reference](/crypto-market-data-platform/reference/#/cli) — all commands and options
 - [Benchmarking](benchmark-design.md) — how to measure pipeline performance
+- [Cloud Deployment](deploy/cloud.md) — deploy to Azure with Terraform
+- [Troubleshooting](troubleshooting.md) — common issues and solutions
 - [Providers](providers.md) — symbol formats and provider-specific notes

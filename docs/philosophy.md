@@ -64,9 +64,3 @@ Every layer depends on an ABC, not a concrete implementation:
 
 Adding a new provider or query engine means writing a new subclass — consumer
 code (CLI, API, benchmarks) never changes.
-
----
----
-
-- `setuptools` and `pip-compile` are used on `pyproject.toml` for app packaging and lock file generation (`requirements.*.txt`), respectively.
-- 

@@ -2,6 +2,8 @@
 
 Run the full `crmd` stack — backend API, data ingestion, and web GUI — on any Linux VM with Docker.
 
+> Prefer managed cloud infrastructure? See [Cloud Deployment](cloud.md) for the Terraform-based Azure deployment.
+
 ## Quick start
 
 ```bash
@@ -85,12 +87,18 @@ services:
 
 Run `crmd fetch --help` for all options.
 
+## Health checks
+
+The stack includes Docker health checks on all services. The backend exposes `/health` (returns `{"status":"ok"}`); the fetcher waits for the backend to be healthy before starting ingestion. Run `docker compose ps` to see health status.
+
 ## Updating
 
 ```bash
 docker compose pull
 docker compose up -d
 ```
+
+See [Upgrading](../upgrading.md) for version-specific migration notes.
 
 ## Manual deployment (without Compose)
 

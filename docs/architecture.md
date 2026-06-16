@@ -144,3 +144,7 @@ DuckDB in-process connections are cheap to open and close. Connection-per-query 
 | Server | `QueryService` (injected via `ServerConfig`) | FastAPI wraps the ABC |
 
 Adding a provider means implementing the ABC. Adding a storage backend means implementing `StorageBackend`. Adding a query engine means implementing `QueryService`. No consumer code changes.
+
+### Frontend web console
+
+A Next.js 15 application (`frontend/`) provides a browser-based interface to the platform, served at port 3000 by default. Pages include a Market Data Explorer (charting + tables), a Datasets browser, and a Settings page for configuring the API connection. The frontend communicates with the backend via the REST API and is fully deployable via Docker Compose or the Terraform-based Azure deployment.
