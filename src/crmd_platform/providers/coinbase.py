@@ -66,7 +66,7 @@ class CoinbaseProvider(BasePagedOHLCVProvider):
         return _to_coinbase_granularity(timeframe)
 
     def _fetch_page(
-        self, prov_symbol: str, prov_tf: int, start: int, end: int
+        self, prov_symbol: str, prov_tf: str | int, start: int, end: int
     ) -> list[list]:
         from_iso = datetime.fromtimestamp(start, tz=timezone.utc).strftime(
             "%Y-%m-%dT%H:%M:%SZ"

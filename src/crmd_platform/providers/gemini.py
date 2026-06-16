@@ -88,7 +88,7 @@ class GeminiProvider(BasePagedOHLCVProvider):
 
         return candles
 
-    def _fetch_page(
+    def _fetch_page(  # type: ignore[override]
         self,
         prov_symbol: str,
         prov_tf: str,

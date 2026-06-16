@@ -135,7 +135,7 @@ def _pct_change(old: float, new: float) -> float | None:
 
 def _classify_regression(
     metric: str,
-    pct: float,
+    pct: float | None,
 ) -> tuple[str, str]:
     thresholds = _SEVERITY_THRESHOLDS.get(metric, {})
     fail = thresholds.get("fail")

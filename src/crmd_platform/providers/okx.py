@@ -116,7 +116,7 @@ class OkxProvider(BasePagedOHLCVProvider):
         all_rows.reverse()
         return [self._parse_row(r, symbol, timeframe) for r in all_rows]
 
-    def _fetch_page(
+    def _fetch_page(  # type: ignore[override]
         self,
         prov_symbol: str,
         prov_tf: str,
