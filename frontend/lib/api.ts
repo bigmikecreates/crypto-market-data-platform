@@ -8,9 +8,9 @@ import {
   SummaryArraySchema,
 } from "./schemas";
 import type { ApiError, CandlesQuery, Candle, DatasetMap, FetchRequest, FetchResponse, FundingRate, FundingRatesQuery, HealthResponse, LastFetch, SummaryItem } from "./types";
-import { getApiKey } from "./auth";
+import { getApiKey, getApiBaseUrl } from "./auth";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8050";
+const DEFAULT_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8050";
 
 class ApiRequestError extends Error implements ApiError {
   status: number;
@@ -23,7 +23,8 @@ class ApiRequestError extends Error implements ApiError {
 }
 
 async function request<T>(path: string, schema: { parse: (data: unknown) => T }, options?: RequestInit): Promise<T> {
-  const url = `${BASE_URL}${path}`;
+  const baseUrl = getApiBaseUrl() ?? DEFAULT_BASE_URL;
+  const url = `${baseUrl}${path}`;
   const apiKey = getApiKey();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",

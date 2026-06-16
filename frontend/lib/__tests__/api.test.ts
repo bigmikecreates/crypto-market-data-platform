@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { fetchHealth, fetchDatasets, ApiRequestError } from "../api";
-import { setApiKey, clearApiKey } from "../auth";
+import { setApiKey, clearApiKey, setApiBaseUrl, clearApiBaseUrl } from "../auth";
 
 beforeEach(() => {
   localStorage.removeItem("crmd_api_key");
+  localStorage.removeItem("crmd_api_base_url");
   vi.restoreAllMocks();
 });
 
@@ -77,5 +78,23 @@ describe("ApiRequestError", () => {
     expect(err.status).toBe(403);
     expect(err.message).toBe("Forbidden");
     expect(err.name).toBe("ApiRequestError");
+  });
+});
+
+describe("custom base URL", () => {
+  it("uses default when no base URL is set", async () => {
+    clearApiBaseUrl();
+    mockFetch(200, { status: "ok" });
+    await fetchHealth();
+    const url = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(url).toContain("http://localhost:8050");
+  });
+
+  it("uses custom base URL from localStorage", async () => {
+    setApiBaseUrl("http://custom:9090");
+    mockFetch(200, { status: "ok" });
+    await fetchHealth();
+    const url = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(url).toContain("http://custom:9090");
   });
 });

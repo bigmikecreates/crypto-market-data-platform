@@ -96,6 +96,7 @@ function NavBar() {
     { href: "/", label: "Home" },
     { href: "/explorer", label: "Explorer" },
     { href: "/datasets", label: "Datasets" },
+    { href: "/settings", label: "Settings" },
   ];
 
   return (
@@ -122,6 +123,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body>
+        <link rel="icon" href="/favicon.svg" sizes="any" />
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <NavBar />
