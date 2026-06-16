@@ -86,9 +86,7 @@ class TestKrakenProvider:
 
     def test_parse_multiple_rows(self) -> None:
         rows = _load_fixture("kraken_ohlc.json")
-        candles = [
-            _parse_row(r, "kraken", "XBT/USD", "1h", "kraken") for r in rows
-        ]
+        candles = [_parse_row(r, "kraken", "XBT/USD", "1h", "kraken") for r in rows]
         assert len(candles) == 5
         assert candles[0].timestamp == "2024-01-01T00:00:00"
         assert candles[1].timestamp == "2024-01-01T01:00:00"

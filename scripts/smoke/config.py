@@ -93,10 +93,7 @@ def _endpoint_coinbase(symbol: str, start: datetime, end: datetime) -> str:
 
 def _endpoint_okx(symbol: str, start: datetime, end: datetime) -> str:
     okx_sym = symbol.replace("/", "-").upper()
-    return (
-        f"https://www.okx.com/api/v5/market/candles"
-        f"?instId={okx_sym}&bar=1H&limit=10"
-    )
+    return f"https://www.okx.com/api/v5/market/candles?instId={okx_sym}&bar=1H&limit=10"
 
 
 def _endpoint_gemini(symbol: str, start: datetime, end: datetime) -> str:
@@ -114,10 +111,7 @@ def _endpoint_htx(symbol: str, start: datetime, end: datetime) -> str:
 
 def _endpoint_kraken(symbol: str, start: datetime, end: datetime) -> str:
     kr_sym = symbol.replace("/", "").upper().replace("BTC", "XBT")
-    return (
-        f"https://api.kraken.com/0/public/OHLC"
-        f"?pair={kr_sym}&interval=60"
-    )
+    return f"https://api.kraken.com/0/public/OHLC?pair={kr_sym}&interval=60"
 
 
 ENDPOINTS = {

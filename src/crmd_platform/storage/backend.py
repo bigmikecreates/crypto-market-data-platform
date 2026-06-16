@@ -439,9 +439,7 @@ class S3Backend(StorageBackend):
                 merged = merge_fn(existing)
 
                 try:
-                    self._fs.pipe(
-                        path, self._serialize_table(merged), IfMatch=etag
-                    )
+                    self._fs.pipe(path, self._serialize_table(merged), IfMatch=etag)
                     return
                 except botocore.exceptions.ClientError as e:
                     if e.response["Error"]["Code"] != "412":
@@ -529,6 +527,7 @@ class GCSBackend(StorageBackend):
         Uses if_generation_match to detect concurrent modifications.
         Retries up to 6 times with exponential backoff on 412 Precondition Failed.
         """
+
         def backoff(attempt: int) -> None:
             time.sleep(min(0.5 * (2**attempt), 8.0) + random.uniform(0, 0.5))
 

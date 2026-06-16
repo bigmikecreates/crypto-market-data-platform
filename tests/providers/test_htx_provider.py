@@ -88,9 +88,7 @@ class TestHtxProvider:
     def test_parse_multiple_rows_reversed(self) -> None:
         rows = _load_fixture("htx_ohlc.json")
         rows_reversed = list(reversed(rows))
-        candles = [
-            _parse_row(r, "htx", "BTC/USDT", "1h", "htx") for r in rows_reversed
-        ]
+        candles = [_parse_row(r, "htx", "BTC/USDT", "1h", "htx") for r in rows_reversed]
         assert len(candles) == 5
         assert candles[0].timestamp == "2024-01-01T00:00:00"
         assert candles[1].timestamp == "2024-01-01T01:00:00"

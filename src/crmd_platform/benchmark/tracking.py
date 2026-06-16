@@ -253,12 +253,14 @@ class TrackingStore:
                     final_verdict = "FAIL"
                 elif rv == "WARN" and final_verdict != "FAIL":
                     final_verdict = "WARN"
-                rule_changes.append({
-                    "name": name,
-                    "old_rating": old_r,
-                    "new_rating": new_r,
-                    "verdict": rv,
-                })
+                rule_changes.append(
+                    {
+                        "name": name,
+                        "old_rating": old_r,
+                        "new_rating": new_r,
+                        "verdict": rv,
+                    }
+                )
 
         stage_deltas: list[dict[str, Any]] = []
         stages_a = {s["name"]: s for s in entry_a.get("stage_breakdown", [])}

@@ -82,8 +82,7 @@ class CoinbaseProvider(BasePagedOHLCVProvider):
         data: Any = fetch_json(url, self._exchange)
         if not isinstance(data, list):
             raise RuntimeError(
-                f"Coinbase API error for {prov_symbol}: "
-                f"unexpected response {data}"
+                f"Coinbase API error for {prov_symbol}: unexpected response {data}"
             )
         return data
 

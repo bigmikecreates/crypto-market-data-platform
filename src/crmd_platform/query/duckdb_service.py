@@ -138,7 +138,9 @@ def _discover_files_cloud(base_path: str) -> dict[str, dict[str, list[str]]]:
     return result
 
 
-def _discover_files(base_path: str, backend: StorageBackend | None = None) -> dict[str, dict[str, list[str]]]:
+def _discover_files(
+    base_path: str, backend: StorageBackend | None = None
+) -> dict[str, dict[str, list[str]]]:
     if backend is not None:
         pattern = f"{base_path.rstrip('/')}/**/*.parquet"
         uris = backend.glob(pattern)

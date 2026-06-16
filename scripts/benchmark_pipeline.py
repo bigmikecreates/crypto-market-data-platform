@@ -997,9 +997,7 @@ def list_runs(
     runner: str = typer.Option(
         None, "--runner", "-r", help="Filter by runner name (candle, bitfinex, ...)"
     ),
-    last: int = typer.Option(
-        None, "--last", "-n", help="Show only the last N entries"
-    ),
+    last: int = typer.Option(None, "--last", "-n", help="Show only the last N entries"),
 ) -> None:
     """List tracked benchmark runs."""
     store = TrackingStore()
@@ -1039,9 +1037,7 @@ def list_runs(
 def compare(
     idx_a: int = typer.Argument(None, help="Index of first run (default: n-2)"),
     idx_b: int = typer.Argument(None, help="Index of second run (default: n-1)"),
-    runner: str = typer.Option(
-        None, "--runner", "-r", help="Filter by runner name"
-    ),
+    runner: str = typer.Option(None, "--runner", "-r", help="Filter by runner name"),
 ) -> None:
     """Compare two tracked benchmark runs."""
     store = TrackingStore()
@@ -1080,25 +1076,20 @@ def compare(
             return " ↓"
         return " →"
 
-    lines.append(
-        f"Comparing run #{idx_a} → #{idx_b}"
-    )
+    lines.append(f"Comparing run #{idx_a} → #{idx_b}")
     lines.append("")
     lines.append(
-        f"  {entry_a.get('git_sha','?')[:7]} ({entry_a.get('runner','?')}, "
-        f"{str(entry_a.get('count',0))} candles)"
+        f"  {entry_a.get('git_sha', '?')[:7]} ({entry_a.get('runner', '?')}, "
+        f"{str(entry_a.get('count', 0))} candles)"
     )
     lines.append(
-        f"  {entry_b.get('git_sha','?')[:7]} ({entry_b.get('runner','?')}, "
-        f"{str(entry_b.get('count',0))} candles)"
+        f"  {entry_b.get('git_sha', '?')[:7]} ({entry_b.get('runner', '?')}, "
+        f"{str(entry_b.get('count', 0))} candles)"
     )
     lines.append("")
 
     sep = "─" * 100
-    header = (
-        f"  {'Metric':<20} {'Run #0':>12} {'Run #1':>12}"
-        f"  {'Δ':>8}  {'Verdict':>8}"
-    )
+    header = f"  {'Metric':<20} {'Run #0':>12} {'Run #1':>12}  {'Δ':>8}  {'Verdict':>8}"
     lines.append(header)
     lines.append(sep)
     for sm in result["summary"]:
@@ -1137,9 +1128,7 @@ def compare(
 
     lines.append("")
     lines.append(sep)
-    lines.append(
-        f"  Final verdict: {_verdict_str(result['final_verdict'])}"
-    )
+    lines.append(f"  Final verdict: {_verdict_str(result['final_verdict'])}")
 
     typer.echo("\n".join(lines))
     if result["final_verdict"] == "FAIL":
@@ -1148,19 +1137,20 @@ def compare(
 
 @app.command()
 def trends(
-    metric: str = typer.Argument(
-        "cpu_ms", help="Metric to show trend for"
-    ),
-    last: int = typer.Option(
-        10, "--last", "-n", help="Number of recent runs to show"
-    ),
-    runner: str = typer.Option(
-        None, "--runner", "-r", help="Filter by runner name"
-    ),
+    metric: str = typer.Argument("cpu_ms", help="Metric to show trend for"),
+    last: int = typer.Option(10, "--last", "-n", help="Number of recent runs to show"),
+    runner: str = typer.Option(None, "--runner", "-r", help="Filter by runner name"),
 ) -> None:
     """Show metric progression over recent benchmark runs."""
-    valid = {"cpu_ms", "wall_ms", "mem_mb", "peak_mb", "file_kb", "gc_g2",
-             "cpu_wall_ratio"}
+    valid = {
+        "cpu_ms",
+        "wall_ms",
+        "mem_mb",
+        "peak_mb",
+        "file_kb",
+        "gc_g2",
+        "cpu_wall_ratio",
+    }
     if metric not in valid:
         typer.echo(
             f"Unknown metric '{metric}'. Valid: {', '.join(sorted(valid))}",
@@ -1184,10 +1174,7 @@ def trends(
     label = _metric_label(metric)
 
     sep = "─" * 80
-    header = (
-        f"  {'#':>3}  {'Date':>20}  {'Runner':<12}  {f'{label}':>12}"
-        f"  {'Δ':>8}"
-    )
+    header = f"  {'#':>3}  {'Date':>20}  {'Runner':<12}  {f'{label}':>12}  {'Δ':>8}"
     typer.echo(f"{label} trend (last {len(trend_data)}):")
     typer.echo(header)
     typer.echo(sep)
@@ -1203,8 +1190,7 @@ def trends(
         pct_s = f"{pct:+.1%}" if pct is not None else " — "
         warn = "  ⚠" if pct is not None and abs(pct) > 0.05 else ""
         typer.echo(
-            f"  {td['index']:>3}  {ts:>20}  {rn:<12}  {val_s:>12}"
-            f"  {pct_s:>8}{warn}"
+            f"  {td['index']:>3}  {ts:>20}  {rn:<12}  {val_s:>12}  {pct_s:>8}{warn}"
         )
     typer.echo(sep)
 

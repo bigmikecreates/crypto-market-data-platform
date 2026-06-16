@@ -75,10 +75,7 @@ class KrakenProvider(BasePagedOHLCVProvider):
         start: int,
         end: int,
     ) -> list[list]:
-        url = (
-            f"{_BASE_URL}/0/public/OHLC"
-            f"?pair={prov_symbol}&interval={prov_tf}"
-        )
+        url = f"{_BASE_URL}/0/public/OHLC?pair={prov_symbol}&interval={prov_tf}"
         if start > 0:
             url += f"&since={start}"
 
@@ -87,9 +84,7 @@ class KrakenProvider(BasePagedOHLCVProvider):
             return []
         errs = data.get("error", [])
         if errs:
-            raise RuntimeError(
-                f"Kraken API error for {prov_symbol}: {', '.join(errs)}"
-            )
+            raise RuntimeError(f"Kraken API error for {prov_symbol}: {', '.join(errs)}")
         result = data.get("result", {})
         if not isinstance(result, dict):
             return []
