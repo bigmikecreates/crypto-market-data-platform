@@ -44,7 +44,8 @@ jobs:
           mkdir -p reports
           pytest \
             --junitxml=reports/junit.xml \
-            --cov --cov-report=term-missing --cov-report=xml
+            --cov --cov-report=term-missing --cov-report=xml \
+            --cov-fail-under=65
 
       - name: Upload test results
         if: always()
