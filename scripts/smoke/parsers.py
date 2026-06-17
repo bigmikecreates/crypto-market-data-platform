@@ -98,6 +98,13 @@ def parse_via_provider(provider: str, raw: str) -> str | None:
                 return f"no data; errors={errs}, keys={list(result.keys())}"
             _parse_row(rows[-1], "kraken", "XBT/USD", TIMEFRAME, "smoke")
 
+        elif provider == "gateio":
+            from crmd_platform.providers.gateio import _parse_row
+
+            if not isinstance(data, list) or not data:
+                return f"expected non-empty list, got {type(data).__name__}"
+            _parse_row(data[-1], "gateio", "BTC/USDT", TIMEFRAME, "smoke")
+
         else:
             return f"unknown provider: {provider}"
 
