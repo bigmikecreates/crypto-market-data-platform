@@ -12,10 +12,11 @@ permissions:
 jobs:
   smoke:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        provider: [bitfinex, bitstamp, bybit, kucoin, mexc, coinbase, okx, gemini, htx, kraken]
+        provider: [bitfinex, bitstamp, bybit, kucoin, mexc, coinbase, okx, gemini, htx, kraken, gateio]
 
     steps:
       - uses: actions/checkout@v6

@@ -11,6 +11,7 @@ SYMBOLS: dict[str, list[str]] = {
     "gemini": ["BTC/USD", "ETH/USD", "BTC/USDT", "ETH/USDT"],
     "htx": ["BTC/USDT", "ETH/USDT"],
     "kraken": ["XBT/USD", "ETH/USD"],
+    "gateio": ["BTC/USDT", "ETH/USDT"],
 }
 
 API_VERSIONS: dict[str, str] = {
@@ -24,6 +25,7 @@ API_VERSIONS: dict[str, str] = {
     "gemini": "v2",
     "htx": "v1",
     "kraken": "0",
+    "gateio": "v4",
 }
 
 TIMEFRAME = "1h"
@@ -114,6 +116,15 @@ def _endpoint_kraken(symbol: str, start: datetime, end: datetime) -> str:
     return f"https://api.kraken.com/0/public/OHLC?pair={kr_sym}&interval=60"
 
 
+def _endpoint_gateio(symbol: str, start: datetime, end: datetime) -> str:
+    gt_sym = symbol.replace("/", "_").upper()
+    return (
+        f"https://api.gateio.ws/api/v4/spot/candlesticks"
+        f"?currency_pair={gt_sym}&interval=1h"
+        f"&from={_utc_s(start)}&to={_utc_s(end)}&limit=10"
+    )
+
+
 ENDPOINTS = {
     "bitfinex": _endpoint_bitfinex,
     "bitstamp": _endpoint_bitstamp,
@@ -125,4 +136,5 @@ ENDPOINTS = {
     "gemini": _endpoint_gemini,
     "htx": _endpoint_htx,
     "kraken": _endpoint_kraken,
+    "gateio": _endpoint_gateio,
 }
