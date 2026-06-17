@@ -194,12 +194,16 @@ class TestWriteCandlesMergeEndToEnd:
             _make_candle("2024-01-01T00:00:00"),
             _make_candle("2024-01-01T01:00:00"),
         ]
-        written = write_candles(candles, str(tmp_path), backend=create_backend(str(tmp_path)))
+        written = write_candles(
+            candles, str(tmp_path), backend=create_backend(str(tmp_path))
+        )
         assert len(written) == 1
         table = pq.read_table(str(written[0]))
         assert table.num_rows == 2
 
-        written2 = write_candles(candles, str(tmp_path), backend=create_backend(str(tmp_path)))
+        written2 = write_candles(
+            candles, str(tmp_path), backend=create_backend(str(tmp_path))
+        )
         assert len(written2) == 1
         table2 = pq.read_table(str(written2[0]))
         assert table2.num_rows == 2  # no duplicates from re-fetch

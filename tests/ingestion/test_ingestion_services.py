@@ -22,7 +22,8 @@ class TestOhlcvService:
             timeframe="1h",
             start=_START,
             end=_END,
-            base_path=str(tmp_path), backend=create_backend(str(tmp_path)),
+            base_path=str(tmp_path),
+            backend=create_backend(str(tmp_path)),
         )
         assert count == 1
         files = list(tmp_path.rglob("*.parquet"))
@@ -55,7 +56,8 @@ class TestOhlcvService:
                 timeframe="1h",
                 start=_START,
                 end=_END,
-                base_path=str(tmp_path), backend=create_backend(str(tmp_path)),
+                base_path=str(tmp_path),
+                backend=create_backend(str(tmp_path)),
             )
         assert list(tmp_path.rglob("*.parquet")) == []
 
@@ -67,7 +69,8 @@ class TestFundingRateService:
             symbol="BTC/USDT",
             start=_START,
             end=_END,
-            base_path=str(tmp_path), backend=create_backend(str(tmp_path)),
+            base_path=str(tmp_path),
+            backend=create_backend(str(tmp_path)),
         )
         assert count == 1
         files = list(tmp_path.rglob("*.parquet"))
@@ -94,6 +97,7 @@ class TestFundingRateService:
                 symbol="BTC/USDT",
                 start=_START,
                 end=_END,
-                base_path=str(tmp_path), backend=create_backend(str(tmp_path)),
+                base_path=str(tmp_path),
+                backend=create_backend(str(tmp_path)),
             )
         assert list(tmp_path.rglob("*.parquet")) == []

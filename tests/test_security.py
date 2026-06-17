@@ -118,7 +118,9 @@ class TestH2TimestampValidation:
             volume="1",
             source="t",
         )
-        write_candles([c], base_path=str(tmp_path), backend=create_backend(str(tmp_path)))
+        write_candles(
+            [c], base_path=str(tmp_path), backend=create_backend(str(tmp_path))
+        )
         svc = DuckDBQueryService()
         with pytest.raises(ValueError, match="ISO-8601"):
             svc.get_candles(
@@ -264,7 +266,9 @@ class TestM1OrderValidation:
             volume="1",
             source="t",
         )
-        write_candles([c], base_path=str(tmp_path), backend=create_backend(str(tmp_path)))
+        write_candles(
+            [c], base_path=str(tmp_path), backend=create_backend(str(tmp_path))
+        )
         svc = DuckDBQueryService()
         rows = svc.get_candles(base_path=str(tmp_path), order="DESC")
         assert len(rows) == 1
@@ -286,7 +290,9 @@ class TestM1OrderValidation:
             volume="1",
             source="t",
         )
-        write_candles([c], base_path=str(tmp_path), backend=create_backend(str(tmp_path)))
+        write_candles(
+            [c], base_path=str(tmp_path), backend=create_backend(str(tmp_path))
+        )
         svc = DuckDBQueryService()
         rows = svc.get_candles(base_path=str(tmp_path), order="ASC")
         assert len(rows) == 1
