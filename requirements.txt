@@ -18,7 +18,7 @@ click==8.4.1
     # via uvicorn
 crmd-platform[local] @ file:///home/bigmike/bigmike/git-projects/crypto-market-data-platform
     # via crmd-platform (pyproject.toml)
-duckdb==1.5.3
+duckdb==1.5.4
     # via crmd-platform
 fastapi==0.137.1
     # via crmd-platform (pyproject.toml)
